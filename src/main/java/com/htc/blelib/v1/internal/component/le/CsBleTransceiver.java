@@ -35,7 +35,7 @@ import com.htc.blelib.v1.internal.component.le.queue.GattQueueManager.IGattReque
 
 public class CsBleTransceiver implements IGattRequest {
 
-	private final static String TAG = "CsBleTransceiver";
+    private final static String TAG = "CsBleTransceiver";
 
     private Context mContext;
     private BluetoothManager mBluetoothManager;
@@ -53,13 +53,13 @@ public class CsBleTransceiver implements IGattRequest {
 
     public CsBleTransceiver(Context context, BluetoothManager bluetoothManager) throws Exception {
 
-    	mContext = context;
-    	mBluetoothManager = bluetoothManager;
+        mContext = context;
+        mBluetoothManager = bluetoothManager;
 
-    	mBluetoothAdapter = mBluetoothManager.getAdapter();
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
 
-        	throw new Exception("Unable to obtain a BluetoothAdapter.");
+            throw new Exception("Unable to obtain a BluetoothAdapter.");
         }
 
         mGattQueueManager = GattQueueManager.getInstance();
@@ -80,9 +80,9 @@ public class CsBleTransceiver implements IGattRequest {
 
 
     public void deInit() {
-    	if (mBroadcastReceiver != null) {
-    		mContext.unregisterReceiver(mBroadcastReceiver);
-    	}
+        if (mBroadcastReceiver != null) {
+            mContext.unregisterReceiver(mBroadcastReceiver);
+        }
     }
 
 
@@ -92,105 +92,105 @@ public class CsBleTransceiver implements IGattRequest {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 
-        	CsConnectivityDevice csDevice;
-        	BluetoothDevice device = gatt.getDevice();
+            CsConnectivityDevice csDevice;
+            BluetoothDevice device = gatt.getDevice();
 
-        	Log.d(TAG, "[CS] onConnectionStateChange status: " + status + ", newState: " + newState);
+            Log.d(TAG, "[CS] onConnectionStateChange status: " + status + ", newState: " + newState);
 
-        	if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
 
-            	if (newState == BluetoothProfile.STATE_CONNECTED) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
 
                     Log.d(TAG, "[CS] Connected to GATT server.");
 
-            		csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+                    csDevice = getCsConnectivityDeviceGroup().getDevice(device);
 
-            		if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING)) {
+                    if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING)) {
 
-                		/// Add one connect count and go to service discovery if count equals 2.
-            			addOneConnectCount(csDevice, gatt);
+                        /// Add one connect count and go to service discovery if count equals 2.
+                        addOneConnectCount(csDevice, gatt);
 
-            		} else {
+                    } else {
 
-                		final LinkedList<CsBleTransceiverListener> listeners;
-                		synchronized(mListeners){
+                        final LinkedList<CsBleTransceiverListener> listeners;
+                        synchronized(mListeners){
 
-                			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-                		}
+                            listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                        }
 
                         for (CsBleTransceiverListener listener : listeners) {
 
-                        	listener.onError(device, null, Common.CsBleTransceiverErrorCode.ERROR_CONNECTING);
+                            listener.onError(device, null, Common.CsBleTransceiverErrorCode.ERROR_CONNECTING);
                         }
-            		}
+                    }
 
                     reset(device);
 
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 
-                	csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+                    csDevice = getCsConnectivityDeviceGroup().getDevice(device);
 
-                	if (csDevice != null) {
+                    if (csDevice != null) {
 
-                    	Log.d(TAG, "[CS] csDevice.getCsStateBle() = " + csDevice.getCsStateBle());
+                        Log.d(TAG, "[CS] csDevice.getCsStateBle() = " + csDevice.getCsStateBle());
 
-                		if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED || csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING) {
+                        if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED || csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING) {
 
-                			Log.d(TAG, "[CS] Disconnected from GATT server.");
+                            Log.d(TAG, "[CS] Disconnected from GATT server.");
 
                             reset(device);
                             closeGattClient(device);
 
-                    		final LinkedList<CsBleTransceiverListener> listeners;
-                    		synchronized(mListeners){
+                            final LinkedList<CsBleTransceiverListener> listeners;
+                            synchronized(mListeners){
 
-                    			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-                    		}
+                                listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                            }
 
                             for (CsBleTransceiverListener listener : listeners) {
 
-                            	listener.onDisconnectedFromGattServer(device);
+                                listener.onDisconnectedFromGattServer(device);
                             }
 
-                		} else if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_DISCONNECTING) {
+                        } else if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_DISCONNECTING) {
 
-                			Log.d(TAG, "[CS] Disconnected successfully.");
+                            Log.d(TAG, "[CS] Disconnected successfully.");
 
-                			reset(device);
+                            reset(device);
 
-                	        closeGattClient(device);
+                            closeGattClient(device);
 
-                			final LinkedList<CsBleTransceiverListener> listeners;
-                			synchronized(mListeners){
+                            final LinkedList<CsBleTransceiverListener> listeners;
+                            synchronized(mListeners){
 
-                				listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-                			}
+                                listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                            }
 
-                	        for (CsBleTransceiverListener listener : listeners) {
+                            for (CsBleTransceiverListener listener : listeners) {
 
-                	        	listener.onDisconnected(device);
-                	        }
-                		}
-                	}
+                                listener.onDisconnected(device);
+                            }
+                        }
+                    }
                 }
 
-        	} else {
+            } else {
 
-        		if (newState == BluetoothProfile.STATE_CONNECTED) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
 
                     reset(device);
                     removeGattClient(device);
                     closeGattClient(device);
 
-            		final LinkedList<CsBleTransceiverListener> listeners;
-            		synchronized(mListeners){
+                    final LinkedList<CsBleTransceiverListener> listeners;
+                    synchronized(mListeners){
 
-            			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-            		}
+                        listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                    }
 
                     for (CsBleTransceiverListener listener : listeners) {
 
-                    	listener.onError(device, null, Common.CsBleTransceiverErrorCode.ERROR_CONNECTING);
+                        listener.onError(device, null, Common.CsBleTransceiverErrorCode.ERROR_CONNECTING);
                     }
 
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
@@ -198,18 +198,18 @@ public class CsBleTransceiver implements IGattRequest {
                     reset(device);
                     closeGattClient(device);
 
-            		final LinkedList<CsBleTransceiverListener> listeners;
-            		synchronized(mListeners){
+                    final LinkedList<CsBleTransceiverListener> listeners;
+                    synchronized(mListeners){
 
-            			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-            		}
+                        listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                    }
 
                     for (CsBleTransceiverListener listener : listeners) {
 
-                    	listener.onDisconnectedFromGattServer(device);
+                        listener.onDisconnectedFromGattServer(device);
                     }
                 }
-        	}
+            }
         }
 
 
@@ -219,33 +219,33 @@ public class CsBleTransceiver implements IGattRequest {
 
             Log.d(TAG, "[CS] onServicesDiscovered received: " + status);
 
-        	if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
 
-        		CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(gatt.getDevice());
-        		csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTED);
+                CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(gatt.getDevice());
+                csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTED);
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
-
-                for (CsBleTransceiverListener listener : listeners) {
-
-                	listener.onConnected(gatt.getDevice());
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
                 }
 
-        	} else {
+                for (CsBleTransceiverListener listener : listeners) {
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                    listener.onConnected(gatt.getDevice());
+                }
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+            } else {
+
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
+
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onError(gatt.getDevice(), null, Common.CsBleTransceiverErrorCode.ERROR_SERVICE_DISCOVER);
+                    listener.onError(gatt.getDevice(), null, Common.CsBleTransceiverErrorCode.ERROR_SERVICE_DISCOVER);
                 }
             }
         }
@@ -259,35 +259,35 @@ public class CsBleTransceiver implements IGattRequest {
 
             flush(gatt.getDevice());
 
-        	if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
 
                 // Test code
                 printCharacteristic("READ", characteristic);
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onCharacteristicRead(gatt.getDevice(), characteristic);
+                    listener.onCharacteristicRead(gatt.getDevice(), characteristic);
                 }
 
-        	} else {
+            } else {
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onError(gatt.getDevice(), characteristic, Common.CsBleTransceiverErrorCode.ERROR_CHARACTERISTIC_READ);
+                    listener.onError(gatt.getDevice(), characteristic, Common.CsBleTransceiverErrorCode.ERROR_CHARACTERISTIC_READ);
                 }
-        	}
+            }
         }
 
 
@@ -302,35 +302,35 @@ public class CsBleTransceiver implements IGattRequest {
 
             flush(gatt.getDevice());
 
-        	if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
 
                 // Test code
                 printCharacteristic("WRITE", tmpChar);
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onCharacteristicWrite(gatt.getDevice(), tmpChar);
+                    listener.onCharacteristicWrite(gatt.getDevice(), tmpChar);
                 }
 
-        	} else {
+            } else {
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onError(gatt.getDevice(), tmpChar, Common.CsBleTransceiverErrorCode.ERROR_CHARACTERISTIC_WRITE);
+                    listener.onError(gatt.getDevice(), tmpChar, Common.CsBleTransceiverErrorCode.ERROR_CHARACTERISTIC_WRITE);
                 }
-        	}
+            }
         }
 
 
@@ -346,15 +346,15 @@ public class CsBleTransceiver implements IGattRequest {
             BluetoothGattCharacteristic ltNotify = CsBleGattAttributeUtil.convertLTNotify(characteristic);
             if (ltNotify != null) {
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onNotificationReceive(gatt.getDevice(), ltNotify);
+                    listener.onNotificationReceive(gatt.getDevice(), ltNotify);
                 }
             }
         }
@@ -364,46 +364,46 @@ public class CsBleTransceiver implements IGattRequest {
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
 
-        	Log.d(TAG, "[CS] onDescriptorWrite status: " + status);
+            Log.d(TAG, "[CS] onDescriptorWrite status: " + status);
 
-    		flush(gatt.getDevice());
+            flush(gatt.getDevice());
 
-        	if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onDescriptorWrite(gatt.getDevice(), descriptor);
+                    listener.onDescriptorWrite(gatt.getDevice(), descriptor);
                 }
 
-        	} else {
+            } else {
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onError(gatt.getDevice(), descriptor.getCharacteristic(), Common.CsBleTransceiverErrorCode.ERROR_DESCRIPTOR_WRITE);
+                    listener.onError(gatt.getDevice(), descriptor.getCharacteristic(), Common.CsBleTransceiverErrorCode.ERROR_DESCRIPTOR_WRITE);
                 }
-        	}
+            }
         }
 
 
 
         private void flush(BluetoothDevice device) {
 
-        	GattQueueManager.getInstance().flush(device);
+            GattQueueManager.getInstance().flush(device);
 
-        	/*
-        	final BluetoothDevice temp = device;
+            /*
+            final BluetoothDevice temp = device;
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 public void run() {
@@ -425,269 +425,269 @@ public class CsBleTransceiver implements IGattRequest {
 
     public void printCharacteristic(String type, BluetoothGattCharacteristic characteristic) {
 
-		Log.d(TAG, "[CS][" + type + "] uuid = " + characteristic.getUuid());
+        Log.d(TAG, "[CS][" + type + "] uuid = " + characteristic.getUuid());
 
-		byte[] value = characteristic.getValue();
-		StringBuilder str = new StringBuilder();
-		for (int i = 0; i < value.length; i++) {
+        byte[] value = characteristic.getValue();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < value.length; i++) {
 
-			str.append(String.format("%02xh ", value[i]));
-		}
+            str.append(String.format("%02xh ", value[i]));
+        }
 
-		Log.d(TAG, "[CS][" + type + "] value = " + str.toString());
+        Log.d(TAG, "[CS][" + type + "] value = " + str.toString());
     }
 
 
 
     public Context getContext() {
 
-    	return mContext;
+        return mContext;
     }
 
 
 
     public synchronized void registerListener(CsBleTransceiverListener listener) {
 
-    	synchronized(mListeners) {
+        synchronized(mListeners) {
 
-    		mListeners.add(listener);
+            mListeners.add(listener);
 
-    		Log.d(TAG, "[CS] After registerListener mListeners.size() = " + mListeners.size());
-    	}
+            Log.d(TAG, "[CS] After registerListener mListeners.size() = " + mListeners.size());
+        }
     }
 
 
 
     public synchronized void unregisterListener(CsBleTransceiverListener listener) {
 
-    	synchronized(mListeners) {
+        synchronized(mListeners) {
 
-    		mListeners.remove(listener);
+            mListeners.remove(listener);
 
-    		Log.d(TAG, "[CS] After unregisterListener mListeners.size() = " + mListeners.size());
-    	}
+            Log.d(TAG, "[CS] After unregisterListener mListeners.size() = " + mListeners.size());
+        }
     }
 
 
 
     public CsConnectivityDeviceGroup getCsConnectivityDeviceGroup() {
 
-    	return mCsConnectivityDeviceGroup;
+        return mCsConnectivityDeviceGroup;
     }
 
 
 
-	private void updateCsConnectivityGroup(BluetoothDevice device) {
+    private void updateCsConnectivityGroup(BluetoothDevice device) {
 
-    	if (getCsConnectivityDeviceGroup().getDevice(device) == null) {
+        if (getCsConnectivityDeviceGroup().getDevice(device) == null) {
 
-        	if (mBluetoothManager != null) {
+            if (mBluetoothManager != null) {
 
-        		List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+                List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
 
-        		if ((connectedDeviceList != null) && (connectedDeviceList.size() > 0)) {
+                if ((connectedDeviceList != null) && (connectedDeviceList.size() > 0)) {
 
-        			for (int cnt = 0; cnt < connectedDeviceList.size(); cnt++) {
+                    for (int cnt = 0; cnt < connectedDeviceList.size(); cnt++) {
 
-        				Log.d(TAG, "[CS] Connected BLE device = " + connectedDeviceList.get(cnt));
-        			}
-        		}
+                        Log.d(TAG, "[CS] Connected BLE device = " + connectedDeviceList.get(cnt));
+                    }
+                }
 
-        		if (getCsConnectivityDeviceGroup().addDevice(device)) {
+                if (getCsConnectivityDeviceGroup().addDevice(device)) {
 
-        			CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+                    CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
 
-            		if (connectedDeviceList.contains(device)) {
+                    if (connectedDeviceList.contains(device)) {
 
-            			csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTED);
-            		}
-        		}
+                        csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTED);
+                    }
+                }
 
-        	} else {
+            } else {
 
-        		Log.d(TAG, "[CS] Should not happen");
-        	}
-    	}
-	}
+                Log.d(TAG, "[CS] Should not happen");
+            }
+        }
+    }
 
 
 
-	public boolean bond(BluetoothDevice device) {
+    public boolean bond(BluetoothDevice device) {
 
-    	if (mBluetoothAdapter == null || device == null) {
+        if (mBluetoothAdapter == null || device == null) {
 
-    		Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
+            Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
             return false;
 
         } else {
 
-        	if (!mBluetoothAdapter.isEnabled()) {
+            if (!mBluetoothAdapter.isEnabled()) {
 
-        		Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
-        		return false;
-        	}
+                Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
+                return false;
+            }
         }
 
-    	if ((mBluetoothAdapter != null) && (mBluetoothAdapter.getBondedDevices().contains(device))) {
+        if ((mBluetoothAdapter != null) && (mBluetoothAdapter.getBondedDevices().contains(device))) {
 
-    		Log.d(TAG, "[CS] device is already bonded.");
+            Log.d(TAG, "[CS] device is already bonded.");
 
-        	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-        	if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED)) {
+            CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+            if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED)) {
 
-        		final LinkedList<CsBleTransceiverListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleTransceiverListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                }
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                	listener.onBonded(device);
+                    listener.onBonded(device);
                 }
 
                 return true;
 
-        	} else {
+            } else {
 
-        		Log.d(TAG, "[CS] BLE is not connected at bonding.");
+                Log.d(TAG, "[CS] BLE is not connected at bonding.");
                 return false;
-        	}
+            }
 
-    	} else {
+        } else {
 
-        	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-        	if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED)) {
+            CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+            if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED)) {
 
-        		Log.d(TAG, "[CS] device is not bonded. Creating bond...");
+                Log.d(TAG, "[CS] device is not bonded. Creating bond...");
 
-        		return device.createBond();
+                return device.createBond();
 
-        	} else {
+            } else {
 
-        		Log.d(TAG, "[CS] BLE is not connected at bonding.");
-        		return false;
-        	}
-    	}
-	}
+                Log.d(TAG, "[CS] BLE is not connected at bonding.");
+                return false;
+            }
+        }
+    }
 
 
 
     public boolean connect(final BluetoothDevice device, boolean auto) {
 
-    	Log.d(TAG, "[CS] connect++");
+        Log.d(TAG, "[CS] connect++");
 
-    	if (mBluetoothAdapter == null || device == null) {
+        if (mBluetoothAdapter == null || device == null) {
 
-    		Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
+            Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
             return false;
 
         } else {
 
-        	if (!mBluetoothAdapter.isEnabled()) {
+            if (!mBluetoothAdapter.isEnabled()) {
 
-        		Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
-        		return false;
-        	}
+                Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
+                return false;
+            }
         }
 
-    	// WORKAROUND suggested by QCA
-    	// gatt may be ready a little after BLE is turned on
-    	// so it wait 500 milliseconds here to avoid gatt-not-ready issue
-    	try {
-    		Log.d(TAG, "[CS] wait for gatt ready");
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			Log.d(TAG, "[CS] wait for gatt ready interrupted");
-		}
+        // WORKAROUND suggested by QCA
+        // gatt may be ready a little after BLE is turned on
+        // so it wait 500 milliseconds here to avoid gatt-not-ready issue
+        try {
+            Log.d(TAG, "[CS] wait for gatt ready");
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Log.d(TAG, "[CS] wait for gatt ready interrupted");
+        }
 
-    	updateCsConnectivityGroup(device);
+        updateCsConnectivityGroup(device);
 
-    	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-    	if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_DISCONNECTED) {
+        CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+        if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_DISCONNECTED) {
 
-    		csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTING);
-    		csDevice.setConnectCount(0);
+            csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTING);
+            csDevice.setConnectCount(0);
             return setGattClient(device, auto, mGattCallback, mContext);
 
-    	} else if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING) {
+        } else if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING) {
 
             return setGattClient(device, auto, mGattCallback, mContext);
 
-    	} else {
+        } else {
 
-    		Log.d(TAG, "[CS] Cs's BLE state is not at CSSTATE_BLE_DISCONNECTED. BLE state = " + csDevice.getCsStateBle());
-    		return false;
-    	}
+            Log.d(TAG, "[CS] Cs's BLE state is not at CSSTATE_BLE_DISCONNECTED. BLE state = " + csDevice.getCsStateBle());
+            return false;
+        }
     }
 
 
 
     public boolean disconnect(final BluetoothDevice device) {
 
-    	Log.d(TAG, "[CS] disconnect++");
+        Log.d(TAG, "[CS] disconnect++");
 
-    	if (mBluetoothAdapter == null || device == null) {
+        if (mBluetoothAdapter == null || device == null) {
 
-    		Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
+            Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
             return false;
 
         } else {
 
-        	if (!mBluetoothAdapter.isEnabled()) {
+            if (!mBluetoothAdapter.isEnabled()) {
 
-        		Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
+                Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
 
-        		/// Bluetooth is disabled means that BLE is disconnected.
-        		closeGattClient(device);
+                /// Bluetooth is disabled means that BLE is disconnected.
+                closeGattClient(device);
 
-        		return false;
-        	}
+                return false;
+            }
         }
 
-    	updateCsConnectivityGroup(device);
+        updateCsConnectivityGroup(device);
 
-    	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-    	if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED) {
+        CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+        if (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTED) {
 
-    		csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_DISCONNECTING);
+            csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_DISCONNECTING);
             return removeGattClient(device);
 
-    	} else {
+        } else {
 
-    		Log.d(TAG, "[CS] Cs's BLE state is not at CSSTATE_BLE_CONNECTED. BLE state = " + csDevice.getCsStateBle());
-    		return false;
-    	}
+            Log.d(TAG, "[CS] Cs's BLE state is not at CSSTATE_BLE_CONNECTED. BLE state = " + csDevice.getCsStateBle());
+            return false;
+        }
     }
 
 
 
     public void disconnectForce(final BluetoothDevice device) {
 
-    	Log.d(TAG, "[CS] disconnectForce device = " + device);
+        Log.d(TAG, "[CS] disconnectForce device = " + device);
 
-    	if (mBluetoothAdapter == null || device == null) {
+        if (mBluetoothAdapter == null || device == null) {
 
-    		Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
+            Log.d(TAG, "[CS] BluetoothAdapter not initialized or unspecified device.");
             return;
 
         } else {
 
-        	if (!mBluetoothAdapter.isEnabled()) {
+            if (!mBluetoothAdapter.isEnabled()) {
 
-        		Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
+                Log.d(TAG, "[CS] Bluetooth is unavailableand please enable it.");
 
-        		/// Bluetooth is disabled means that BLE is disconnected.
-        		closeGattClient(device);
+                /// Bluetooth is disabled means that BLE is disconnected.
+                closeGattClient(device);
 
-        		return;
-        	}
+                return;
+            }
         }
 
-    	if (removeGattClient(device)) {
+        if (removeGattClient(device)) {
 
-    		closeGattClient(device);
-    	}
+            closeGattClient(device);
+        }
     }
 
 
@@ -697,7 +697,7 @@ public class CsBleTransceiver implements IGattRequest {
         Log.d(TAG, "[CS] removeGattClient++: " + device);
 
         if ((device == null) || (!mGatt.containsKey(device))) {
-        	return false;
+            return false;
         }
 
         mBleAPIInvoker.disconnect(mGatt.get(device));
@@ -714,7 +714,7 @@ public class CsBleTransceiver implements IGattRequest {
         Log.d(TAG, "[CS] closeGattClient device = " + device);
 
         if ((device == null) || (!mGatt.containsKey(device))) {
-        	return;
+            return;
         }
 
         removeBleConnectCheckRequestAlarm();
@@ -732,12 +732,12 @@ public class CsBleTransceiver implements IGattRequest {
 
     private synchronized BluetoothGatt getGattClient(BluetoothDevice device) {
 
-    	Log.d(TAG, "[CS] getGattClient:" + device);
+        Log.d(TAG, "[CS] getGattClient:" + device);
 
         if (device == null || !mGatt.containsKey(device)) {
-        	return null;
+            return null;
         } else {
-        	return mGatt.get(device);
+            return mGatt.get(device);
         }
     }
 
@@ -745,29 +745,29 @@ public class CsBleTransceiver implements IGattRequest {
 
     private synchronized boolean setGattClient(BluetoothDevice device, boolean auto, BluetoothGattCallback callback, Context context) {
 
-    	Log.d(TAG, "[CS] addGattClient:" + device + ", mGatt.size(): " + mGatt.size() + ", autoConnect: " + auto);
+        Log.d(TAG, "[CS] addGattClient:" + device + ", mGatt.size(): " + mGatt.size() + ", autoConnect: " + auto);
 
         if (device == null) {
-        	return false;
+            return false;
         }
 
         if (mGatt.containsKey(device)) {
 
-           	removeGattClient(device);
-           	closeGattClient(device);
+               removeGattClient(device);
+               closeGattClient(device);
         }
 
         BluetoothGatt gatt = mBleAPIInvoker.connectGatt(device, context, auto, callback);
 
         if (gatt != null) {
 
-        	mGatt.put(device, gatt);
+            mGatt.put(device, gatt);
 
-        	return true;
+            return true;
 
         } else {
 
-        	return false;
+            return false;
         }
     }
 
@@ -775,67 +775,67 @@ public class CsBleTransceiver implements IGattRequest {
 
     public int readCsCommand(BluetoothDevice device, String service, String command) {
 
-    	if (device == null) {
-    		return -1;
-    	}
+        if (device == null) {
+            return -1;
+        }
 
-    	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-    	if ((csDevice == null) || (csDevice != null && csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED)) {
+        CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+        if ((csDevice == null) || (csDevice != null && csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED)) {
 
-    		Log.d(TAG, "[CS] Can't get csDevice or BLE is not connected.");
-    		return -1;
-    	}
+            Log.d(TAG, "[CS] Can't get csDevice or BLE is not connected.");
+            return -1;
+        }
 
-    	/// Check connection state from BluetoothManager directly.
-    	if (mBluetoothManager != null) {
+        /// Check connection state from BluetoothManager directly.
+        if (mBluetoothManager != null) {
 
-    		List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+            List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
 
-    		if (!connectedDeviceList.contains(device)) {
+            if (!connectedDeviceList.contains(device)) {
 
-    			Log.d(TAG, "[CS] Selected device is not connected.");
+                Log.d(TAG, "[CS] Selected device is not connected.");
 
-				if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
+                if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
 
-					Log.d(TAG, "[CS] Selected device is not connected and force to disconnect device = " + device);
+                    Log.d(TAG, "[CS] Selected device is not connected and force to disconnect device = " + device);
 
-					GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
-					disconnectForce(csDevice.getBluetoothDevice());
+                    GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
+                    disconnectForce(csDevice.getBluetoothDevice());
 
-            		final LinkedList<CsBleTransceiverListener> listeners;
-            		synchronized(mListeners){
+                    final LinkedList<CsBleTransceiverListener> listeners;
+                    synchronized(mListeners){
 
-            			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-            		}
+                        listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                    }
 
                     for (CsBleTransceiverListener listener : listeners) {
 
-                    	listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
+                        listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
                     }
-				}
+                }
 
-    			return -1;
-    		}
+                return -1;
+            }
 
-    	} else {
+        } else {
 
-    		Log.d(TAG, "[CS] BluetoothManager is not available!!!");
-    		return -1;
-    	}
+            Log.d(TAG, "[CS] BluetoothManager is not available!!!");
+            return -1;
+        }
 
-    	UUID uuidService = UUID.fromString(service);
-    	UUID uuidChar = UUID.fromString(command);
+        UUID uuidService = UUID.fromString(service);
+        UUID uuidChar = UUID.fromString(command);
 
         Log.d(TAG, "[CS] readCsCommand uuidChar = " + uuidChar);
 
-    	GattRequest request = mGattQueueManager.new GattRequest(device,
-    										  uuidService,
-    										  uuidChar,
-    										  null,
-    										  null,
-    										  GattQueueManager.REQUEST_READ_CHAR,
-    										  0,
-    										  this);
+        GattRequest request = mGattQueueManager.new GattRequest(device,
+                                              uuidService,
+                                              uuidChar,
+                                              null,
+                                              null,
+                                              GattQueueManager.REQUEST_READ_CHAR,
+                                              0,
+                                              this);
 
         boolean ret = mGattQueueManager.addPendingRequest(request);
 
@@ -846,103 +846,103 @@ public class CsBleTransceiver implements IGattRequest {
 
 
 
-    public int writeCsCommand(BluetoothDevice device, CsBleGattAttributes.CsV2CommandEnum commandID, byte[] writeData, long delay) {
+    public int writeCsCommand(BluetoothDevice device, CsBleGattAttributes.CsV1CommandEnum commandID, byte[] writeData, long delay) {
 
-    	int retSize = 0;
+        int retSize = 0;
 
-    	if (device == null) {
-    		return -1;
-    	}
+        if (device == null) {
+            return -1;
+        }
 
-    	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-    	if ((csDevice == null) || (csDevice != null && csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED)) {
+        CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+        if ((csDevice == null) || (csDevice != null && csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED)) {
 
-    		Log.d(TAG, "[CS] Can't get csDevice or BLE is not connected.");
-    		return -1;
-    	}
+            Log.d(TAG, "[CS] Can't get csDevice or BLE is not connected.");
+            return -1;
+        }
 
-    	/// Check connection state from BluetoothManager directly.
-    	if (mBluetoothManager != null) {
+        /// Check connection state from BluetoothManager directly.
+        if (mBluetoothManager != null) {
 
-    		List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+            List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
 
-    		if (!connectedDeviceList.contains(device)) {
+            if (!connectedDeviceList.contains(device)) {
 
-    			Log.d(TAG, "[CS] Selected device is not connected.");
+                Log.d(TAG, "[CS] Selected device is not connected.");
 
-				if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
+                if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
 
-					Log.d(TAG, "[CS] Selected device is not connected and force to disconnect device = " + device);
+                    Log.d(TAG, "[CS] Selected device is not connected and force to disconnect device = " + device);
 
-					GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
-					disconnectForce(csDevice.getBluetoothDevice());
+                    GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
+                    disconnectForce(csDevice.getBluetoothDevice());
 
-            		final LinkedList<CsBleTransceiverListener> listeners;
-            		synchronized(mListeners){
+                    final LinkedList<CsBleTransceiverListener> listeners;
+                    synchronized(mListeners){
 
-            			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-            		}
+                        listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                    }
 
                     for (CsBleTransceiverListener listener : listeners) {
 
-                    	listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
+                        listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
                     }
-				}
+                }
 
-    			return -1;
-    		}
+                return -1;
+            }
 
-    	} else {
+        } else {
 
-    		Log.d(TAG, "[CS] BluetoothManager is not available!!!");
-    		return -1;
-    	}
+            Log.d(TAG, "[CS] BluetoothManager is not available!!!");
+            return -1;
+        }
 
-    	UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV2CommandEnum.CS_SERVICE));
-    	UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
+        UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_SERVICE));
+        UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
 
         Log.d(TAG, "[CS] writeCsCommand command id= " + commandID.getID() + ", length = " + writeData.length);
 
         if (CsBleGattAttributes.isLongFormat(commandID)) {
 
-        	ArrayList<byte[]> writeDataList = getPayload(writeData, commandID.getID());
+            ArrayList<byte[]> writeDataList = getPayload(writeData, commandID.getID());
 
-        	for (int cnt = 0; cnt < writeDataList.size(); cnt++) {
+            for (int cnt = 0; cnt < writeDataList.size(); cnt++) {
 
-            	GattRequest request = mGattQueueManager.new GattRequest(device,
-  					  uuidService,
-  					  uuidChar,
-  					  null,
-  					  writeDataList.get(cnt),
-  					  GattQueueManager.REQUEST_WRITE_CHAR_RSP,
-  					  delay,
-  					  this);
+                GattRequest request = mGattQueueManager.new GattRequest(device,
+                        uuidService,
+                        uuidChar,
+                        null,
+                        writeDataList.get(cnt),
+                        GattQueueManager.REQUEST_WRITE_CHAR_RSP,
+                        delay,
+                        this);
 
-            	boolean ret = mGattQueueManager.addPendingRequest(request);
-            	Log.d(TAG, "[CS] writeCsCommand ret = " + ret);
-        	}
+                boolean ret = mGattQueueManager.addPendingRequest(request);
+                Log.d(TAG, "[CS] writeCsCommand ret = " + ret);
+            }
 
-        	retSize = writeDataList.size();
+            retSize = writeDataList.size();
 
         } else {
-        	//add command ID
-        	byte[] writeDataAndID = new byte[writeData.length + 1];
-        	for (int i = 0; i < writeData.length; i++)
-        	{
-        		writeDataAndID[i+1] = writeData[i];
-        	}
-        	writeDataAndID[0] = commandID.getID();
+            //add command ID
+            byte[] writeDataAndID = new byte[writeData.length + 1];
+            for (int i = 0; i < writeData.length; i++)
+            {
+                writeDataAndID[i+1] = writeData[i];
+            }
+            writeDataAndID[0] = commandID.getID();
 
-        	GattRequest request = mGattQueueManager.new GattRequest(device,
-					  uuidService,
-					  uuidChar,
-					  null,
-					  writeDataAndID,
-					  GattQueueManager.REQUEST_WRITE_CHAR_RSP,
-					  delay,
-					  this);
+            GattRequest request = mGattQueueManager.new GattRequest(device,
+                      uuidService,
+                      uuidChar,
+                      null,
+                      writeDataAndID,
+                      GattQueueManager.REQUEST_WRITE_CHAR_RSP,
+                      delay,
+                      this);
 
-        	boolean ret = mGattQueueManager.addPendingRequest(request);
+            boolean ret = mGattQueueManager.addPendingRequest(request);
             Log.d(TAG, "[CS] writeCsCommand ret = " + ret);
 
             retSize = 1;
@@ -955,145 +955,145 @@ public class CsBleTransceiver implements IGattRequest {
 
     private ArrayList<byte[]> getPayload(byte[] writeData, byte commandid) {
 
-    	ArrayList<byte[]> retWriteDataPayload = new ArrayList<byte[]>();
-    	int data_offset = 0;
+        ArrayList<byte[]> retWriteDataPayload = new ArrayList<byte[]>();
+        int data_offset = 0;
 
-    	//The first pack is only 17 bytes payload
-    	if (writeData.length <= (Common.PAYLOAD_SIZE -1))
-    	{
-    		data_offset = writeData.length;
-    	}
-    	else
-    	{
-    		data_offset = (Common.PAYLOAD_SIZE -1);
-    	}
+        //The first pack is only 17 bytes payload
+        if (writeData.length <= (Common.PAYLOAD_SIZE -1))
+        {
+            data_offset = writeData.length;
+        }
+        else
+        {
+            data_offset = (Common.PAYLOAD_SIZE -1);
+        }
 
-    	byte[] payload = new byte[data_offset + 3];
-    	payload[0] = commandid;
-    	payload[1] = (byte)((writeData.length >> 8) & 0xff);
-    	payload[2] = (byte)(writeData.length & 0xff);
-    	for (int i = 0; i < data_offset; i++)
-    	{
-    		payload[i+3] = writeData[i];
-    	}
-    	retWriteDataPayload.add(payload);
+        byte[] payload = new byte[data_offset + 3];
+        payload[0] = commandid;
+        payload[1] = (byte)((writeData.length >> 8) & 0xff);
+        payload[2] = (byte)(writeData.length & 0xff);
+        for (int i = 0; i < data_offset; i++)
+        {
+            payload[i+3] = writeData[i];
+        }
+        retWriteDataPayload.add(payload);
 
-    	if (writeData.length <= (Common.PAYLOAD_SIZE -1))
-    	{
-    		return retWriteDataPayload;
-    	}
+        if (writeData.length <= (Common.PAYLOAD_SIZE -1))
+        {
+            return retWriteDataPayload;
+        }
 
-    	//It is need for more than two packs
-    	int payloadSize = Common.PAYLOAD_SIZE;
-    	int payloadRes = (writeData.length - data_offset) % payloadSize;
-    	int payloadNum = ((writeData.length - data_offset) / payloadSize) + ((payloadRes > 0) ? 1 : 0);
+        //It is need for more than two packs
+        int payloadSize = Common.PAYLOAD_SIZE;
+        int payloadRes = (writeData.length - data_offset) % payloadSize;
+        int payloadNum = ((writeData.length - data_offset) / payloadSize) + ((payloadRes > 0) ? 1 : 0);
 
-    	if (payloadRes == 0) {
-    		payloadRes = payloadSize;
-    	}
+        if (payloadRes == 0) {
+            payloadRes = payloadSize;
+        }
 
-    	for (int cnt = 0; cnt < payloadNum; cnt++) {
+        for (int cnt = 0; cnt < payloadNum; cnt++) {
 
-    		int res;
+            int res;
 
-    		if (cnt == (payloadNum - 1)) {
-       			res = payloadRes;
-    		} else {
-    			res = payloadSize;
-    		}
+            if (cnt == (payloadNum - 1)) {
+                   res = payloadRes;
+            } else {
+                res = payloadSize;
+            }
 
-    		byte[] payloads = new byte[res + 2];
+            byte[] payloads = new byte[res + 2];
 
-    		payloads[0] = commandid;
-    		payloads[1] = (byte) ((cnt + 1) * 2);
+            payloads[0] = commandid;
+            payloads[1] = (byte) ((cnt + 1) * 2);
 
-    		///Log.d(TAG, "[CS] getPayload payload[0] = " + payload[0]);
-    		///Log.d(TAG, "[CS] getPayload payload[1] = " + payload[1]);
+            ///Log.d(TAG, "[CS] getPayload payload[0] = " + payload[0]);
+            ///Log.d(TAG, "[CS] getPayload payload[1] = " + payload[1]);
 
-    		for (int idx = 0; idx < res; idx++) {
-    			payloads[idx + 2] = writeData[cnt * payloadSize + idx + data_offset];
-    			///Log.d(TAG, "[CS] getPayload payload[" + (idx + 2) + "] = " + payload[idx + 2]);
-    		}
+            for (int idx = 0; idx < res; idx++) {
+                payloads[idx + 2] = writeData[cnt * payloadSize + idx + data_offset];
+                ///Log.d(TAG, "[CS] getPayload payload[" + (idx + 2) + "] = " + payload[idx + 2]);
+            }
 
-    		retWriteDataPayload.add(payloads);
+            retWriteDataPayload.add(payloads);
 
-    	}
+        }
 
-    	return retWriteDataPayload;
+        return retWriteDataPayload;
     }
 
 
 
-    public int setCsNotification(BluetoothDevice device, CsBleGattAttributes.CsV2CommandEnum commandID, boolean enable, long delay) {
+    public int setCsNotification(BluetoothDevice device, CsBleGattAttributes.CsV1CommandEnum commandID, boolean enable, long delay) {
 
-    	if (device == null) {
-    		return -1;
-    	}
+        if (device == null) {
+            return -1;
+        }
 
-    	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-    	if ((csDevice == null) || (csDevice != null && csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED)) {
+        CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+        if ((csDevice == null) || (csDevice != null && csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED)) {
 
-    		Log.d(TAG, "[CS] Can't get csDevice or BLE is not connected.");
-    		return -1;
-    	}
+            Log.d(TAG, "[CS] Can't get csDevice or BLE is not connected.");
+            return -1;
+        }
 
-    	/// Check connection state from BluetoothManager directly.
-    	if (mBluetoothManager != null) {
+        /// Check connection state from BluetoothManager directly.
+        if (mBluetoothManager != null) {
 
-    		List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+            List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
 
-    		if (!connectedDeviceList.contains(device)) {
+            if (!connectedDeviceList.contains(device)) {
 
-    			Log.d(TAG, "[CS] Selected device is not connected.");
+                Log.d(TAG, "[CS] Selected device is not connected.");
 
-				if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
+                if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
 
-					Log.d(TAG, "[CS] Selected device is not connected and force to disconnect device = " + device);
+                    Log.d(TAG, "[CS] Selected device is not connected and force to disconnect device = " + device);
 
-					GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
-					disconnectForce(csDevice.getBluetoothDevice());
+                    GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
+                    disconnectForce(csDevice.getBluetoothDevice());
 
-            		final LinkedList<CsBleTransceiverListener> listeners;
-            		synchronized(mListeners){
+                    final LinkedList<CsBleTransceiverListener> listeners;
+                    synchronized(mListeners){
 
-            			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-            		}
+                        listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                    }
 
                     for (CsBleTransceiverListener listener : listeners) {
 
-                    	listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
+                        listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
                     }
-				}
+                }
 
-    			return -1;
-    		}
+                return -1;
+            }
 
-    	} else {
+        } else {
 
-    		Log.d(TAG, "[CS] BluetoothManager is not available!!!");
-    		return -1;
-    	}
-    	Log.d(TAG, "[CS] UUID:" + commandID + " uuid(bytes):" + commandID.getID());
-    	UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV2CommandEnum.CS_SERVICE));
-    	UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
-        UUID uuidDescriptor = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV2CommandEnum.CS_DESCRIPTOR));
+            Log.d(TAG, "[CS] BluetoothManager is not available!!!");
+            return -1;
+        }
+        Log.d(TAG, "[CS] UUID:" + commandID + " uuid(bytes):" + commandID.getID());
+        UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_SERVICE));
+        UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
+        UUID uuidDescriptor = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_DESCRIPTOR));
         byte[] writeData = (enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
 
         Log.d(TAG, "[CS] setCsNotification enable = " + enable + ", uuidChar = " + uuidChar + ", uuidDescriptor = " + uuidDescriptor);
 
         if (setNotification(device, uuidService, uuidChar, enable)) {
 
-           	GattRequest request = mGattQueueManager.new GattRequest(device,
-						uuidService,
-						uuidChar,
-						uuidDescriptor,
-						writeData,
-						GattQueueManager.REQUEST_WRITE_DESCRIP,
-						delay,
-						this);
+               GattRequest request = mGattQueueManager.new GattRequest(device,
+                        uuidService,
+                        uuidChar,
+                        uuidDescriptor,
+                        writeData,
+                        GattQueueManager.REQUEST_WRITE_DESCRIP,
+                        delay,
+                        this);
 
-           	boolean ret = mGattQueueManager.addPendingRequest(request);
-           	Log.d(TAG, "[CS] setCsNotification ret = " + ret);
+               boolean ret = mGattQueueManager.addPendingRequest(request);
+               Log.d(TAG, "[CS] setCsNotification ret = " + ret);
         }
 
         return 0;
@@ -1103,9 +1103,9 @@ public class CsBleTransceiver implements IGattRequest {
 
     private boolean readCharacteristicIntValue(BluetoothDevice device, UUID service, UUID characteristic) {
 
-    	///Log.d(TAG, "gattReadWrite - readCharacteristicIntValue: " + device + ", " + service + ", " + characteristic);
+        ///Log.d(TAG, "gattReadWrite - readCharacteristicIntValue: " + device + ", " + service + ", " + characteristic);
 
-    	BluetoothGatt gatt = mGatt.get(device);
+        BluetoothGatt gatt = mGatt.get(device);
         if (gatt == null) {
             Log.d(TAG, " + cannot get BluetoothGatt: " + device);
             return false;
@@ -1130,9 +1130,9 @@ public class CsBleTransceiver implements IGattRequest {
 
     private boolean writeCharacteristic(BluetoothDevice device, byte[] value, UUID service, UUID characteristic, int writeType) {
 
-    	///Log.i(TAG, "gattReadWrite - writeCharacteristic: " + device + ", " + service + ", " + characteristic + ", " + writeType);
+        ///Log.i(TAG, "gattReadWrite - writeCharacteristic: " + device + ", " + service + ", " + characteristic + ", " + writeType);
 
-    	BluetoothGatt gatt = mGatt.get(device);
+        BluetoothGatt gatt = mGatt.get(device);
         if (gatt == null) {
             Log.d(TAG, " + cannot get BluetoothGatt: " + device);
             return false;
@@ -1160,9 +1160,9 @@ public class CsBleTransceiver implements IGattRequest {
 
     private boolean writeDescriptor(BluetoothDevice device, byte[] value, UUID service, UUID characteristic, UUID descriptor) {
 
-    	///Log.i(TAG, "gattReadWrite - writeDescriptor: " + device + ", " + service + ", " + characteristic + ", " + descriptor);
+        ///Log.i(TAG, "gattReadWrite - writeDescriptor: " + device + ", " + service + ", " + characteristic + ", " + descriptor);
 
-    	BluetoothGatt gatt = mGatt.get(device);
+        BluetoothGatt gatt = mGatt.get(device);
         if (gatt == null) {
             Log.d(TAG, " + cannot get BluetoothGatt: " + device);
             return false;
@@ -1197,9 +1197,9 @@ public class CsBleTransceiver implements IGattRequest {
 
     private boolean setNotification(BluetoothDevice device, UUID service, UUID characteristic, boolean enable) {
 
-    	///Log.i(TAG, "[CS] gattReadWrite - setNotification: " + device + ", " + service + ", " + characteristic + ", " + enable);
+        ///Log.i(TAG, "[CS] gattReadWrite - setNotification: " + device + ", " + service + ", " + characteristic + ", " + enable);
 
-    	BluetoothGatt gatt = mGatt.get(device);
+        BluetoothGatt gatt = mGatt.get(device);
         if (gatt == null) {
             Log.d(TAG, "[CS] + cannot get BluetoothGatt: " + device);
             return false;
@@ -1224,9 +1224,9 @@ public class CsBleTransceiver implements IGattRequest {
 
     public boolean processGattRequest(GattRequest request) {
 
-    	Log.d(TAG, "processGattRequest: " + (request == null ? null : request.request_type + ", " + request.device + ", " + request.characteristic));
+        Log.d(TAG, "processGattRequest: " + (request == null ? null : request.request_type + ", " + request.device + ", " + request.characteristic));
 
-    	if (request == null) return false;
+        if (request == null) return false;
 
         boolean ret = false;
         if (request.request_type == GattQueueManager.REQUEST_WRITE_DESCRIP) {
@@ -1251,163 +1251,163 @@ public class CsBleTransceiver implements IGattRequest {
 
         final IntentFilter intentFilter = new IntentFilter();
 
-		///intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
-		intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-		///intentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
-		intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-		intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        ///intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        ///intentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
 
-		intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-		///intentFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-		intentFilter.addAction(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        ///intentFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
+        intentFilter.addAction(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
-		///intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-		///intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        ///intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        ///intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
         return intentFilter;
     }
 
 
 
-	public class CsBleBroadcastReceiver extends BroadcastReceiver {
+    public class CsBleBroadcastReceiver extends BroadcastReceiver {
 
-	    public CsBleBroadcastReceiver() {
+        public CsBleBroadcastReceiver() {
 
-	    	super();
-	    }
+            super();
+        }
 
 
 
-	    @Override
-	    public void onReceive(final Context context, final Intent intent) {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
 
-	    	CsConnectivityDevice csDevice;
-	    	String action = intent.getAction();
+            CsConnectivityDevice csDevice;
+            String action = intent.getAction();
 
-	    	if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
+            if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
 
-	    		BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	    		Integer bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
-	    		Integer bondPrevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Integer bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
+                Integer bondPrevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
 
-	    		Log.d(TAG, "[CS] onReceive bondState = " + bondState + ", bondPrevState = " + bondPrevState);
+                Log.d(TAG, "[CS] onReceive bondState = " + bondState + ", bondPrevState = " + bondPrevState);
 
-	    		if (bondState == BluetoothDevice.BOND_BONDED) {
+                if (bondState == BluetoothDevice.BOND_BONDED) {
 
-	        		final LinkedList<CsBleTransceiverListener> listeners;
-	        		synchronized(mListeners){
+                    final LinkedList<CsBleTransceiverListener> listeners;
+                    synchronized(mListeners){
 
-	        			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-	        		}
+                        listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                    }
 
-	                for (CsBleTransceiverListener listener : listeners) {
+                    for (CsBleTransceiverListener listener : listeners) {
 
-	                	listener.onBonded(device);
-	                }
-	    		}
+                        listener.onBonded(device);
+                    }
+                }
 
-	    	} else if (action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
+            } else if (action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
 
-	    		BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-	    		Log.d(TAG, "[CS] onReceive action = " + action + ", device = " + device);
+                Log.d(TAG, "[CS] onReceive action = " + action + ", device = " + device);
 
-        		csDevice = getCsConnectivityDeviceGroup().getDevice(device);
-        		if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING)) {
+                csDevice = getCsConnectivityDeviceGroup().getDevice(device);
+                if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING)) {
 
-        			/// Add one connect count and go to service discovery if count equals 2.
-        			addOneConnectCount(csDevice, getGattClient(device));
-        		}
+                    /// Add one connect count and go to service discovery if count equals 2.
+                    addOneConnectCount(csDevice, getGattClient(device));
+                }
 
-	    	} else if (action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
+            } else if (action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
 
-	    		BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-	    		Log.d(TAG, "[CS] onReceive action = " + action + ", device = " + device);
+                Log.d(TAG, "[CS] onReceive action = " + action + ", device = " + device);
 
-	    	} else if (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)) {
+            } else if (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)) {
 
-	    		///BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	    		///Integer state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
-	    		///Integer prevState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_CONNECTION_STATE, -1);
+                ///BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                ///Integer state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
+                ///Integer prevState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_CONNECTION_STATE, -1);
 
-	    		///Log.d(TAG, "[CS] onReceive device = " + device + ", connection state = " + state + ", prev connection state = " + prevState);
+                ///Log.d(TAG, "[CS] onReceive device = " + device + ", connection state = " + state + ", prev connection state = " + prevState);
 
-	    	} else if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+            } else if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
 
-	    		Integer state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
-	    		Integer prevState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, -1);
+                Integer state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+                Integer prevState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, -1);
 
-	    		Log.d(TAG, "[CS] onReceive BT state = " + state + ", BT PrevState = " + prevState);
+                Log.d(TAG, "[CS] onReceive BT state = " + state + ", BT PrevState = " + prevState);
 
-	    		if (state == BluetoothAdapter.STATE_OFF) {
+                if (state == BluetoothAdapter.STATE_OFF) {
 
-	    			ArrayList<CsConnectivityDevice> csDeviceList = getCsConnectivityDeviceGroup().getDeviceList();
+                    ArrayList<CsConnectivityDevice> csDeviceList = getCsConnectivityDeviceGroup().getDeviceList();
 
-	    			for (int cnt = 0; cnt < csDeviceList.size(); cnt++) {
+                    for (int cnt = 0; cnt < csDeviceList.size(); cnt++) {
 
-	    				csDevice = csDeviceList.get(cnt);
+                        csDevice = csDeviceList.get(cnt);
 
-	    				if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
+                        if ((csDevice != null) && (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_DISCONNECTED)) {
 
-	    					Log.d(TAG, "[CS] Bluetooth is disabled and force to disconnect device = " + csDevice.getBluetoothDevice());
+                            Log.d(TAG, "[CS] Bluetooth is disabled and force to disconnect device = " + csDevice.getBluetoothDevice());
 
-	    					GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
-	    					disconnectForce(csDevice.getBluetoothDevice());
+                            GattQueueManager.getInstance().reset(csDevice.getBluetoothDevice());
+                            disconnectForce(csDevice.getBluetoothDevice());
 
-                    		final LinkedList<CsBleTransceiverListener> listeners;
-                    		synchronized(mListeners){
+                            final LinkedList<CsBleTransceiverListener> listeners;
+                            synchronized(mListeners){
 
-                    			listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
-                    		}
+                                listeners = new LinkedList<CsBleTransceiverListener>(mListeners);
+                            }
 
                             for (CsBleTransceiverListener listener : listeners) {
 
-                            	listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
+                                listener.onDisconnectedFromGattServer(csDevice.getBluetoothDevice());
                             }
-	    				}
-	    			}
-	    		}
+                        }
+                    }
+                }
 
-	    	} else {
+            } else {
 
-	    		Log.d(TAG, "[CS] onReceive action = " + action);
-	    	}
-	    }
-	}
+                Log.d(TAG, "[CS] onReceive action = " + action);
+            }
+        }
+    }
 
 
 
     synchronized private void addOneConnectCount(CsConnectivityDevice csDevice, BluetoothGatt gatt)
     {
-    	csDevice.setConnectCount(csDevice.getConnectCount() + 1);
+        csDevice.setConnectCount(csDevice.getConnectCount() + 1);
 
-		Log.d(TAG, "[CS] csDevice.getConnectCount() = " + csDevice.getConnectCount());
-		if (csDevice.getConnectCount() == 2) {
+        Log.d(TAG, "[CS] csDevice.getConnectCount() = " + csDevice.getConnectCount());
+        if (csDevice.getConnectCount() == 2) {
 
-			removeBleConnectCheckRequestAlarm();
+            removeBleConnectCheckRequestAlarm();
 
             // Attempts to discover services after successful connection.
-			if (gatt != null) {
+            if (gatt != null) {
 
-	            Log.d(TAG, "[CS] Attempting to start service discovery: " + gatt.discoverServices());
-			}
+                Log.d(TAG, "[CS] Attempting to start service discovery: " + gatt.discoverServices());
+            }
 
-		} else if (csDevice.getConnectCount() == 1) {
+        } else if (csDevice.getConnectCount() == 1) {
 
-			addBleConnectCheckRequestAlarm(3000, csDevice.getBluetoothDevice());
+            addBleConnectCheckRequestAlarm(3000, csDevice.getBluetoothDevice());
 
-		} else {
+        } else {
 
-			removeBleConnectCheckRequestAlarm();
-		}
+            removeBleConnectCheckRequestAlarm();
+        }
     }
 
 
 
-	private static BaseAlarmService mAlarmTimeoutRequest = null;
-	private static BluetoothDevice mAlarmTimeoutDevice = null;
-	private synchronized void addBleConnectCheckRequestAlarm(long periodMs, BluetoothDevice device) {
+    private static BaseAlarmService mAlarmTimeoutRequest = null;
+    private static BluetoothDevice mAlarmTimeoutDevice = null;
+    private synchronized void addBleConnectCheckRequestAlarm(long periodMs, BluetoothDevice device) {
 
         Context context = mContext;
         final int id = Common.ALARM_BLE_CONNECT_CHECK;
@@ -1417,52 +1417,52 @@ public class CsBleTransceiver implements IGattRequest {
         if (context == null) return;
 
         if (mAlarmTimeoutRequest != null) {
-        	mAlarmTimeoutRequest.deinitAlarm(id);
-        	mAlarmTimeoutRequest = null;
-        	mAlarmTimeoutDevice = null;
+            mAlarmTimeoutRequest.deinitAlarm(id);
+            mAlarmTimeoutRequest = null;
+            mAlarmTimeoutDevice = null;
         }
 
         if (context != null) {
 
-        	mAlarmTimeoutRequest = new BaseAlarmService("CsBleConnectCheckRequestAlarm", context);
-        	mAlarmTimeoutDevice = device;
+            mAlarmTimeoutRequest = new BaseAlarmService("CsBleConnectCheckRequestAlarm", context);
+            mAlarmTimeoutDevice = device;
 
             try {
 
-        		IAlarmService alarmService = new IAlarmService() {
+                IAlarmService alarmService = new IAlarmService() {
 
                     @Override
                     public void onAlarm() {
 
-                    	Log.d(TAG, "[CS] onAlarm: ALARM_BLE_CONNECT_CHECK");
+                        Log.d(TAG, "[CS] onAlarm: ALARM_BLE_CONNECT_CHECK");
 
                         if (mAlarmTimeoutRequest != null) {
-                        	mAlarmTimeoutRequest.deinitAlarm(id);
-                        	mAlarmTimeoutRequest = null;
+                            mAlarmTimeoutRequest.deinitAlarm(id);
+                            mAlarmTimeoutRequest = null;
                         }
 
                         try {
 
-                        	if (mAlarmTimeoutDevice != null) {
+                            if (mAlarmTimeoutDevice != null) {
 
-                            	CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(mAlarmTimeoutDevice);
-                        		if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING)) {
+                                CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(mAlarmTimeoutDevice);
+                                if ((csDevice != null) && (csDevice.getCsStateBle() == CsStateBle.CSSTATE_BLE_CONNECTING)) {
 
-                        			/// Add one connect count and go to service discovery if count equals 2.
-                        			addOneConnectCount(csDevice, getGattClient(mAlarmTimeoutDevice));
-                        		}
-                        	}
+                                    /// Add one connect count and go to service discovery if count equals 2.
+                                    addOneConnectCount(csDevice, getGattClient(mAlarmTimeoutDevice));
+                                }
+                            }
 
-                        	mAlarmTimeoutDevice = null;
+                            mAlarmTimeoutDevice = null;
 
-            			} catch (Exception e) {
+                        } catch (Exception e) {
 
-							e.printStackTrace();
-						}
+                            e.printStackTrace();
+                        }
                     }
-        		};
+                };
 
-        		mAlarmTimeoutRequest.initAlarm(System.currentTimeMillis() + periodMs, id, alarmService);
+                mAlarmTimeoutRequest.initAlarm(System.currentTimeMillis() + periodMs, id, alarmService);
 
             } catch (Exception e) {
 
@@ -1473,18 +1473,18 @@ public class CsBleTransceiver implements IGattRequest {
 
 
 
-	private synchronized void removeBleConnectCheckRequestAlarm() {
+    private synchronized void removeBleConnectCheckRequestAlarm() {
 
         final int id = Common.ALARM_BLE_CONNECT_CHECK;
 
         Log.d(TAG, "[CS] removeBleConnectCheckRequestAlarm mAlarmTimeoutRequest = " + mAlarmTimeoutRequest);
 
         if (mAlarmTimeoutRequest != null) {
-        	mAlarmTimeoutRequest.deinitAlarm(id);
-        	mAlarmTimeoutRequest = null;
-        	mAlarmTimeoutDevice = null;
+            mAlarmTimeoutRequest.deinitAlarm(id);
+            mAlarmTimeoutRequest = null;
+            mAlarmTimeoutDevice = null;
         }
-	}
+    }
 
 
 
@@ -1501,58 +1501,58 @@ public class CsBleTransceiver implements IGattRequest {
         if (mContext == null) return;
 
         if (alarmTimeoutRequest != null) {
-        	alarmTimeoutRequest.deinitAlarm(id);
-        	alarmTimeoutRequest = null;
+            alarmTimeoutRequest.deinitAlarm(id);
+            alarmTimeoutRequest = null;
         }
 
         if (!enable) return;
 
         if (mContext != null) {
 
-        	alarmTimeoutRequest = new BaseAlarmService("GattTimeout", mContext);
+            alarmTimeoutRequest = new BaseAlarmService("GattTimeout", mContext);
 
             try {
 
-            	if (id == TIMEOUT_BOOT_UP_READY) {
+                if (id == TIMEOUT_BOOT_UP_READY) {
 
-            		IAlarmService alarmService = new IAlarmService() {
-
-                        @Override
-                        public void onAlarm() {
-
-                        	Log.d(TAG, "[CS] setTimeoutRequestAlarm TIMEOUT_BOOT_UP_READY onAlarm");
-
-                            if (alarmTimeoutRequest != null) {
-                            	alarmTimeoutRequest.deinitAlarm(id);
-                            	alarmTimeoutRequest = null;
-                            }
-                        }
-            		};
-
-            		alarmTimeoutRequest.initAlarm(System.currentTimeMillis() + 10000, TIMEOUT_BOOT_UP_READY, alarmService);
-
-            	} else if (id == TIMEOUT_WIFI_CONNECTING) {
-
-            		IAlarmService alarmService = new IAlarmService() {
+                    IAlarmService alarmService = new IAlarmService() {
 
                         @Override
                         public void onAlarm() {
 
-                        	Log.d(TAG, "[CS] setTimeoutRequestAlarm TIMEOUT_WIFI_CONNECTING onAlarm");
+                            Log.d(TAG, "[CS] setTimeoutRequestAlarm TIMEOUT_BOOT_UP_READY onAlarm");
 
                             if (alarmTimeoutRequest != null) {
-                            	alarmTimeoutRequest.deinitAlarm(id);
-                            	alarmTimeoutRequest = null;
+                                alarmTimeoutRequest.deinitAlarm(id);
+                                alarmTimeoutRequest = null;
                             }
                         }
-            		};
+                    };
 
-            		alarmTimeoutRequest.initAlarm(System.currentTimeMillis() + 18000, TIMEOUT_WIFI_CONNECTING, alarmService);
-            	}
+                    alarmTimeoutRequest.initAlarm(System.currentTimeMillis() + 10000, TIMEOUT_BOOT_UP_READY, alarmService);
+
+                } else if (id == TIMEOUT_WIFI_CONNECTING) {
+
+                    IAlarmService alarmService = new IAlarmService() {
+
+                        @Override
+                        public void onAlarm() {
+
+                            Log.d(TAG, "[CS] setTimeoutRequestAlarm TIMEOUT_WIFI_CONNECTING onAlarm");
+
+                            if (alarmTimeoutRequest != null) {
+                                alarmTimeoutRequest.deinitAlarm(id);
+                                alarmTimeoutRequest = null;
+                            }
+                        }
+                    };
+
+                    alarmTimeoutRequest.initAlarm(System.currentTimeMillis() + 18000, TIMEOUT_WIFI_CONNECTING, alarmService);
+                }
 
             } catch (java.lang.NullPointerException e) {
 
-            	e.printStackTrace();
+                e.printStackTrace();
                 Log.d(TAG, "[CS] setTimeoutRequestAlarm CONNARD: I don't know what's going on here!!");
             }
 

@@ -13,7 +13,7 @@ import android.util.Log;
 public class LongCommandCollector {
 
 	private final static String TAG = "LongCommandCollector";
-	private CsBleGattAttributes.CsV2CommandEnum mCommandID;
+	private CsBleGattAttributes.CsV1CommandEnum mCommandID;
 	private BluetoothDevice mBluetoothDevice;
 
 
@@ -27,7 +27,7 @@ public class LongCommandCollector {
 	private int mLast_pack_size = 0;
 
 
-	public LongCommandCollector(BluetoothDevice device, CsBleGattAttributes.CsV2CommandEnum commandID) {
+	public LongCommandCollector(BluetoothDevice device, CsBleGattAttributes.CsV1CommandEnum commandID) {
 
 		mBluetoothDevice = device;
 		mCommandID = commandID;
@@ -158,7 +158,7 @@ public class LongCommandCollector {
 
 
 
-	public CsBleGattAttributes.CsV2CommandEnum getUuid() {
+	public CsBleGattAttributes.CsV1CommandEnum getUuid() {
 
 		return mCommandID;
 	}
