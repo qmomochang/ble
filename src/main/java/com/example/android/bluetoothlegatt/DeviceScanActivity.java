@@ -35,8 +35,11 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Messenger;
 
 import java.util.ArrayList;
+
+import com.htc.blelib.CsConnectivityScanner;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
@@ -46,6 +49,8 @@ public class DeviceScanActivity extends ListActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
     private Handler mHandler;
+    private Messenger mMessenger;
+    CsConnectivityScanner scanner;
 
     private static final int REQUEST_ENABLE_BT = 1;
     // Stops scanning after 10 seconds.
@@ -76,6 +81,15 @@ public class DeviceScanActivity extends ListActivity {
             finish();
             return;
         }
+        if (mMessenger == null) {
+            mMessenger = new Messenger(mHandler);
+        }
+        if (scanner == null) {
+            scanner = new CsConnectivityScanner(this,mMessenger);
+            scanner.csOpen();
+            scanner.csScan(5000);
+        }
+
     }
 
     @Override
