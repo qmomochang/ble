@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.htc.blelib.interfaces.ICsConnectivityDevice.CsStateBle;
 import com.htc.blelib.interfaces.ICsConnectivityDevice.CsVersion;
-import com.htc.blelib.v2.internal.component.le.CsBleScanner;
+import com.htc.blelib.v1.internal.component.le.CsBleScanner;
 
 import android.bluetooth.BluetoothDevice;
 import android.util.Log;
