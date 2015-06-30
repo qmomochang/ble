@@ -56,7 +56,7 @@ class CSBleAPIInvoker {
 			mGattHolder = device.connectGatt(context, auto, callback);
 			Log.d(TAG, "[CS] device.connectGatt()---");
 		}
-		
+
 		return mGattHolder;
 	}
 

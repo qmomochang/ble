@@ -1,6 +1,6 @@
 package com.htc.blelib.interfaces;
 
-import com.htc.blelib.v2.interfaces.ICsConnectivityService;
+import com.htc.blelib.v1.interfaces.ICsConnectivityService;
 
 
 

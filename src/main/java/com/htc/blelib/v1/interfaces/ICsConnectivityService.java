@@ -1,15 +1,15 @@
-package com.htc.gc.connectivity.v3.interfaces;
+package com.htc.blelib.v1.interfaces;
 
 import java.util.Calendar;
 import java.util.List;
 
-import com.htc.gc.connectivity.interfaces.IGcConnectivityServiceBase;
+import com.htc.blelib.interfaces.ICsConnectivityServiceBase;
 
 import android.bluetooth.BluetoothDevice;
 
 
 
-public interface IGcConnectivityService extends IGcConnectivityServiceBase {
+public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
 	public enum BootUpType{
 
