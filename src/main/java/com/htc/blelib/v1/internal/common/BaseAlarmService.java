@@ -19,7 +19,7 @@ public class BaseAlarmService implements IAlarmService {
 	private final static String TAG = "BaseAlarmService";
 
 	public static final String CONFIG_FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.data/HtcBluetoothLeProfiles.conf";
-	
+
     private String mName = "";
 
     PendingIntent mReceiverPendingIntent = null;
@@ -32,17 +32,17 @@ public class BaseAlarmService implements IAlarmService {
 
     private static AlarmReceiver mAlarmReceiver = null;
     private static final String ACTION_BASE_ALARM_SERVICE = "com.htc.intent.action.base_alarm_service";
-    
-    
-    
+
+
+
     public BaseAlarmService(String name, Context ctx) {
 
     	instance = this;
         mName = name;
         mContext = ctx;
-        
+
         if (mAlarmReceiver == null) {
-        	
+
             mAlarmReceiver = new AlarmReceiver();
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(ACTION_BASE_ALARM_SERVICE);
@@ -50,15 +50,15 @@ public class BaseAlarmService implements IAlarmService {
         }
     }
 
-    
-    
+
+
     public boolean isAlarmActive() {
 
         return (mReceiverPendingIntent != null);
     }
 
-    
-    
+
+
     public void setAlarm(Calendar cal, long repeat) {
 
         Log.i(TAG, "setAlarm: cal is" + (cal == null ? "" : " not") + " null, " + repeat);
@@ -71,15 +71,15 @@ public class BaseAlarmService implements IAlarmService {
         mRepeat = repeat;
     }
 
-    
-    
+
+
     public boolean initAlarm(long next, int id, IAlarmService iface) {
 
     	Log.i(TAG, "initAlarm: mContext = " + mContext + ", " + next + ", " + id + ", " + iface);
         return startAlarm(next, id, iface);
     }
 
-    
+
 
     private boolean startAlarm(long next, int id, IAlarmService iface) {
 
@@ -88,7 +88,7 @@ public class BaseAlarmService implements IAlarmService {
             Log.d(TAG, "[WTF] startAlarm: mContext is null.");
             return false;
         }
-        
+
         AlarmManager alarmMgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent();
         intent.setAction(ACTION_BASE_ALARM_SERVICE);
@@ -113,8 +113,8 @@ public class BaseAlarmService implements IAlarmService {
         return true;
     }
 
-    
-    
+
+
     public void deinitAlarm(int id) {
 
         Log.i(TAG, "deinitAlarm: " + mName);
@@ -130,15 +130,15 @@ public class BaseAlarmService implements IAlarmService {
         mContext = null;
     }
 
-    
-    
+
+
     public class AlarmReceiver extends BroadcastReceiver {
 
     	@Override
         public void onReceive(Context context, Intent intent) {
-        	
+
         	Log.d(TAG, "[CS] onReceive intent = " + intent);
-        	
+
             if (instance == null) {
                 Log.d(TAG, "[WTF] AlarmReceiver_onReceive: instance is null.");
                 return;
@@ -167,8 +167,8 @@ public class BaseAlarmService implements IAlarmService {
         }
     }
 
-    
-    
+
+
     @Override
     public void onAlarm() {
         Log.i(TAG, "onAlarm: dummy");

@@ -20,6 +20,6 @@ public interface ICsBleTransceiverListener {
    	public void onCharacteristicWrite(BluetoothDevice device, BluetoothGattCharacteristic characteristic);
    	public void onDescriptorWrite(BluetoothDevice device, BluetoothGattDescriptor descriptor);
    	public void onNotificationReceive(BluetoothDevice device, BluetoothGattCharacteristic characteristic);
-        
+
    	public void onError(BluetoothDevice device, BluetoothGattCharacteristic characteristic, CsBleTransceiverErrorCode errorCode);
 }

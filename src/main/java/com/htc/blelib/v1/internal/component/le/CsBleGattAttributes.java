@@ -93,9 +93,9 @@ public class CsBleGattAttributes {
 	public static String CS_SERVICE 					= "0000a000-0000-1000-8000-00805f9b34fb";
 	public static String CS_DEVICE_INFORMATION			= "0000180a-0000-1000-8000-00805f9b34fb";
 	public static String CS_DESCRIPTOR 					= "00002902-0000-1000-8000-00805f9b34fb";
-	
+
 	public static String CS_FW_REVISION 				= "00002a26-0000-1000-8000-00805f9b34fb";
-	
+
 	public static String CS_BOOT_UP_READY 				= "0000a101-0000-1000-8000-00805f9b34fb";
 	public static String CS_HW_STATUS 					= "0000a102-0000-1000-8000-00805f9b34fb";
 	public static String CS_NAME 						= "0000a104-0000-1000-8000-00805f9b34fb";
@@ -134,10 +134,10 @@ public class CsBleGattAttributes {
 	public static String CS_TEST_NOTIFY 				= "0000ffe1-0000-1000-8000-00805f9b34fb";
 	public static String CS_TEST_DESCRIPTOR 			= "00002902-0000-1000-8000-00805f9b34fb";
 
-	
+
 	private static HashMap<Byte, String> mUuidV2Map = new HashMap<Byte, String>();
-	
-	
+
+
     static {
     	mUuidV2Map.put(CsV2CommandEnum.CS_SERVICE.getID()                      , CS_V2_COMMANDTYPE0);
     	mUuidV2Map.put(CsV2CommandEnum.CS_DESCRIPTOR.getID()                   , CS_V2_COMMANDTYPE4);
@@ -187,7 +187,7 @@ public class CsBleGattAttributes {
     	mUuidV2Map.put(CsV2CommandEnum.GENERAL_PURPOSE_NOTIFY_EVENT.getID()    , CS_V2_COMMANDTYPE2);
     }
 
-    
+
     public static String getUuid(CsV2CommandEnum id){
     	String result = mUuidV2Map.get((byte)id.getID());
 
@@ -199,9 +199,9 @@ public class CsBleGattAttributes {
     	return result;
     }
 
-    
+
     public static boolean isLongFormat(CsV2CommandEnum id) {
-    	
+
     	boolean ret = false;
     	String result = mUuidV2Map.get(id.getID());
 
