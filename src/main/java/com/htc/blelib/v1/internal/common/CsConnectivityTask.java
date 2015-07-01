@@ -4,7 +4,6 @@ import java.util.concurrent.ExecutorService;
 
 import com.htc.blelib.v1.interfaces.ICsConnectivityService;
 import com.htc.blelib.v1.internal.component.le.CsBleTransceiver;
-import com.htc.blelib.v1.internal.component.wifi.CsWifiTransceiver;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Bundle;
@@ -23,15 +22,13 @@ public class CsConnectivityTask implements Comparable<CsConnectivityTask> {
     protected Messenger mMessenger;
     protected ExecutorService mExecutor;
     protected CsBleTransceiver mCsBleTransceiver;
-    protected CsWifiTransceiver mCsWifiTransceiver;
     protected long mTimePrev;
 
 
 
-    public CsConnectivityTask(CsBleTransceiver csBleTransceiver, CsWifiTransceiver csWifiTransceiver, Messenger messenger, ExecutorService executor) {
+    public CsConnectivityTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor) {
 
         mCsBleTransceiver = csBleTransceiver;
-        mCsWifiTransceiver = csWifiTransceiver;
         mMessenger = messenger;
         mExecutor = executor;
     }

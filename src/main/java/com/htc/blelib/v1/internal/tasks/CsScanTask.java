@@ -32,7 +32,7 @@ public class CsScanTask extends CsConnectivityTask {
 
     public CsScanTask(CsBleScanner csBleScanner, Messenger messenger, ExecutorService executor, int periodMs, boolean scan) {
 
-        super(null, null,messenger, executor);
+        super(null, messenger, executor);
 
         mCsBleScanner = csBleScanner;
 
