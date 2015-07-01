@@ -11,490 +11,297 @@ import android.bluetooth.BluetoothDevice;
 
 public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
-    public enum BootUpType{
+    // General request
+    public static class GeneralRequest {
+        public enum ACTION {
+            READ                    ((byte)0x00),
+            WRITE                   ((byte)0x01);
 
-        BOOTUP_RTOS ((byte)0x00),
-        BOOTUP_LINUX((byte)0x01);
-
-        private final byte type;
-        BootUpType (byte bootup_os)
-        {
-            this.type = bootup_os;
+            private final byte val;
+            ACTION (byte val) { this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getType()
-        {
-            return this.type;
-        }
-    }
+        public enum UNIT {
+            KG                      ((byte)0x00),
+            LBS                     ((byte)0x01);
 
-    public enum FWUpdatePart{
-
-        UPDATE_RTOS ((byte)0x01),
-        UPDATE_MODEM((byte)0x02),
-        UPDATE_MCU  ((byte)0x04);
-
-        private final byte part;
-        FWUpdatePart (byte update_part)
-        {
-            this.part = update_part;
+            private final byte val;
+            UNIT (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getPart()
-        {
-            return this.part;
-        }
-    }
+        public enum LANGUAGE {
+            ENGLISH                 ((byte)0x00),
+            TRANDITIONAL_CHINESE    ((byte)0x01),
+            SIMPLIFIED_CHINESE      ((byte)0x02),
+            JAPANESE                ((byte)0x03),
+            FRENCH                  ((byte)0x04),
+            SPANISH                 ((byte)0x05),
+            GERMAN                  ((byte)0x06);
 
-    public enum TriggerFWUpdateResult{
-        SUCCESS_TO_START    ((byte)0x00),
-        FAIL_NO_UPDATE_IMAGE((byte)0x01),
-        FAIL_LOW_BATTERY    ((byte)0x02);
-
-        private final byte error;
-        TriggerFWUpdateResult (byte result_error)
-        {
-            this.error = result_error;
+            private final byte val;
+            LANGUAGE (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public static TriggerFWUpdateResult findError(byte status)
-        {
-            for (TriggerFWUpdateResult error_selected:TriggerFWUpdateResult.values())
-            {
-                if ( error_selected.error == status)
-                {
-                    return error_selected;
-                }
-            }
-            //Should not be here
-            return null;
+        public enum SOUND {
+            OFF                     ((byte)0x00),
+            ON                      ((byte)0x01);
+
+            private final byte val;
+            SOUND (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getError()
-        {
-            return this.error;
+        public enum BEI{
+            OFF                     ((byte)0x00),
+            ON                      ((byte)0x01);
+
+            private final byte val;
+            BEI (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
-    }
+    } // END General Request
 
-    public enum FWUpdateResult{
+    // Power request
+    public static class PowerRequest {
+        public enum ACTION {
+            POWER_CHECK             ((byte)0x00);
 
-        NONE_UPDATE    ((byte)0x00),
-        UPDATING       ((byte)0x01),
-        UPDATED        ((byte)0x02),
-        UPDATE_ERROR   ((byte)0x03);
-
-        private final byte error;
-        FWUpdateResult (byte result_error)
-        {
-            this.error = result_error;
+            private final byte val;
+            ACTION (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
+    } // END Power Request
 
-        public byte getError()
-        {
-            return this.error;
+    // Power event
+    public static class PowerEvent {
+
+        public enum STATE {
+            STANDBY                 ((byte)0x00),   // only BLE
+            SYNC                    ((byte)0x01),   // BLE, Wifi
+            NORMAL                  ((byte)0x02),   // Could be measured
+            FIRMWARE                ((byte)0x03),
+            FACTORY_RESETING        ((byte)0x04),   // Wifi & BLE disconnect
+            BLE_DISCONNECTION       ((byte)0x05),   // Due to low battery
+            UNKNOWN                 ((byte)0xFF);
+
+            private final byte val;
+            STATE (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
-    }
+    } // Power event
 
-    public enum WifiConfigureType {
-        WIFI_SOFTAP((byte)0x00),
-        WIFI_STATION((byte)0x01),
-        WIFI_CONN_AP((byte)0x11),
-        WIFI_DISCONN((byte)0xff);
+    // Firmware Update
+    public static class FirmwareUpdateResuleEvent {
+        public enum ERROR_CODE {
+            SUCCESS_TO_START        ((byte)0x00),
+            NO_UPDATE_IMAGE         ((byte)0x01),
+            LOW_BATTERY             ((byte)0x02);
 
-        private final byte type;
-        WifiConfigureType(byte type)
-        {
-            this.type = type;
-        }
-
-        public byte getType()
-        {
-            return this.type;
-        }
-    }
-
-    public enum WifiConfigBand {
-        WIFI_24G ((byte)0x00),
-        WIFI_5G ((byte)0x01);
-
-        private final byte band;
-        WifiConfigBand (byte band)
-        {
-            this.band = band;
+            private final byte val;
+            ERROR_CODE (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getBand()
-        {
-            return this.band;
-        }
-    }
+        public enum UPDATE_STATUS {
+            NONE_UPDATE             ((byte)0x00),
+            UPDAING                 ((byte)0x01),
+            UPDATED                 ((byte)0x02),
+            UPDATE_ERROR            ((byte)0x03);
 
-    public enum WifiConfigSecurity {
-        WIFI_OPEN      ((byte)0x00),
-        WIFI_WEP       ((byte)0x01),
-        WIFI_WPA       ((byte)0x02),
-        WIFI_WPA_EAP   ((byte)0x03),
-        WIFI_WPA2      ((byte)0x04),
-        WIFI_WPA_AES   ((byte)0x05),
-        WIFI_WPA2_TKIP ((byte)0x06),
-        WIFI_WPA2_EAP  ((byte)0x07);
-
-        private final byte type;
-        WifiConfigSecurity (byte security)
-        {
-            this.type = security;
+            private final byte val;
+            UPDATE_STATUS (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getSecurity()
-        {
-            return this.type;
+    } // END Firmware Update
+
+    // Factory Reset Result Event
+    public static class FactoryResetResultEvent {
+
+        public enum STATUS {
+            EVENT_SUCCESS           ((byte)0x00),
+            EVENT_FAIL              ((byte)0x01),
+            LOW_BATTERY             ((byte)0x02);
+
+            private final byte val;
+            STATUS (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
-    }
+    } // END Factory Reset Request Event
 
-    public enum BackupProviderIdIndex {
-        PROVIDER_NONE         ((byte)0x00),
-        PROVIDER_DROPBOX      ((byte)0x01),
-        PROVIDER_GOOGLEDRIVE  ((byte)0x02),
-        PROVIDER_AUTOSAVE     ((byte)0x03),
-        PROVIDER_BAIDU        ((byte)0x04);
+    // Wifi Configuration Request
+    public static class WifiConfigurationRequest {
+        public enum TYPE {
+            CONNECT                 ((byte)0x00),
+            DISCONNECT              ((byte)0x01);
 
-        private final byte pid;
-        BackupProviderIdIndex (byte id)
-        {
-            this.pid = id;
-        }
-
-        public static BackupProviderIdIndex findProvider(byte id)
-        {
-            for (BackupProviderIdIndex provider:BackupProviderIdIndex.values())
-            {
-                if ( provider.pid == id)
-                {
-                    return provider;
-                }
-            }
-            //Should not be here
-            return null;
+            private final byte val;
+            TYPE (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getID()
-        {
-            return this.pid;
-        }
-    }
-
-    public enum BackupTokenType {
-        TOKENTYPE_ACCESS      ((byte)0x00),
-        TOKENTYPE_REFLESH     ((byte)0x01),
-        TOKENTYPE_CLIENTID    ((byte)0x02),
-        TOKENTYPE_CLIENTSELECT((byte)0x03);
-
-        private final byte token_type;
-        BackupTokenType (byte type)
-        {
-            this.token_type = type;
+        public enum COUNTRY_CODE {
+            USE_DEFULT              ((byte)0x00);
+            private final byte val;
+            COUNTRY_CODE (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public static BackupTokenType findToken(byte type)
-        {    
-            for (BackupTokenType tokenType : BackupTokenType.values()) {
-                if (tokenType.getType() == type) {
-                    return tokenType;
-                }
-            }
-            //Should not be here
-            return null;
+        public enum BAND {
+            ALL_BAND                ((byte)0x00),
+            2_4G                    ((byte)0x01),
+            5G                      ((byte)0x02);
+
+            private final byte val;
+            BAND (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getType()
-        {
-            return this.token_type;
-        }
-    }
+        public enum SECURITY {
+            OPEN                    ((byte)0x00),
+            WEP                     ((byte)0x01),
+            WPA_PSK                 ((byte)0x02),
+            WPA2_PSK                ((byte)0x03);
 
-    public enum BackupProcessStatus {
-        PROCESSING_STOPPED      ((byte)0x00),
-        PROCESSING_UPDATING     ((byte)0x01),
-        PROCESSING_FINISH       ((byte)0x02),
-        PROCESSING_ERROR        ((byte)0x03);
-
-        private final byte backup_status;
-        BackupProcessStatus (byte status)
-        {
-            this.backup_status = status;
+            private final byte val;
+            SECURITY (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public static BackupProcessStatus findStatus(byte status)
-        {
-            for (BackupProcessStatus backupStatus:BackupProcessStatus.values())
-            {
-                if ( backupStatus.backup_status == status)
-                {
-                    return backupStatus;
-                }
-            }
-            //Should not be here
-            return null;
+        public enum CHANNEL {
+            SCAN_ALL_CHANNEL        ((byte)0x00);
+
+            private final byte val;
+            CHANNEL (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
+        }
+    } // END Wifi Configuration
+
+    // Wifi Configuration Event
+    public static class WifiConfigurationEvent {
+        WIFIMGR_ERR_SUCCESS                             ((byte)0x00),
+        WIFIMGR_ERR_FAIL                                ((byte)0x01),
+        WIFIMGR_ERR_WIFI_INIT_FAILED                    ((byte)0x02),
+        WIFIMGR_ERR_WIFI_BUSY                           ((byte)0x03),
+        WIFIMGR_ERR_BAD_SSID                            ((byte)0x04),
+        WIFIMGR_ERR_BAD_SSID_LENGTH                     ((byte)0x05),
+        WIFIMGR_ERR_BAD_KEY                             ((byte)0x06),
+        WIFIMGR_ERR_BAD_KEY_LENGTH                      ((byte)0x07),
+        WIFIMGR_ERR_BAD_KEYMGMT                         ((byte)0x08),
+        WIFIMGR_ERR_CAN_NOT_FIND_AP                     ((byte)0x09),
+        WIFIMGR_ERR_SEARCH_AP_TIMEOUT                   ((byte)0x0A),
+        WIFIMGR_ERR_AUTH_NO_PASSWORD                    ((byte)0x0B),
+        WIFIMGR_ERR_AUTH_PASSWORD_NOMATCH               ((byte)0x0C),
+        WIFIMGR_ERR_AUTH_REQ_TIMEOUT                    ((byte)0x0D),
+        WIFIMGR_ERR_AUTH_RSP_TIMEOUT                    ((byte)0x0E),
+        WIFIMGR_ERR_ASOCIATE_REQ_TIMEOUT                ((byte)0x0F),
+        WIFIMGR_ERR_ASOCIATE_RSP_TIMEOUT                ((byte)0x10),
+        WIFIMGR_ERR_HANDSHAKE_REQ_TIMEOUT               ((byte)0x11),
+        WIFIMGR_ERR_HANDSHAKE_REQ_CONF_TIMEOUT          ((byte)0x12),
+        WIFIMGR_ERR_HANDSHAKE_RSP_TIMEOUT               ((byte)0x13),
+        WIFIMGR_ERR_HANDSHAKE_RSP_CONF_TIMEOUT          ((byte)0x14),
+        WIFIMGR_ERR_GET_IP_FAIL                         ((byte)0x15),
+        WIFIMGR_ERR_GET_IP_TIMEOUT                      ((byte)0x16),
+        WIFIMGR_ERR_START_AP_FAILED                     ((byte)0x17),
+        WIFIMGR_ERR_START_DHCP_FAILED                   ((byte)0x18);
+
+        private final byte val;
+        WifiConfigurationEvent (byte val) {this.val = val;}
+        public byte getValue() {return this.val;}
+    } // END Wifi Configuration Event
+
+    public static class WifiScanRequest {
+        public enum ACTION {
+            SCAN                    ((byte)0x00),
+            STOP_SCANNING           ((byte)0x01);
+
+            private final byte val;
+            ACTION (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getStatus()
-        {
-            return this.backup_status;
+        public enum SCAN_OPTION {
+            SCAN_MODE_ALL           ((byte)0x00),
+            RESERVED                ((byte)0x01);
+
+            private final byte val;
+            SCAN_OPTION (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
     }
 
-    public enum MCUBatteryLevel {
-        MCU_BATTERY_INSUFFICIENT        (1),
-        MCU_BATTERY_NEAR_INSUFFICIENT    (2),
-        MCU_BATTERY_LOW                    (3),
-        MCU_BATTERY_HALF                (4),
-        MCU_BATTERY_NEAR_FULL            (5),
-        MCU_BATTERY_FULL                (6);
+    public static class WifiScanResultEvent {
+        public enum WIFI_SECURITY {
+            OPEN                    ((byte)0x00),
+            WEP                     ((byte)0x01),
+            WPA_PSK                 ((byte)0x02),
+            WPA2_PSK                ((byte)0x03);
 
-        private int level;
-        MCUBatteryLevel(int level) {
-            this.level = level;
+            private final byte val;
+            WIFI_SECURITY (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public static MCUBatteryLevel findLevel(int level) {
-            for (MCUBatteryLevel mcuBatteryLevel : MCUBatteryLevel.values()) {
-                if (mcuBatteryLevel.getLevel() == level) {
-                    return mcuBatteryLevel;
-                }
-            }
-            //Should not be here
-            return null;
-        }
+        public enum WIFI_AUTHORIZATION {
+            UN_AUTHORIZATION        ((byte)0x00),
+            AUTHORIZATION           ((byte)0x01);
 
-        public int getLevel() {
-            return this.level;
+            private final byte val;
+            WIFI_AUTHORIZATION (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
     }
 
-    public enum BroadcastSetting {
-        BROADCAST_SETTING_OFF    ((byte)0x0),
-        BROADCAST_SETTING_ON    ((byte)0x1);
+    public static class EraseWifiApConfigRequest {
+        public enum WIFI_SECURITY {
+            OPEN                    ((byte)0x00),
+            WEP                     ((byte)0x01),
+            WPA_PSK                 ((byte)0x02),
+            WPA2_PSK                ((byte)0x03);
 
-        private byte setting;
-        BroadcastSetting(byte setting) {
-            this.setting = setting;
+            private final byte val;
+            EraseWifiApConfigRequest (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public static BroadcastSetting findSetting(byte setting) {
-            for (BroadcastSetting broadcastSetting : BroadcastSetting.values()) {
-                if (broadcastSetting.getSetting() == setting) {
-                    return broadcastSetting;
-                }
-            }
-            //Should not be here
-            return null;
+    }
+
+    public static class HWStatusEvent {
+        public enum TYPE {
+            BATTERY_LEVEL           ((byte)0x00),
+            RESERVED                ((byte)0x01),
+            private final byte val;
+            HWStatusEvent (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
 
-        public byte getSetting() {
-            return this.setting;
+        public enum BATTERY_LEVEL {
+            MCU_BATTERY_INSUFFICIENT      ((byte)1), //0%
+            MCU_BATTERY_NEAR_INSUFFICIENT ((byte)2), // <= 5%
+            MCU_BATTERY_LOW               ((byte)3), //25%~6%
+            MCU_BATTERY_HALF              ((byte)4), //50%~26%
+            MCU_BATTERY_NEAR_FULL         ((byte)5), //75%~51%
+            MCU_BATTERY_FULL              ((byte)6); //100%~76%
+
+            private final byte val;
+            BATTERY_LEVEL (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
     }
 
-    public enum BroadcastPlatform {
-        BROADCAST_PLATFORM_NONE        ((byte)0x0),
-        BROADCAST_PLATFORM_YOUTUBE    ((byte)0x1),
-        BROADCAST_PLATFORM_LL        ((byte)0x2);
+    public static class CSBleNameRequest {
+        public enum TYPE {
+            GET_NAME                ((byte)1),
+            SET_NAME                ((byte)2);
 
-        private byte platform;
-        BroadcastPlatform(byte platform) {
-            this.platform = platform;
-        }
-
-        public static BroadcastPlatform findPlatform(byte platform) {
-            for (BroadcastPlatform broadcastPlatform : BroadcastPlatform.values()) {
-                if (broadcastPlatform.getPlatform() == platform) {
-                    return broadcastPlatform;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getPlatform() {
-            return this.platform;
+            private final byte val;
+            CSBleNameRequest (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
         }
     }
-
-    public enum BroadcastTokenType {
-        TOKENTYPE_ACCESS      ((byte)0x0),
-        TOKENTYPE_REFLESH     ((byte)0x1);
-
-        private final byte token_type;
-        BroadcastTokenType(byte type) {
-            this.token_type = type;
-        }
-
-        public static BroadcastTokenType findToken(byte type) {
-            for (BroadcastTokenType tokenType : BroadcastTokenType.values()) {
-                if (tokenType.getType() == type) {
-                    return tokenType;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getType() {
-            return this.token_type;
-        }
-    }
-
-    public enum BroadcastPrivacy {
-        BROADCASTPRIVACY_NONPUBLIC    ((byte)0x0),
-        BROADCASTPRIVACY_PUBLIC        ((byte)0x1);
-
-        private final byte privacy;
-        private BroadcastPrivacy(byte privacy) {
-            this.privacy = privacy;
-        }
-
-        public static BroadcastPrivacy findPrivacy(byte privacy) {
-            for (BroadcastPrivacy broadcastPrivacy : BroadcastPrivacy.values()) {
-                if (broadcastPrivacy.getPrivacy() == privacy) {
-                    return broadcastPrivacy;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getPrivacy() {
-            return privacy;
-        }
-    }
-
-    public enum BroadcastStatus {
-        BROADCASTSTATUS_STARTED    ((byte)0x0),
-        BROADCASTSTATUS_STOPPED    ((byte)0x1);
-
-        private final byte status;
-        private BroadcastStatus(byte status) {
-            this.status = status;
-        }
-
-        public static BroadcastStatus findStatus(byte status) {
-            for (BroadcastStatus broadcastStatus : BroadcastStatus.values()) {
-                if (broadcastStatus.getStatus() == status) {
-                    return broadcastStatus;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getStatus() {
-            return status;
-        }
-    }
-
-    public enum SimHwStatus {
-        SIMHWSTATUS_PLUG_OUT        ((byte)0x0),
-        SIMHWSTATUS_PLUG_IN            ((byte)0x1),
-        SIMHWSTATUS_NO_IN_LTE_MODE    ((byte)0x2);
-
-        private final byte status;
-        private SimHwStatus(byte status) {
-            this.status = status;
-        }
-
-        public static SimHwStatus findStatus(byte status) {
-            for (SimHwStatus simHwStatus : SimHwStatus.values()) {
-                if (simHwStatus.getStatus() == status) {
-                    return simHwStatus;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getStatus() {
-            return status;
-        }
-    }
-
-    public enum CameraMode {
-        CAMERAMODE_NORMAL        ((byte)0x1),
-        CAMERAMODE_SLOW_MOTION    ((byte)0x2),
-        CAMERAMODE_LET_MODE        ((byte)0x3);
-
-        private final byte mode;
-        private CameraMode(byte mode) {
-            this.mode = mode;
-        }
-
-        public static CameraMode findMode(byte mode) {
-            for (CameraMode cameraMode : CameraMode.values()) {
-                if (cameraMode.getMode() == mode) {
-                    return cameraMode;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getMode() {
-            return mode;
-        }
-    }
-
-    public enum LTECampingStatus {
-        LTECAMPINGSTATUS_SUCCESS       ((byte)0x00),
-        LTECAMPINGSTATUS_WRONG_APN     ((byte)0x01),
-        LTECAMPINGSTATUS_CONNECT_FAIL  ((byte)0x02),
-        LTECAMPINGSTATUS_UNKNOWN_ERROR ((byte)0x03);
-
-        private final byte status;
-        private LTECampingStatus(byte status) {
-            this.status = status;
-        }
-
-        public static LTECampingStatus findStatus(byte status) {
-            for (LTECampingStatus lteCampingStatus : LTECampingStatus.values()) {
-                if (lteCampingStatus.getStatus() == status) {
-                    return lteCampingStatus;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getStatus() {
-            return status;
-        }
-    }
-
-    public enum SimLockType {
-        SIMLOCKTYPE_UNKNOWN ((byte)0x00),
-        SIMLOCKTYPE_NONE    ((byte)0x01),
-        SIMLOCKTYPE_PIN        ((byte)0x02),
-        SIMLOCKTYPE_PUK        ((byte)0x03);
-
-        private final byte type;
-        private SimLockType(byte type) {
-            this.type = type;
-        }
-
-        public static SimLockType findType(byte type) {
-            for (SimLockType simLockType : SimLockType.values()) {
-                if (simLockType.getType() == type) {
-                    return simLockType;
-                }
-            }
-            //Should not be here
-            return null;
-        }
-
-        public byte getType() {
-            return type;
-        }
-    }
-
-
 
     public enum Operation {
 
@@ -726,32 +533,33 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public boolean csBootUp(BluetoothDevice device);
     public boolean csOpen();
     public boolean csClose();
-    public boolean csCreateWifiP2pGroup();
-    public boolean csRemoveWifiP2pGroup();
-    public boolean csRemoveWifiP2pGroupForce();
+
+    public boolean csSetGeneralRequest(BluetoothDevice device, boolean ReadOrWrite,   );
     public boolean csBleConnect(BluetoothDevice device);
     public boolean csBleDisconnect(BluetoothDevice device);
     public boolean csBleDisconnectForce(BluetoothDevice device);
-    public boolean csWifiConnect(BluetoothDevice device);
-    public boolean csWifiDisconnect(BluetoothDevice device);
+
+    public boolean csSetWifiAcc(BluetoothDevice device,String account);
+    public boolean csSetWifiPw(BluetoothDevice device,String password);
+
     public boolean csSetPowerOnOff(BluetoothDevice device, Module module, SwitchOnOff onoff);
     public boolean csGetPowerOnOff(BluetoothDevice device, Module module);
     public boolean csTriggerFWUpdate(BluetoothDevice device, boolean update_rtos, boolean update_modem, boolean update_mcu, String firmwareVersion);
     public boolean csSetHwStatusLTEvent(BluetoothDevice device);
     public boolean csClrHwStatusLTEvent(BluetoothDevice device);
     public boolean csGetHwStatus(BluetoothDevice device);
-    public boolean csGetSimHwStatus(BluetoothDevice device);
-    public boolean csSetFlightMode(BluetoothDevice device);
-    public boolean csSetAutoSleepTimerOffset(BluetoothDevice device, int offset_sec);
+    //public boolean csGetSimHwStatus(BluetoothDevice device);
+    //public boolean csSetFlightMode(BluetoothDevice device);
+    //public boolean csSetAutoSleepTimerOffset(BluetoothDevice device, int offset_sec);
     public boolean csSetOperationLTEvent(BluetoothDevice device);
     public boolean csClrOperationLTEvent(BluetoothDevice device);
     public boolean csSetOperation(BluetoothDevice device, Operation operation);
     public boolean csSetDateTime(BluetoothDevice device, Calendar calendar);
     public boolean csSetName(BluetoothDevice device, String name);
     public boolean csGetName(BluetoothDevice device);
-    public boolean csSetGpsInfoLTEvent(BluetoothDevice device);
-    public boolean csClrGpsInfoLTEvent(BluetoothDevice device);
-    public boolean csSetGpsInfo(BluetoothDevice device, Calendar calendar, double longitude, double latitude, double altitude);
+    //public boolean csSetGpsInfoLTEvent(BluetoothDevice device);
+    //public boolean csClrGpsInfoLTEvent(BluetoothDevice device);
+    //public boolean csSetGpsInfo(BluetoothDevice device, Calendar calendar, double longitude, double latitude, double altitude);
     public boolean csGetBleFWVersion(BluetoothDevice device);
     public boolean csVerifyPassword(BluetoothDevice device, String password);
     public boolean csChangePassword(BluetoothDevice device, String password);
@@ -761,46 +569,46 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public boolean csGetCameraMode(BluetoothDevice device);
     public boolean csSetMetadataLTEvent(BluetoothDevice device);
     public boolean csClrMetadataLTEvent(BluetoothDevice device);
-    public boolean csSetCameraErrorLTEvent(BluetoothDevice device);
-    public boolean csClrCameraErrorLTEvent(BluetoothDevice device);
-    public boolean csSoftAPConnect(BluetoothDevice device, String passwd);
-    public boolean csSetAutoBackupLTEvent(BluetoothDevice device);
-    public boolean csClrAutoBackupLTEvent(BluetoothDevice device);
-    public boolean csSetAutoBackupAP(BluetoothDevice device, String ssid, String passwd, byte security);
-    public boolean csClrAutoBackupAP(BluetoothDevice device, byte security, String ssid);
+    //public boolean csSetCameraErrorLTEvent(BluetoothDevice device);
+    //public boolean csClrCameraErrorLTEvent(BluetoothDevice device);
+    //public boolean csSoftAPConnect(BluetoothDevice device, String passwd);
+    //public boolean csSetAutoBackupLTEvent(BluetoothDevice device);
+    //public boolean csClrAutoBackupLTEvent(BluetoothDevice device);
+    //public boolean csSetAutoBackupAP(BluetoothDevice device, String ssid, String passwd, byte security);
+    //public boolean csClrAutoBackupAP(BluetoothDevice device, byte security, String ssid);
     public boolean csSetLTNotify(BluetoothDevice device);
     public boolean csClrLTNotify(BluetoothDevice device);
-    public boolean csSetAutoBackupToken(BluetoothDevice device, BackupProviderIdIndex pidx, BackupTokenType type, String token);
-    public boolean csSetAutoBackupAPScan(BluetoothDevice device, int startORstop , int option);
-    public boolean csSetAutoBackupProxy(BluetoothDevice device, int port, byte security, String ssid, String proxy);
-    public boolean csGetAutoBackupProxy(BluetoothDevice device, byte security, String ssid);
+    //public boolean csSetAutoBackupToken(BluetoothDevice device, BackupProviderIdIndex pidx, BackupTokenType type, String token);
+    //public boolean csSetAutoBackupAPScan(BluetoothDevice device, int startORstop , int option);
+    //public boolean csSetAutoBackupProxy(BluetoothDevice device, int port, byte security, String ssid, String proxy);
+    //public boolean csGetAutoBackupProxy(BluetoothDevice device, byte security, String ssid);
     public boolean csGetAllFwVersion(BluetoothDevice device);
-    public boolean csGetAutoBackupStatus(BluetoothDevice device);
-    public boolean csGetAutoBackupIsAvailable(BluetoothDevice device);
-    public boolean csSetAutoBackupAccount(BluetoothDevice device, String name);
-    public boolean csGetAutoBackupAccount(BluetoothDevice device);
-    public boolean csSetAutoBackupPreference(BluetoothDevice device, boolean enableBackup, boolean deleteAfterBackup, boolean backupWithoutAC);
-    public boolean csGetAutoBackupPreference(BluetoothDevice device);
-    public boolean csSetBroadcastSetting(BluetoothDevice device, BroadcastSetting setting);
-    public boolean csGetBroadcastSetting(BluetoothDevice device);
-    public boolean csSetBroadcastPlatform(BluetoothDevice device, BroadcastPlatform platform, BroadcastTokenType tokenType, String token);
-    public boolean csSetBroadcastInvitationList(BluetoothDevice device, List<String> invitationList);
-    public boolean csSetBroadcastPrivacy(BluetoothDevice device, BroadcastPrivacy privacy);
-    public boolean csGetBroadcastStatus(BluetoothDevice device);
-    public boolean csGetBroadcastInvitationList(BluetoothDevice device);
-    public boolean csGetBroadcastPrivacy(BluetoothDevice device);
-    public boolean csGetBroadcastPlatform(BluetoothDevice device);
-    public boolean csGetBroadcastVideoUrl(BluetoothDevice device);
-    public boolean csGetBroadcastErrorList(BluetoothDevice device);
-    public boolean csSetBroadcastUserName(BluetoothDevice device, String userName);
-    public boolean csSetBroadcastSMSContent(BluetoothDevice device, String smsContent);
-    public boolean csGetBroadcastUserName(BluetoothDevice device);
-    public boolean csGetBroadcastSMSContent(BluetoothDevice device);
+    //public boolean csGetAutoBackupStatus(BluetoothDevice device);
+    //public boolean csGetAutoBackupIsAvailable(BluetoothDevice device);
+    //public boolean csSetAutoBackupAccount(BluetoothDevice device, String name);
+    //public boolean csGetAutoBackupAccount(BluetoothDevice device);
+    //public boolean csSetAutoBackupPreference(BluetoothDevice device, boolean enableBackup, boolean deleteAfterBackup, boolean backupWithoutAC);
+    //public boolean csGetAutoBackupPreference(BluetoothDevice device);
+    //public boolean csSetBroadcastSetting(BluetoothDevice device, BroadcastSetting setting);
+    //public boolean csGetBroadcastSetting(BluetoothDevice device);
+    //public boolean csSetBroadcastPlatform(BluetoothDevice device, BroadcastPlatform platform, BroadcastTokenType tokenType, String token);
+    //public boolean csSetBroadcastInvitationList(BluetoothDevice device, List<String> invitationList);
+    //public boolean csSetBroadcastPrivacy(BluetoothDevice device, BroadcastPrivacy privacy);
+    //public boolean csGetBroadcastStatus(BluetoothDevice device);
+    //public boolean csGetBroadcastInvitationList(BluetoothDevice device);
+    //public boolean csGetBroadcastPrivacy(BluetoothDevice device);
+    //public boolean csGetBroadcastPlatform(BluetoothDevice device);
+    //public boolean csGetBroadcastVideoUrl(BluetoothDevice device);
+    //public boolean csGetBroadcastErrorList(BluetoothDevice device);
+    //public boolean csSetBroadcastUserName(BluetoothDevice device, String userName);
+    //public boolean csSetBroadcastSMSContent(BluetoothDevice device, String smsContent);
+    //public boolean csGetBroadcastUserName(BluetoothDevice device);
+    //public boolean csGetBroadcastSMSContent(BluetoothDevice device);
     public boolean csSetGeneralPurposeCommandLTNotify(BluetoothDevice device);
     public boolean csClrGeneralPurposeCommandLTNotify(BluetoothDevice device);
     public boolean csGetLTECampingStatus(BluetoothDevice device);
     public boolean csSetLTECampingStatusLTEvent(BluetoothDevice device);
     public boolean csClrLTECampingStatusLTEvent(BluetoothDevice device);
     public boolean csGetModemStatus(BluetoothDevice device);
-    public boolean csUnlockSimPin(BluetoothDevice device, String pinCode);
+    //public boolean csUnlockSimPin(BluetoothDevice device, String pinCode);
 }
