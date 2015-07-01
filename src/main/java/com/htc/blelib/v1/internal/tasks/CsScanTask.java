@@ -19,80 +19,80 @@ import android.util.Log;
 
 public class CsScanTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsScanTask";
+    private final static String TAG = "CsScanTask";
 
-	private static final int DEFAULT_SCAN_PERIOD_MS = 3000;
+    private static final int DEFAULT_SCAN_PERIOD_MS = 3000;
 
-	private final CsBleScanner mCsBleScanner;
-	private final int mScanPeriodMs;
-	private final boolean bScan;
-	private static BaseAlarmService alarmTimeoutRequest = null;
-
-
-
-	public CsScanTask(CsBleScanner csBleScanner, Messenger messenger, ExecutorService executor, int periodMs, boolean scan) {
-
-		super(null, messenger, executor);
-
-		mCsBleScanner = csBleScanner;
-
-		if (periodMs <= 0) {
-
-			mScanPeriodMs = DEFAULT_SCAN_PERIOD_MS;
-
-		} else {
-
-			mScanPeriodMs = periodMs;
-		}
-
-		bScan = scan;
-	}
+    private final CsBleScanner mCsBleScanner;
+    private final int mScanPeriodMs;
+    private final boolean bScan;
+    private static BaseAlarmService alarmTimeoutRequest = null;
 
 
 
-	@Override
-	public void execute() throws Exception {
+    public CsScanTask(CsBleScanner csBleScanner, Messenger messenger, ExecutorService executor, int periodMs, boolean scan) {
 
-		super.execute();
+        super(null, null,messenger, executor);
 
-		if (mCsBleScanner != null) {
+        mCsBleScanner = csBleScanner;
 
-			Integer result;
-			Callable<Integer> callable;
-			Future<Integer> future;
+        if (periodMs <= 0) {
 
-			Log.d(TAG, "[CS] bScan = " + bScan);
+            mScanPeriodMs = DEFAULT_SCAN_PERIOD_MS;
 
-			if (bScan) {
+        } else {
 
-				callable = new CsScanStartCallable(mCsBleScanner, mMessenger);
-				future = mExecutor.submit(callable);
+            mScanPeriodMs = periodMs;
+        }
 
-				result = future.get();
-				Log.d(TAG, "[CS] future result = " + result);
-
-				if (result == 0) {
-
-					addScanTimeoutRequestAlarm(mScanPeriodMs);
-				}
-
-			} else {
-
-				removeScanTimeoutRequestAlarm();
-
-            	callable = new CsScanStopCallable(mCsBleScanner, mMessenger);
-    			future = mExecutor.submit(callable);
-
-    			result = future.get();
-    			Log.d(TAG, "[CS] future result = " + result);
-			}
-
-		}
-	}
+        bScan = scan;
+    }
 
 
 
-	private synchronized void addScanTimeoutRequestAlarm(long periodMs) {
+    @Override
+    public void execute() throws Exception {
+
+        super.execute();
+
+        if (mCsBleScanner != null) {
+
+            Integer result;
+            Callable<Integer> callable;
+            Future<Integer> future;
+
+            Log.d(TAG, "[CS] bScan = " + bScan);
+
+            if (bScan) {
+
+                callable = new CsScanStartCallable(mCsBleScanner, mMessenger);
+                future = mExecutor.submit(callable);
+
+                result = future.get();
+                Log.d(TAG, "[CS] future result = " + result);
+
+                if (result == 0) {
+
+                    addScanTimeoutRequestAlarm(mScanPeriodMs);
+                }
+
+            } else {
+
+                removeScanTimeoutRequestAlarm();
+
+                callable = new CsScanStopCallable(mCsBleScanner, mMessenger);
+                future = mExecutor.submit(callable);
+
+                result = future.get();
+                Log.d(TAG, "[CS] future result = " + result);
+            }
+
+        }
+    }
+
+
+
+    private synchronized void addScanTimeoutRequestAlarm(long periodMs) {
 
         Context context = mCsBleScanner.getContext();
         final int id = Common.ALARM_SCAN_TIMEOUT;
@@ -102,47 +102,47 @@ public class CsScanTask extends CsConnectivityTask {
         if (context == null) return;
 
         if (alarmTimeoutRequest != null) {
-        	alarmTimeoutRequest.deinitAlarm(id);
-        	alarmTimeoutRequest = null;
+            alarmTimeoutRequest.deinitAlarm(id);
+            alarmTimeoutRequest = null;
         }
 
         if (context != null) {
 
-        	alarmTimeoutRequest = new BaseAlarmService("CsScanTimeout", context);
+            alarmTimeoutRequest = new BaseAlarmService("CsScanTimeout", context);
 
             try {
 
-        		IAlarmService alarmService = new IAlarmService() {
+                IAlarmService alarmService = new IAlarmService() {
 
                     @Override
                     public void onAlarm() {
 
-                    	Log.d(TAG, "[CS] onAlarm: ALARM_SCAN_TIMEOUT");
-            			Integer result;
-            			Callable<Integer> callable;
-            			Future<Integer> future;
+                        Log.d(TAG, "[CS] onAlarm: ALARM_SCAN_TIMEOUT");
+                        Integer result;
+                        Callable<Integer> callable;
+                        Future<Integer> future;
 
                         if (alarmTimeoutRequest != null) {
-                        	alarmTimeoutRequest.deinitAlarm(id);
-                        	alarmTimeoutRequest = null;
+                            alarmTimeoutRequest.deinitAlarm(id);
+                            alarmTimeoutRequest = null;
                         }
 
                         try {
 
-                        	callable = new CsScanStopCallable(mCsBleScanner, mMessenger);
-                			future = mExecutor.submit(callable);
+                            callable = new CsScanStopCallable(mCsBleScanner, mMessenger);
+                            future = mExecutor.submit(callable);
 
-                			result = future.get();
-                			Log.d(TAG, "[CS] future result = " + result);
+                            result = future.get();
+                            Log.d(TAG, "[CS] future result = " + result);
 
-            			} catch (Exception e) {
+                        } catch (Exception e) {
 
-							e.printStackTrace();
-						}
+                            e.printStackTrace();
+                        }
                     }
-        		};
+                };
 
-        		alarmTimeoutRequest.initAlarm(System.currentTimeMillis() + periodMs, id, alarmService);
+                alarmTimeoutRequest.initAlarm(System.currentTimeMillis() + periodMs, id, alarmService);
 
             } catch (Exception e) {
 
@@ -153,20 +153,20 @@ public class CsScanTask extends CsConnectivityTask {
 
 
 
-	private synchronized void removeScanTimeoutRequestAlarm() {
+    private synchronized void removeScanTimeoutRequestAlarm() {
 
         final int id = Common.ALARM_SCAN_TIMEOUT;
 
         if (alarmTimeoutRequest != null) {
-        	alarmTimeoutRequest.deinitAlarm(id);
-        	alarmTimeoutRequest = null;
+            alarmTimeoutRequest.deinitAlarm(id);
+            alarmTimeoutRequest = null;
         }
-	}
+    }
 
 
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-	}
+    }
 }

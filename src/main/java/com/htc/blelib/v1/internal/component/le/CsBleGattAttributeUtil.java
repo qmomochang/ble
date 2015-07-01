@@ -390,32 +390,32 @@ public class CsBleGattAttributeUtil {
 
         Log.d(TAG, "[CS] getOperationResult CommandID = " + resultArray[0]);
 
-        if (resultArray[0] == CsBleGattAttributes.CsV1CommandEnum.OPERATION_STATUS_EVENT.getID()) {
+        //if (resultArray[0] == CsBleGattAttributes.CsV1CommandEnum.OPERATION_STATUS_EVENT.getID()) {
 
-            byte type = resultArray[1];
+        //    byte type = resultArray[1];
 
-            if (OperationEvent.OPEVENT_START_CAPTURING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_CAPTURE_START))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_START_RECORDING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_VIDEO_RECORDING_NORMAL_START) || operation.equals(Operation.OPERATION_VIDEO_RECORDING_SLOW_MOTION_START) || operation.equals(Operation.OPERATION_BROADCAST_START))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_STOP_RECORDING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_VIDEO_RECORDING_NORMAL_STOP) || operation.equals(Operation.OPERATION_VIDEO_RECORDING_SLOW_MOTION_STOP) || operation.equals(Operation.OPERATION_BROADCAST_STOP))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_START.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_START))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_STOP.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_STOP))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_PAUSE.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_PAUSE))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_RESUME.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_RESUME))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_GET_DR_STATUS.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_DR_STATUS))) {
-                ret = 0;
-            } else if (OperationEvent.OPEVENT_GET_FREE_SPACE.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_FREE_SPACE))) {
-                ret = 0;
-            } else if (Operation.OPERATION_GET_TIME_LAPS_SETTING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_TIME_LAPS_SETTING))){
-                ret = 0;
-            }
-        }
+        //    if (OperationEvent.OPEVENT_START_CAPTURING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_CAPTURE_START))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_START_RECORDING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_VIDEO_RECORDING_NORMAL_START) || operation.equals(Operation.OPERATION_VIDEO_RECORDING_SLOW_MOTION_START) || operation.equals(Operation.OPERATION_BROADCAST_START))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_STOP_RECORDING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_VIDEO_RECORDING_NORMAL_STOP) || operation.equals(Operation.OPERATION_VIDEO_RECORDING_SLOW_MOTION_STOP) || operation.equals(Operation.OPERATION_BROADCAST_STOP))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_START.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_START))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_STOP.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_STOP))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_PAUSE.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_PAUSE))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_RESUME.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_RESUME))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_GET_DR_STATUS.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_DR_STATUS))) {
+        //        ret = 0;
+        //    } else if (OperationEvent.OPEVENT_GET_FREE_SPACE.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_FREE_SPACE))) {
+        //        ret = 0;
+        //    } else if (Operation.OPERATION_GET_TIME_LAPS_SETTING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_TIME_LAPS_SETTING))){
+        //        ret = 0;
+        //    }
+        //}
 
         return ret;
     }
@@ -428,7 +428,7 @@ public class CsBleGattAttributeUtil {
         Log.d(TAG, "[CS] getCsName UUID = " + characteristic.getUuid());
 
         byte[] value = characteristic.getValue();
-        if (value[0] == CsBleGattAttributes.CsV1CommandEnum.SET_CS_NAME_REQUEST.getID()) {
+        if (value[0] == CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST.getID()) {
             Log.d(TAG, "[CS] getCsName value.length = " + value.length);
 
             for (int i = 2; i < value.length; i++) {//The first 2 bytes are "id" and "type"

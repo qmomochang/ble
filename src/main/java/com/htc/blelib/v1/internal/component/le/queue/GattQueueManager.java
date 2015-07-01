@@ -19,9 +19,9 @@ import android.util.Log;
 
 public class GattQueueManager {
 
-	private final static String TAG = "GattQueueManager";
+    private final static String TAG = "GattQueueManager";
 
-	public static final int GATT_REQUEST_DELAY_INTERVAL = 2000;
+    public static final int GATT_REQUEST_DELAY_INTERVAL = 2000;
 
     private static GattQueueManager mManager = null;
     private static Context mContext = null;
@@ -46,7 +46,7 @@ public class GattQueueManager {
 
     public class GattRequest {
 
-    	public IGattRequest callback;
+        public IGattRequest callback;
         public BluetoothDevice device;
         public UUID service;
         public UUID characteristic;
@@ -78,7 +78,7 @@ public class GattQueueManager {
 
         if (mManager == null) {
 
-        	mManager = new GattQueueManager();
+            mManager = new GattQueueManager();
         }
 
         return mManager;
@@ -95,18 +95,18 @@ public class GattQueueManager {
         mLastDeviceGattRequestTime.clear();
         setPendingRequestAlarm(false);
 
-		try {
+        try {
 
-			if (mProcessRequestThread == null) {
+            if (mProcessRequestThread == null) {
 
-				mProcessRequestThread = new Thread(mProcessRequestRunnable, "CsConnectivityProcessRequestThread");
-				mProcessRequestThread.start();
-			}
+                mProcessRequestThread = new Thread(mProcessRequestRunnable, "CsConnectivityProcessRequestThread");
+                mProcessRequestThread.start();
+            }
 
-		} catch (Exception e) {
+        } catch (Exception e) {
 
-			Log.d(TAG, "[CS] init e" + e);
-		}
+            Log.d(TAG, "[CS] init e" + e);
+        }
     }
 
     /*protected void finalize() throws Throwable {
@@ -123,7 +123,7 @@ public class GattQueueManager {
 
     private synchronized boolean p_addPendingRequest(GattRequest request) {
 
-    	if (mContext == null || request == null) {
+        if (mContext == null || request == null) {
             Log.d(TAG, "GattQueueManager initialize fail: " + mContext + ", " + request);
             return false;
         }
@@ -145,9 +145,9 @@ public class GattQueueManager {
         ///else if (mPendingRequest.size() == 1) flush();
         if (mPendingRequest.size() == 1) {
 
-        	if (request.device != null) mLastDeviceGattRequestTime.put(request.device, (long) 0);
+            if (request.device != null) mLastDeviceGattRequestTime.put(request.device, (long) 0);
 
-        	flush();
+            flush();
         }
 
         return true;
@@ -157,7 +157,7 @@ public class GattQueueManager {
 
     public void removePendingRequest(BluetoothDevice device) {
 
-    	if (mContext == null) {
+        if (mContext == null) {
             Log.d(TAG, "GattQueueManager initialize fail: " + mContext);
             return;
         }
@@ -227,7 +227,7 @@ public class GattQueueManager {
     }*/
     public void tryPurgeLastRequest(int request_type, UUID characteristic) {
 
-    	GattRequest lastRequest = mLastProcessedRequest;
+        GattRequest lastRequest = mLastProcessedRequest;
         Log.d(TAG, "tryPurgeLastRequest: " + request_type + ", " + characteristic + ", " + lastRequest);
         if (lastRequest == null || characteristic == null) return;
         else if (lastRequest.request_type != request_type
@@ -245,22 +245,22 @@ public class GattQueueManager {
 
     public void reset(BluetoothDevice device) {
 
-    	if (device != null) {
+        if (device != null) {
 
-    		mLastDeviceGattRequestTime.put(device, (long) 0);
-        	removePendingRequest(device);
-        	setFlushing(false);
-    	}
+            mLastDeviceGattRequestTime.put(device, (long) 0);
+            removePendingRequest(device);
+            setFlushing(false);
+        }
     }
 
 
 
     private synchronized void addFlushQueue(Integer value) {
 
-    	if (value != null) {
+        if (value != null) {
 
-    		mFlushQueue.add(value);
-    	}
+            mFlushQueue.add(value);
+        }
     }
 
 
@@ -269,23 +269,23 @@ public class GattQueueManager {
 
     private synchronized void setFlushing(boolean value) {
 
-    	bFlushing = value;
+        bFlushing = value;
     }
 
 
 
     private synchronized boolean getFlushing() {
 
-    	return bFlushing;
+        return bFlushing;
     }
 
 
 
     public synchronized void flush(BluetoothDevice device) {
 
-    	if (device != null) mLastDeviceGattRequestTime.put(device, (long) 0);
+        if (device != null) mLastDeviceGattRequestTime.put(device, (long) 0);
 
-    	setFlushing(false);
+        setFlushing(false);
         flush();
     }
 
@@ -293,13 +293,13 @@ public class GattQueueManager {
 
     public synchronized void flush() {
 
-    	///Log.d(TAG, "[CS] flush getFlushing() = " + getFlushing());
+        ///Log.d(TAG, "[CS] flush getFlushing() = " + getFlushing());
 
-    	if (getFlushing()) {
-    		return;
-    	}
+        if (getFlushing()) {
+            return;
+        }
 
-    	addFlushQueue(7);
+        addFlushQueue(7);
     }
 
 
@@ -307,7 +307,7 @@ public class GattQueueManager {
     boolean isProcessPendingRequest = false;
     private synchronized void processPendingRequest() {
 
-    	isProcessPendingRequest = true;
+        isProcessPendingRequest = true;
         Log.d(TAG, "processPendingRequest: " + mPendingRequest.size());
         if (mContext == null) {
             Log.d(TAG, " + GattQueueManager initialize fail: " + mContext);
@@ -409,34 +409,34 @@ public class GattQueueManager {
 
 
 
-	private final Runnable mProcessRequestRunnable = new Runnable() {
+    private final Runnable mProcessRequestRunnable = new Runnable() {
 
-		@Override
-		public void run() {
+        @Override
+        public void run() {
 
-			try {
+            try {
 
-				while (mProcessRequestThread.isInterrupted() == false) {
+                while (mProcessRequestThread.isInterrupted() == false) {
 
-					///Log.d(TAG, "[CS] Before mFlushQueue poll");
-					Integer value = mFlushQueue.poll(Long.MAX_VALUE, TimeUnit.SECONDS);
-					///Log.d(TAG, "[CS] After mFlushQueue poll, value = " + value);
+                    ///Log.d(TAG, "[CS] Before mFlushQueue poll");
+                    Integer value = mFlushQueue.poll(Long.MAX_VALUE, TimeUnit.SECONDS);
+                    ///Log.d(TAG, "[CS] After mFlushQueue poll, value = " + value);
 
-					if (value > 0) {
+                    if (value > 0) {
 
-						///Log.d(TAG, "[CS] mPendingRequest.size() = " + mPendingRequest.size());
-						if (!mPendingRequest.isEmpty()) {
+                        ///Log.d(TAG, "[CS] mPendingRequest.size() = " + mPendingRequest.size());
+                        if (!mPendingRequest.isEmpty()) {
 
-							GattQueueManager.getInstance().processPendingRequest();
-						}
-					}
-				}
+                            GattQueueManager.getInstance().processPendingRequest();
+                        }
+                    }
+                }
 
-			} catch (Exception e) {
+            } catch (Exception e) {
 
-				Log.d(TAG, "[CS] mProcessRequestRunnable e = " + e);
-				e.printStackTrace();
-			}
-		}
-	};
+                Log.d(TAG, "[CS] mProcessRequestRunnable e = " + e);
+                e.printStackTrace();
+            }
+        }
+    };
 }

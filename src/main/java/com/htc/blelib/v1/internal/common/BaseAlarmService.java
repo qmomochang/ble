@@ -16,9 +16,9 @@ import android.util.Log;
 
 public class BaseAlarmService implements IAlarmService {
 
-	private final static String TAG = "BaseAlarmService";
+    private final static String TAG = "BaseAlarmService";
 
-	public static final String CONFIG_FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.data/HtcBluetoothLeProfiles.conf";
+    public static final String CONFIG_FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.data/HtcBluetoothLeProfiles.conf";
 
     private String mName = "";
 
@@ -37,7 +37,7 @@ public class BaseAlarmService implements IAlarmService {
 
     public BaseAlarmService(String name, Context ctx) {
 
-    	instance = this;
+        instance = this;
         mName = name;
         mContext = ctx;
 
@@ -75,7 +75,7 @@ public class BaseAlarmService implements IAlarmService {
 
     public boolean initAlarm(long next, int id, IAlarmService iface) {
 
-    	Log.i(TAG, "initAlarm: mContext = " + mContext + ", " + next + ", " + id + ", " + iface);
+        Log.i(TAG, "initAlarm: mContext = " + mContext + ", " + next + ", " + id + ", " + iface);
         return startAlarm(next, id, iface);
     }
 
@@ -83,7 +83,7 @@ public class BaseAlarmService implements IAlarmService {
 
     private boolean startAlarm(long next, int id, IAlarmService iface) {
 
-    	Log.i(TAG, "startAlarm: mContext = " + mContext + ", " + next + ", " + id + ", " + iface);
+        Log.i(TAG, "startAlarm: mContext = " + mContext + ", " + next + ", " + id + ", " + iface);
         if (mContext == null) {
             Log.d(TAG, "[WTF] startAlarm: mContext is null.");
             return false;
@@ -134,10 +134,10 @@ public class BaseAlarmService implements IAlarmService {
 
     public class AlarmReceiver extends BroadcastReceiver {
 
-    	@Override
+        @Override
         public void onReceive(Context context, Intent intent) {
 
-        	Log.d(TAG, "[CS] onReceive intent = " + intent);
+            Log.d(TAG, "[CS] onReceive intent = " + intent);
 
             if (instance == null) {
                 Log.d(TAG, "[WTF] AlarmReceiver_onReceive: instance is null.");

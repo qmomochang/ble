@@ -19,7 +19,7 @@ import com.htc.blelib.internal.common.CsConnectivityDeviceGroup;
 
 public class CsBleScanner {
 
-	private final static String TAG = "CsBleScanner";
+    private final static String TAG = "CsBleScanner";
 
     private Context mContext;
     private BluetoothManager mBluetoothManager;
@@ -33,13 +33,13 @@ public class CsBleScanner {
 
     public CsBleScanner(Context context, BluetoothManager bluetoothManager) throws Exception {
 
-    	mContext = context;
-    	mBluetoothManager = bluetoothManager;
+        mContext = context;
+        mBluetoothManager = bluetoothManager;
 
-    	mBluetoothAdapter = mBluetoothManager.getAdapter();
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
 
-        	throw new Exception("Unable to obtain a BluetoothAdapter.");
+            throw new Exception("Unable to obtain a BluetoothAdapter.");
         }
 
         mCsConnectivityDeviceGroup = CsConnectivityDeviceGroup.getInstance();
@@ -53,23 +53,23 @@ public class CsBleScanner {
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 
-        	if (getCsConnectivityDeviceGroup().addDevice(device, scanRecord)) {
+            if (getCsConnectivityDeviceGroup().addDevice(device, scanRecord)) {
 
-        		CsConnectivityDevice gcDevice = getCsConnectivityDeviceGroup().getDevice(device);
+                CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDevice(device);
 
-        		Log.d(TAG, "[CS] addDevice OK: " + device.getAddress());
+                Log.d(TAG, "[CS] addDevice OK: " + device.getAddress());
 
-        		final LinkedList<CsBleScannerListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleScannerListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleScannerListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleScannerListener>(mListeners);
+                }
 
                 for (CsBleScannerListener listener : listeners) {
 
-                	listener.onScanHit(device, gcDevice.getVersion());
+                    listener.onScanHit(device, csDevice.getVersion());
                 }
-        	}
+            }
         }
     };
 
@@ -77,195 +77,195 @@ public class CsBleScanner {
 
     public Context getContext() {
 
-    	return mContext;
+        return mContext;
     }
 
 
 
     public synchronized void registerListener(CsBleScannerListener listener) {
 
-    	synchronized(mListeners) {
+        synchronized(mListeners) {
 
-    		mListeners.add(listener);
+            mListeners.add(listener);
 
-    		Log.d(TAG, "[CS] After registerListener mListeners.size() = " + mListeners.size());
-    	}
+            Log.d(TAG, "[CS] After registerListener mListeners.size() = " + mListeners.size());
+        }
     }
 
 
 
     public synchronized void unregisterListener(CsBleScannerListener listener) {
 
-    	synchronized(mListeners) {
+        synchronized(mListeners) {
 
-    		mListeners.remove(listener);
+            mListeners.remove(listener);
 
-    		Log.d(TAG, "[CS] After unregisterListener mListeners.size() = " + mListeners.size());
-    	}
+            Log.d(TAG, "[CS] After unregisterListener mListeners.size() = " + mListeners.size());
+        }
     }
 
 
 
     public CsConnectivityDeviceGroup getCsConnectivityDeviceGroup() {
 
-    	return mCsConnectivityDeviceGroup;
+        return mCsConnectivityDeviceGroup;
     }
 
 
 
     synchronized public ScanState getScanState() {
 
-    	return mScanState;
+        return mScanState;
     }
 
 
 
     synchronized private void setScanState(ScanState state) {
 
-    	mScanState = state;
+        mScanState = state;
     }
 
 
 
     private void updateCsConnectivityGroup() {
 
-    	if (mBluetoothManager != null) {
+        if (mBluetoothManager != null) {
 
-    		List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+            List<BluetoothDevice> connectedDeviceList = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
 
-    		ArrayList<CsConnectivityDevice> gcDeviceList = new ArrayList<CsConnectivityDevice>();
-    		gcDeviceList.addAll(mCsConnectivityDeviceGroup.getDeviceList());
+            ArrayList<CsConnectivityDevice> csDeviceList = new ArrayList<CsConnectivityDevice>();
+            csDeviceList.addAll(mCsConnectivityDeviceGroup.getDeviceList());
 
-    		for (int cnt = 0; cnt < gcDeviceList.size(); cnt++) {
+            for (int cnt = 0; cnt < csDeviceList.size(); cnt++) {
 
-    			CsConnectivityDevice gcDevice = gcDeviceList.get(cnt);
+                CsConnectivityDevice csDevice = csDeviceList.get(cnt);
 
-    			if (!connectedDeviceList.contains(gcDevice.getBluetoothDevice())) {
+                if (!connectedDeviceList.contains(csDevice.getBluetoothDevice())) {
 
-    				mCsConnectivityDeviceGroup.removeDevice(gcDevice);
+                    mCsConnectivityDeviceGroup.removeDevice(csDevice);
 
-    			} else {
+                } else {
 
-    				if (gcDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED) {
+                    if (csDevice.getCsStateBle() != CsStateBle.CSSTATE_BLE_CONNECTED) {
 
-    					Log.d(TAG, "[CS] CS BLE state is " + gcDevice.getCsStateBle() + ", which is not at CSSTATE_BLE_CONNECTED before scanning");
-    					gcDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTED);
-    				}
-    			}
-    		}
+                        Log.d(TAG, "[CS] CS BLE state is " + csDevice.getCsStateBle() + ", which is not at CSSTATE_BLE_CONNECTED before scanning");
+                        csDevice.setCsStateBle(CsStateBle.CSSTATE_BLE_CONNECTED);
+                    }
+                }
+            }
 
-    	} else {
+        } else {
 
-    		Log.d(TAG, "[CS] updateCsConnectivityGroup. mBluetoothManager is null.");
-    	}
+            Log.d(TAG, "[CS] updateCsConnectivityGroup. mBluetoothManager is null.");
+        }
     }
 
 
 
-	public boolean scanStart() {
+    public boolean scanStart() {
 
-		boolean ret = false;
+        boolean ret = false;
 
         Log.d(TAG, "[CS] scanStart++");
         Log.d(TAG, "[CS] scanStart getScanState() = " + getScanState());
 
-    	if (mBluetoothAdapter == null) {
+        if (mBluetoothAdapter == null) {
 
-    		Log.d(TAG, "[CS] BluetoothAdapter not initialized.");
+            Log.d(TAG, "[CS] BluetoothAdapter not initialized.");
             return false;
 
         } else {
 
-        	if (!mBluetoothAdapter.isEnabled()) {
+            if (!mBluetoothAdapter.isEnabled()) {
 
-        		Log.d(TAG, "[CS] Bluetooth is unavailable and please enable it.");
-        		return false;
-        	}
+                Log.d(TAG, "[CS] Bluetooth is unavailable and please enable it.");
+                return false;
+            }
         }
 
-		if (getScanState() == ScanState.SCAN_STATE_STANDBY) {
+        if (getScanState() == ScanState.SCAN_STATE_STANDBY) {
 
-			setScanState(ScanState.SCAN_STATE_SCANNING);
+            setScanState(ScanState.SCAN_STATE_SCANNING);
 
-			updateCsConnectivityGroup();
+            updateCsConnectivityGroup();
 
-	        /// Add exist and connected device.
-	        for (int cnt = 0; cnt < getCsConnectivityDeviceGroup().getCount(); cnt++) {
+            /// Add exist and connected device.
+            for (int cnt = 0; cnt < getCsConnectivityDeviceGroup().getCount(); cnt++) {
 
-	        	CsConnectivityDevice gcDevice = getCsConnectivityDeviceGroup().getDeviceList().get(cnt);
+                CsConnectivityDevice csDevice = getCsConnectivityDeviceGroup().getDeviceList().get(cnt);
 
-	        	Log.d(TAG, "[CS] add exist and connected device OK: " + gcDevice.getAddress());
+                Log.d(TAG, "[CS] add exist and connected device OK: " + csDevice.getAddress());
 
-        		final LinkedList<CsBleScannerListener> listeners;
-        		synchronized(mListeners){
+                final LinkedList<CsBleScannerListener> listeners;
+                synchronized(mListeners){
 
-        			listeners = new LinkedList<CsBleScannerListener>(mListeners);
-        		}
+                    listeners = new LinkedList<CsBleScannerListener>(mListeners);
+                }
 
                 for (CsBleScannerListener listener : listeners) {
 
-                	listener.onScanHitConnected(gcDevice.getBluetoothDevice(), gcDevice.getVersion());
+                    listener.onScanHitConnected(csDevice.getBluetoothDevice(), csDevice.getVersion());
                 }
-	        }
+            }
 
-	        if (mBluetoothAdapter.startLeScan(mLeScanCallback)) {
+            if (mBluetoothAdapter.startLeScan(mLeScanCallback)) {
 
-	        	ret = true;
+                ret = true;
 
-	        } else {
+            } else {
 
-	        	setScanState(ScanState.SCAN_STATE_STANDBY);
-	        }
+                setScanState(ScanState.SCAN_STATE_STANDBY);
+            }
 
-		} else {
+        } else {
 
-			Log.d(TAG, "[CS] The scan state is not correct for scanStart(). getScanState = " + getScanState());
-		}
+            Log.d(TAG, "[CS] The scan state is not correct for scanStart(). getScanState = " + getScanState());
+        }
 
         Log.d(TAG, "[CS] scanStart--");
 
         return ret;
-	}
+    }
 
 
 
-	public boolean scanStop() {
+    public boolean scanStop() {
 
-		boolean ret = false;
+        boolean ret = false;
 
         Log.d(TAG, "[CS] scanStop++");
         Log.d(TAG, "[CS] scanStop getScanState() = " + getScanState());
 
-    	if (mBluetoothAdapter == null) {
+        if (mBluetoothAdapter == null) {
 
-    		Log.d(TAG, "[CS] BluetoothAdapter not initialized.");
+            Log.d(TAG, "[CS] BluetoothAdapter not initialized.");
             return false;
 
         } else {
 
-        	if (!mBluetoothAdapter.isEnabled()) {
+            if (!mBluetoothAdapter.isEnabled()) {
 
-        		Log.d(TAG, "[CS] Bluetooth is unavailable and please enable it.");
-        		return false;
-        	}
+                Log.d(TAG, "[CS] Bluetooth is unavailable and please enable it.");
+                return false;
+            }
         }
 
-		if (getScanState() == ScanState.SCAN_STATE_SCANNING) {
+        if (getScanState() == ScanState.SCAN_STATE_SCANNING) {
 
-	        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
 
-	        setScanState(ScanState.SCAN_STATE_STANDBY);
+            setScanState(ScanState.SCAN_STATE_STANDBY);
 
-	        ret = true;
+            ret = true;
 
-		} else {
+        } else {
 
-			Log.d(TAG, "[CS] The scan state is not correct for scanStop(). getScanState = " + getScanState());
-		}
+            Log.d(TAG, "[CS] The scan state is not correct for scanStop(). getScanState = " + getScanState());
+        }
 
-		Log.d(TAG, "[CS] scanStop--");
+        Log.d(TAG, "[CS] scanStop--");
 
-		return ret;
-	}
+        return ret;
+    }
 
 }

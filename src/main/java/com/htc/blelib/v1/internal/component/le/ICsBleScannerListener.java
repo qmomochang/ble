@@ -8,7 +8,7 @@ import android.bluetooth.BluetoothDevice;
 
 public interface ICsBleScannerListener {
 
-	public void onScanHit(BluetoothDevice device, CsVersion deviceVersion);
-	public void onScanHitConnected(BluetoothDevice device, CsVersion deviceVersion);
-   	public void onScanComplete();
+    public void onScanHit(BluetoothDevice device, CsVersion deviceVersion);
+    public void onScanHitConnected(BluetoothDevice device, CsVersion deviceVersion);
+       public void onScanComplete();
 }
