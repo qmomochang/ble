@@ -145,6 +145,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
         public enum COUNTRY_CODE {
             USE_DEFULT              ((byte)0x00);
+
             private final byte val;
             COUNTRY_CODE (byte val) {this.val = val;}
             public byte getValue() {return this.val;}
@@ -152,8 +153,8 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
         public enum BAND {
             ALL_BAND                ((byte)0x00),
-            2_4G                    ((byte)0x01),
-            5G                      ((byte)0x02);
+            BAND_2_4G               ((byte)0x01),
+            BAND_5G                 ((byte)0x02);
 
             private final byte val;
             BAND (byte val) {this.val = val;}
@@ -182,35 +183,37 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
     // Wifi Configuration Event
     public static class WifiConfigurationEvent {
-        WIFIMGR_ERR_SUCCESS                             ((byte)0x00),
-        WIFIMGR_ERR_FAIL                                ((byte)0x01),
-        WIFIMGR_ERR_WIFI_INIT_FAILED                    ((byte)0x02),
-        WIFIMGR_ERR_WIFI_BUSY                           ((byte)0x03),
-        WIFIMGR_ERR_BAD_SSID                            ((byte)0x04),
-        WIFIMGR_ERR_BAD_SSID_LENGTH                     ((byte)0x05),
-        WIFIMGR_ERR_BAD_KEY                             ((byte)0x06),
-        WIFIMGR_ERR_BAD_KEY_LENGTH                      ((byte)0x07),
-        WIFIMGR_ERR_BAD_KEYMGMT                         ((byte)0x08),
-        WIFIMGR_ERR_CAN_NOT_FIND_AP                     ((byte)0x09),
-        WIFIMGR_ERR_SEARCH_AP_TIMEOUT                   ((byte)0x0A),
-        WIFIMGR_ERR_AUTH_NO_PASSWORD                    ((byte)0x0B),
-        WIFIMGR_ERR_AUTH_PASSWORD_NOMATCH               ((byte)0x0C),
-        WIFIMGR_ERR_AUTH_REQ_TIMEOUT                    ((byte)0x0D),
-        WIFIMGR_ERR_AUTH_RSP_TIMEOUT                    ((byte)0x0E),
-        WIFIMGR_ERR_ASOCIATE_REQ_TIMEOUT                ((byte)0x0F),
-        WIFIMGR_ERR_ASOCIATE_RSP_TIMEOUT                ((byte)0x10),
-        WIFIMGR_ERR_HANDSHAKE_REQ_TIMEOUT               ((byte)0x11),
-        WIFIMGR_ERR_HANDSHAKE_REQ_CONF_TIMEOUT          ((byte)0x12),
-        WIFIMGR_ERR_HANDSHAKE_RSP_TIMEOUT               ((byte)0x13),
-        WIFIMGR_ERR_HANDSHAKE_RSP_CONF_TIMEOUT          ((byte)0x14),
-        WIFIMGR_ERR_GET_IP_FAIL                         ((byte)0x15),
-        WIFIMGR_ERR_GET_IP_TIMEOUT                      ((byte)0x16),
-        WIFIMGR_ERR_START_AP_FAILED                     ((byte)0x17),
-        WIFIMGR_ERR_START_DHCP_FAILED                   ((byte)0x18);
+        public enum RESULT {
+            WIFIMGR_ERR_SUCCESS                             ((byte)0x00),
+            WIFIMGR_ERR_FAIL                                ((byte)0x01),
+            WIFIMGR_ERR_WIFI_INIT_FAILED                    ((byte)0x02),
+            WIFIMGR_ERR_WIFI_BUSY                           ((byte)0x03),
+            WIFIMGR_ERR_BAD_SSID                            ((byte)0x04),
+            WIFIMGR_ERR_BAD_SSID_LENGTH                     ((byte)0x05),
+            WIFIMGR_ERR_BAD_KEY                             ((byte)0x06),
+            WIFIMGR_ERR_BAD_KEY_LENGTH                      ((byte)0x07),
+            WIFIMGR_ERR_BAD_KEYMGMT                         ((byte)0x08),
+            WIFIMGR_ERR_CAN_NOT_FIND_AP                     ((byte)0x09),
+            WIFIMGR_ERR_SEARCH_AP_TIMEOUT                   ((byte)0x0A),
+            WIFIMGR_ERR_AUTH_NO_PASSWORD                    ((byte)0x0B),
+            WIFIMGR_ERR_AUTH_PASSWORD_NOMATCH               ((byte)0x0C),
+            WIFIMGR_ERR_AUTH_REQ_TIMEOUT                    ((byte)0x0D),
+            WIFIMGR_ERR_AUTH_RSP_TIMEOUT                    ((byte)0x0E),
+            WIFIMGR_ERR_ASOCIATE_REQ_TIMEOUT                ((byte)0x0F),
+            WIFIMGR_ERR_ASOCIATE_RSP_TIMEOUT                ((byte)0x10),
+            WIFIMGR_ERR_HANDSHAKE_REQ_TIMEOUT               ((byte)0x11),
+            WIFIMGR_ERR_HANDSHAKE_REQ_CONF_TIMEOUT          ((byte)0x12),
+            WIFIMGR_ERR_HANDSHAKE_RSP_TIMEOUT               ((byte)0x13),
+            WIFIMGR_ERR_HANDSHAKE_RSP_CONF_TIMEOUT          ((byte)0x14),
+            WIFIMGR_ERR_GET_IP_FAIL                         ((byte)0x15),
+            WIFIMGR_ERR_GET_IP_TIMEOUT                      ((byte)0x16),
+            WIFIMGR_ERR_START_AP_FAILED                     ((byte)0x17),
+            WIFIMGR_ERR_START_DHCP_FAILED                   ((byte)0x18);
 
-        private final byte val;
-        WifiConfigurationEvent (byte val) {this.val = val;}
-        public byte getValue() {return this.val;}
+            private final byte val;
+            RESULT (byte val) {this.val = val;}
+            public byte getValue() {return this.val;}
+        }
     } // END Wifi Configuration Event
 
     public static class WifiScanRequest {
@@ -263,7 +266,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
             WPA2_PSK                ((byte)0x03);
 
             private final byte val;
-            EraseWifiApConfigRequest (byte val) {this.val = val;}
+            WIFI_SECURITY (byte val) {this.val = val;}
             public byte getValue() {return this.val;}
         }
 
@@ -272,9 +275,9 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static class HWStatusEvent {
         public enum TYPE {
             BATTERY_LEVEL           ((byte)0x00),
-            RESERVED                ((byte)0x01),
+            RESERVED                ((byte)0x01);
             private final byte val;
-            HWStatusEvent (byte val) {this.val = val;}
+            TYPE (byte val) {this.val = val;}
             public byte getValue() {return this.val;}
         }
 
@@ -298,7 +301,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
             SET_NAME                ((byte)2);
 
             private final byte val;
-            CSBleNameRequest (byte val) {this.val = val;}
+            TYPE (byte val) {this.val = val;}
             public byte getValue() {return this.val;}
         }
     }
@@ -534,7 +537,6 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public boolean csOpen();
     public boolean csClose();
 
-    public boolean csSetGeneralRequest(BluetoothDevice device, boolean ReadOrWrite,   );
     public boolean csBleConnect(BluetoothDevice device);
     public boolean csBleDisconnect(BluetoothDevice device);
     public boolean csBleDisconnectForce(BluetoothDevice device);
@@ -565,8 +567,6 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public boolean csChangePassword(BluetoothDevice device, String password);
     public boolean csSetCameraModeLTEvent(BluetoothDevice device);
     public boolean csClrCameraModeLTEvent(BluetoothDevice device);
-    public boolean csSetCameraMode(BluetoothDevice device, CameraMode mode);
-    public boolean csGetCameraMode(BluetoothDevice device);
     public boolean csSetMetadataLTEvent(BluetoothDevice device);
     public boolean csClrMetadataLTEvent(BluetoothDevice device);
     //public boolean csSetCameraErrorLTEvent(BluetoothDevice device);
