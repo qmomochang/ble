@@ -10,31 +10,20 @@ import com.htc.blelib.internal.common.CommonBase;
 
 public interface ICsConnectivityServiceBase {
 
-    public static final int ERROR_SUCCESS = CommonBase.ERROR_SUCCESS;
-    public static final int ERROR_P2P_SSID = CommonBase.ERROR_P2P_SSID;
-    public static final int ERROR_P2P_GROUP = CommonBase.ERROR_P2P_GROUP;
-    public static final int ERROR_BOOT_UP_CS = CommonBase.ERROR_BOOT_UP_CS;
-    public static final int ERROR_P2P_GROUP_REMOVE = CommonBase.ERROR_P2P_GROUP_REMOVE;
-    public static final int ERROR_FAIL = CommonBase.ERROR_FAIL;
-    public static final int ERROR_GET_IP = CommonBase.ERROR_GET_IP;
-    public static final int ERROR_GATT_READ = CommonBase.ERROR_GATT_READ;
-    public static final int ERROR_GATT_WRITE = CommonBase.ERROR_GATT_WRITE;
-    public static final int ERROR_GATT_SET_NOTIFICATION = CommonBase.ERROR_GATT_SET_NOTIFICATION;
+    public static final int ERROR_SUCCESS                   = CommonBase.ERROR_SUCCESS;
+    public static final int ERROR_BOOT_UP_CS                = CommonBase.ERROR_BOOT_UP_CS;
+    public static final int ERROR_FAIL                      = CommonBase.ERROR_FAIL;
+    public static final int ERROR_GATT_READ                 = CommonBase.ERROR_GATT_READ;
+    public static final int ERROR_GATT_WRITE                = CommonBase.ERROR_GATT_WRITE;
+    public static final int ERROR_GATT_SET_NOTIFICATION     = CommonBase.ERROR_GATT_SET_NOTIFICATION;
     public static final int ERROR_GATT_RECEIVE_NOTIFICATION = CommonBase.ERROR_GATT_RECEIVE_NOTIFICATION;
-    public static final int ERROR_DHCP_FAILURE = CommonBase.ERROR_DHCP_FAILURE;
-    public static final int ERROR_CONN_FAILURE = CommonBase.ERROR_CONN_FAILURE;
-    public static final int ERROR_SOFTAP_NOT_FOUND = CommonBase.ERROR_SOFTAP_NOT_FOUND;
-
-
-
+    public static final int ERROR_CONN_FAILURE              = CommonBase.ERROR_CONN_FAILURE;
 
     public enum Result {
 
         RESULT_SUCCESS,
         RESULT_FAIL,
     }
-
-
 
     public enum LongTermEvent {
 
