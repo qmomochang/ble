@@ -36,8 +36,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Messenger;
+import android.util.Log;
+import android.os.Message;
 
 import java.util.ArrayList;
+
+import com.htc.blelib.interfaces.ICsConnectivityScanner;
+import com.htc.blelib.interfaces.ICsConnectivityDevice.CsVersion;
+import com.htc.blelib.interfaces.ICsConnectivityScanner.ScanResult;
+import com.htc.blelib.v1.interfaces.ICsConnectivityService;
 
 import com.htc.blelib.CsConnectivityScanner;
 
@@ -52,6 +59,7 @@ public class DeviceScanActivity extends ListActivity {
     private Messenger mMessenger;
     CsConnectivityScanner scanner;
 
+    private static String TAG = "[CS] DeviceScanActivity";
     private static final int REQUEST_ENABLE_BT = 1;
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
@@ -60,7 +68,29 @@ public class DeviceScanActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setTitle(R.string.title_devices);
-        mHandler = new Handler();
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch(msg.what){
+                    case ICsConnectivityService.CB_BLE_SCAN_RESULT:
+                        Log.v(TAG,"[CS] handleMessage ICsConnectivityService.CB_BLE_SCAN_RESULT");
+                        Bundle b = msg.getData();
+                        ScanResult r = (ScanResult)b.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                        CsVersion csv = (CsVersion)b.getSerializable(ICsConnectivityScanner.PARAM_BLUETOOTH_DEVICE_VERSION);
+                        BluetoothDevice device = b.getParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE);
+                        if (device != null ) {
+                            Log.v(TAG,"[CS] ScanResult = "+r+", CsVersion = "+csv+", device = "+device.getName());
+
+                            if("HT543YV00003".equals(device.getName())) {
+                            mLeDeviceListAdapter.addDevice(device);
+                            mLeDeviceListAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        break;
+                }
+                super.handleMessage(msg);
+            }
+        };
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -87,9 +117,7 @@ public class DeviceScanActivity extends ListActivity {
         if (scanner == null) {
             scanner = new CsConnectivityScanner(this,mMessenger);
             scanner.csOpen();
-            scanner.csScan(5000);
         }
-
     }
 
     @Override
@@ -169,15 +197,20 @@ public class DeviceScanActivity extends ListActivity {
 //            intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, "D4:0B:1A:0E:14:11");
 //
 //        } else{
+        Bundle outData = new Bundle();
+        outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+
+            intent.putExtras(outData);
             intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
             intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-//        }
-        b1411switch = !b1411switch;
 
-        if (mScanning) {
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            mScanning = false;
-        }
+//        }
+//        b1411switch = !b1411switch;
+//
+//        if (mScanning) {
+//            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//            mScanning = false;
+//        }
         startActivity(intent);
     }
 
@@ -194,10 +227,12 @@ public class DeviceScanActivity extends ListActivity {
             }, SCAN_PERIOD);
 
             mScanning = true;
-            mBluetoothAdapter.startLeScan(mLeScanCallback);
+            scanner.csScan(5000);
+            //mBluetoothAdapter.startLeScan(mLeScanCallback);
         } else {
             mScanning = false;
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            scanner.csStopScan();
+            //mBluetoothAdapter.stopLeScan(mLeScanCallback);
         }
         invalidateOptionsMenu();
     }

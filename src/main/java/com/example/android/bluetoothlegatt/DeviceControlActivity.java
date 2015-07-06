@@ -19,6 +19,8 @@ package com.example.android.bluetoothlegatt;
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -39,6 +41,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+
+import com.htc.blelib.v1.internal.component.le.CsBleTransceiver;
+import com.htc.blelib.v1.interfaces.ICsConnectivityService;
 
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
@@ -63,6 +69,8 @@ public class DeviceControlActivity extends Activity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
 
+    CsBleTransceiver m_CsBleTransceiver;
+    BluetoothDevice m_device;
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
 
@@ -164,6 +172,8 @@ public class DeviceControlActivity extends Activity {
         //mDeviceAddress = "D4:0B:1A:0E:14:11";
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
+        Bundle b = intent.getExtras();
+        m_device = b.getParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE);
         // Sets up UI references.
         ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
@@ -173,8 +183,20 @@ public class DeviceControlActivity extends Activity {
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        //Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        //bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        final BluetoothManager bluetoothManager =
+                        (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+
+        if (m_CsBleTransceiver == null) {
+            try {
+                m_CsBleTransceiver = new CsBleTransceiver(this,bluetoothManager);
+            } catch (Exception e) {
+                Log.v(TAG,"error when newing CsBleTransceiver");
+            }
+            m_CsBleTransceiver.connect(m_device,true);
+        }
     }
 
     @Override
