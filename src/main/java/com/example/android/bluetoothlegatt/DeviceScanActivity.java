@@ -79,7 +79,7 @@ public class DeviceScanActivity extends ListActivity {
                         CsVersion csv = (CsVersion)b.getSerializable(ICsConnectivityScanner.PARAM_BLUETOOTH_DEVICE_VERSION);
                         BluetoothDevice device = b.getParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE);
                         if (device != null ) {
-                            Log.v(TAG,"[CS] ScanResult = "+r+", CsVersion = "+csv+", device = "+device.getName());
+                            Log.v(TAG,"[CS] ScanResult = "+r+", CsVersion = "+csv+", device = "+device.getName()+", hit = "+"HT543YV00003".equals(device.getName()));
 
                             if("HT543YV00003".equals(device.getName())) {
                             mLeDeviceListAdapter.addDevice(device);
@@ -87,6 +87,14 @@ public class DeviceScanActivity extends ListActivity {
                             }
                         }
                         break;
+
+                    case ICsConnectivityService.CB_BLE_CONNECT_RESULT:
+                        Bundle b2 = msg.getData();
+                        int result = (int) b2.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                        Log.v(TAG,"[CS] handleMessage ICsConnectivityService.CB_BLE_CONNECT_RESULT: result = "+ result);
+                        break;
+
+                    default:break;
                 }
                 super.handleMessage(msg);
             }

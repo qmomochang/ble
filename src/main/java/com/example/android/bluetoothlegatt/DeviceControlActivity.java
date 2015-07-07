@@ -29,6 +29,10 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Handler;
+import android.os.Messenger;
+import android.os.Message;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,8 +47,13 @@ import java.util.HashMap;
 import java.util.List;
 
 
-import com.htc.blelib.v1.internal.component.le.CsBleTransceiver;
+import com.htc.blelib.interfaces.ICsConnectivityScanner;
+import com.htc.blelib.interfaces.ICsConnectivityDevice.CsVersion;
+import com.htc.blelib.interfaces.ICsConnectivityServiceBase;
+
+import com.htc.blelib.v1.CsConnectivityService;
 import com.htc.blelib.v1.interfaces.ICsConnectivityService;
+
 
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
@@ -62,6 +71,10 @@ public class DeviceControlActivity extends Activity {
     private TextView mDataField;
     private String mDeviceName;
     private String mDeviceAddress;
+
+    private Messenger mMessenger;
+    private Handler mHandler;
+
     private ExpandableListView mGattServicesList;
     private BluetoothLeService mBluetoothLeService;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
@@ -69,7 +82,7 @@ public class DeviceControlActivity extends Activity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
 
-    CsBleTransceiver m_CsBleTransceiver;
+    CsConnectivityService m_CsConnectivityService;
     BluetoothDevice m_device;
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
@@ -189,13 +202,48 @@ public class DeviceControlActivity extends Activity {
         final BluetoothManager bluetoothManager =
                         (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
-        if (m_CsBleTransceiver == null) {
-            try {
-                m_CsBleTransceiver = new CsBleTransceiver(this,bluetoothManager);
-            } catch (Exception e) {
-                Log.v(TAG,"error when newing CsBleTransceiver");
-            }
-            m_CsBleTransceiver.connect(m_device,true);
+        mHandler = new Handler() {
+            @Override
+                public void handleMessage(Message msg) {
+                    Bundle b;
+                    ICsConnectivityServiceBase.Result result;
+                    String str;
+                    switch(msg.what){
+
+                        case ICsConnectivityService.CB_BLE_CONNECT_RESULT:
+                            b = msg.getData();
+                            result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                            Log.v(TAG,"[CS] handleMessage ICsConnectivityService.CB_BLE_CONNECT_RESULT: result = "+ result);
+                            break;
+
+                        case ICsConnectivityService.CB_SET_NAME_RESULT:
+                            b = msg.getData();
+                            result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                            str = b.getString(ICsConnectivityService.PARAM_CS_NAME);
+
+                            Log.v(TAG,"[CS] handleMessage CB_SET_NAME_RESULT r = "+result+", name = "+str);
+                            break;
+
+                        case ICsConnectivityService.CB_GET_NAME_RESULT:
+                            b = msg.getData();
+                            result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                            str = b.getString(ICsConnectivityService.PARAM_CS_NAME);
+
+                            Log.v(TAG,"[CS] handleMessage CB_GET_NAME_RESULT r = "+result+", name = "+str);
+                            break;
+
+                        default:break;
+                    }
+                    super.handleMessage(msg);
+                }
+        };
+
+        mMessenger = new Messenger(mHandler);
+
+        if (m_CsConnectivityService == null) {
+            m_CsConnectivityService = new CsConnectivityService(this,mMessenger);
+            m_CsConnectivityService.csBleConnect(m_device);
+            m_CsConnectivityService.csSetName(m_device,"HT543YV11113");
         }
     }
 
@@ -218,7 +266,7 @@ public class DeviceControlActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
+        //unbindService(mServiceConnection);
         mBluetoothLeService = null;
     }
 
@@ -240,15 +288,17 @@ public class DeviceControlActivity extends Activity {
         switch(item.getItemId()) {
             case R.id.menu_connect:
 
-                boolean connect = mBluetoothLeService.connect(mDeviceAddress);
-                Log.v("MC","BDA is "+mDeviceAddress.toString()+", suc = "+connect);
+                //boolean connect = mBluetoothLeService.connect(mDeviceAddress);
+                m_CsConnectivityService.csSetName(m_device,"HT543YV11113");
+                Log.v("CS","m_CsConnectivityService.csSetName");
+                //Log.v("MC","BDA is "+mDeviceAddress.toString()+", suc = "+connect);
                 return true;
             case R.id.menu_disconnect:
-                mBluetoothLeService.disconnect();
-                Log.v("MC","R.id.menu_disconnect:");
+                //mBluetoothLeService.disconnect();
+                Log.v("CS","R.id.menu_disconnect:");
                 return true;
             case android.R.id.home:
-                Log.v("MC","onBackPressed");
+                Log.v("CS","onBackPressed");
                 onBackPressed();
 
                 return true;
