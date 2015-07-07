@@ -281,7 +281,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
             public byte getValue() {return this.val;}
         }
 
-        public enum BATTERY_LEVEL {
+        public enum MCUBatteryLevel {
             MCU_BATTERY_INSUFFICIENT      ((byte)1), //0%
             MCU_BATTERY_NEAR_INSUFFICIENT ((byte)2), // <= 5%
             MCU_BATTERY_LOW               ((byte)3), //25%~6%
@@ -290,7 +290,18 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
             MCU_BATTERY_FULL              ((byte)6); //100%~76%
 
             private final byte val;
-            BATTERY_LEVEL (byte val) {this.val = val;}
+            MCUBatteryLevel (byte val) {this.val = val;}
+
+            public static MCUBatteryLevel findLevel(int level) {
+                for (MCUBatteryLevel mcuBatteryLevel : MCUBatteryLevel.values()) {
+                    if (mcuBatteryLevel.getValue() == level) {
+                        return mcuBatteryLevel;
+                    }
+                }
+                //Should not be here
+                return null;
+            }
+
             public byte getValue() {return this.val;}
         }
     }
@@ -541,74 +552,74 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public boolean csBleDisconnect(BluetoothDevice device);
     public boolean csBleDisconnectForce(BluetoothDevice device);
 
-    public boolean csSetWifiAcc(BluetoothDevice device,String account);
-    public boolean csSetWifiPw(BluetoothDevice device,String password);
-
-    public boolean csSetPowerOnOff(BluetoothDevice device, Module module, SwitchOnOff onoff);
-    public boolean csGetPowerOnOff(BluetoothDevice device, Module module);
-    public boolean csTriggerFWUpdate(BluetoothDevice device, boolean update_rtos, boolean update_modem, boolean update_mcu, String firmwareVersion);
-    public boolean csSetHwStatusLTEvent(BluetoothDevice device);
-    public boolean csClrHwStatusLTEvent(BluetoothDevice device);
-    public boolean csGetHwStatus(BluetoothDevice device);
-    //public boolean csGetSimHwStatus(BluetoothDevice device);
-    //public boolean csSetFlightMode(BluetoothDevice device);
-    //public boolean csSetAutoSleepTimerOffset(BluetoothDevice device, int offset_sec);
-    public boolean csSetOperationLTEvent(BluetoothDevice device);
-    public boolean csClrOperationLTEvent(BluetoothDevice device);
-    public boolean csSetOperation(BluetoothDevice device, Operation operation);
-    public boolean csSetDateTime(BluetoothDevice device, Calendar calendar);
+//    public boolean csSetWifiAcc(BluetoothDevice device,String account);
+//    public boolean csSetWifiPw(BluetoothDevice device,String password);
+//
+//    public boolean csSetPowerOnOff(BluetoothDevice device, Module module, SwitchOnOff onoff);
+//    public boolean csGetPowerOnOff(BluetoothDevice device, Module module);
+//    public boolean csTriggerFWUpdate(BluetoothDevice device, boolean update_rtos, boolean update_modem, boolean update_mcu, String firmwareVersion);
+//    public boolean csSetHwStatusLTEvent(BluetoothDevice device);
+//    public boolean csClrHwStatusLTEvent(BluetoothDevice device);
+//    public boolean csGetHwStatus(BluetoothDevice device);
+//    //public boolean csGetSimHwStatus(BluetoothDevice device);
+//    //public boolean csSetFlightMode(BluetoothDevice device);
+//    //public boolean csSetAutoSleepTimerOffset(BluetoothDevice device, int offset_sec);
+//    public boolean csSetOperationLTEvent(BluetoothDevice device);
+//    public boolean csClrOperationLTEvent(BluetoothDevice device);
+//    public boolean csSetOperation(BluetoothDevice device, Operation operation);
+//    public boolean csSetDateTime(BluetoothDevice device, Calendar calendar);
     public boolean csSetName(BluetoothDevice device, String name);
     public boolean csGetName(BluetoothDevice device);
-    //public boolean csSetGpsInfoLTEvent(BluetoothDevice device);
-    //public boolean csClrGpsInfoLTEvent(BluetoothDevice device);
-    //public boolean csSetGpsInfo(BluetoothDevice device, Calendar calendar, double longitude, double latitude, double altitude);
-    public boolean csGetBleFWVersion(BluetoothDevice device);
-    public boolean csVerifyPassword(BluetoothDevice device, String password);
-    public boolean csChangePassword(BluetoothDevice device, String password);
-    public boolean csSetCameraModeLTEvent(BluetoothDevice device);
-    public boolean csClrCameraModeLTEvent(BluetoothDevice device);
-    public boolean csSetMetadataLTEvent(BluetoothDevice device);
-    public boolean csClrMetadataLTEvent(BluetoothDevice device);
-    //public boolean csSetCameraErrorLTEvent(BluetoothDevice device);
-    //public boolean csClrCameraErrorLTEvent(BluetoothDevice device);
-    //public boolean csSoftAPConnect(BluetoothDevice device, String passwd);
-    //public boolean csSetAutoBackupLTEvent(BluetoothDevice device);
-    //public boolean csClrAutoBackupLTEvent(BluetoothDevice device);
-    //public boolean csSetAutoBackupAP(BluetoothDevice device, String ssid, String passwd, byte security);
-    //public boolean csClrAutoBackupAP(BluetoothDevice device, byte security, String ssid);
-    public boolean csSetLTNotify(BluetoothDevice device);
-    public boolean csClrLTNotify(BluetoothDevice device);
-    //public boolean csSetAutoBackupToken(BluetoothDevice device, BackupProviderIdIndex pidx, BackupTokenType type, String token);
-    //public boolean csSetAutoBackupAPScan(BluetoothDevice device, int startORstop , int option);
-    //public boolean csSetAutoBackupProxy(BluetoothDevice device, int port, byte security, String ssid, String proxy);
-    //public boolean csGetAutoBackupProxy(BluetoothDevice device, byte security, String ssid);
-    public boolean csGetAllFwVersion(BluetoothDevice device);
-    //public boolean csGetAutoBackupStatus(BluetoothDevice device);
-    //public boolean csGetAutoBackupIsAvailable(BluetoothDevice device);
-    //public boolean csSetAutoBackupAccount(BluetoothDevice device, String name);
-    //public boolean csGetAutoBackupAccount(BluetoothDevice device);
-    //public boolean csSetAutoBackupPreference(BluetoothDevice device, boolean enableBackup, boolean deleteAfterBackup, boolean backupWithoutAC);
-    //public boolean csGetAutoBackupPreference(BluetoothDevice device);
-    //public boolean csSetBroadcastSetting(BluetoothDevice device, BroadcastSetting setting);
-    //public boolean csGetBroadcastSetting(BluetoothDevice device);
-    //public boolean csSetBroadcastPlatform(BluetoothDevice device, BroadcastPlatform platform, BroadcastTokenType tokenType, String token);
-    //public boolean csSetBroadcastInvitationList(BluetoothDevice device, List<String> invitationList);
-    //public boolean csSetBroadcastPrivacy(BluetoothDevice device, BroadcastPrivacy privacy);
-    //public boolean csGetBroadcastStatus(BluetoothDevice device);
-    //public boolean csGetBroadcastInvitationList(BluetoothDevice device);
-    //public boolean csGetBroadcastPrivacy(BluetoothDevice device);
-    //public boolean csGetBroadcastPlatform(BluetoothDevice device);
-    //public boolean csGetBroadcastVideoUrl(BluetoothDevice device);
-    //public boolean csGetBroadcastErrorList(BluetoothDevice device);
-    //public boolean csSetBroadcastUserName(BluetoothDevice device, String userName);
-    //public boolean csSetBroadcastSMSContent(BluetoothDevice device, String smsContent);
-    //public boolean csGetBroadcastUserName(BluetoothDevice device);
-    //public boolean csGetBroadcastSMSContent(BluetoothDevice device);
-    public boolean csSetGeneralPurposeCommandLTNotify(BluetoothDevice device);
-    public boolean csClrGeneralPurposeCommandLTNotify(BluetoothDevice device);
-    public boolean csGetLTECampingStatus(BluetoothDevice device);
-    public boolean csSetLTECampingStatusLTEvent(BluetoothDevice device);
-    public boolean csClrLTECampingStatusLTEvent(BluetoothDevice device);
-    public boolean csGetModemStatus(BluetoothDevice device);
-    //public boolean csUnlockSimPin(BluetoothDevice device, String pinCode);
+//    //public boolean csSetGpsInfoLTEvent(BluetoothDevice device);
+//    //public boolean csClrGpsInfoLTEvent(BluetoothDevice device);
+//    //public boolean csSetGpsInfo(BluetoothDevice device, Calendar calendar, double longitude, double latitude, double altitude);
+//    public boolean csGetBleFWVersion(BluetoothDevice device);
+//    public boolean csVerifyPassword(BluetoothDevice device, String password);
+//    public boolean csChangePassword(BluetoothDevice device, String password);
+//    public boolean csSetCameraModeLTEvent(BluetoothDevice device);
+//    public boolean csClrCameraModeLTEvent(BluetoothDevice device);
+//    public boolean csSetMetadataLTEvent(BluetoothDevice device);
+//    public boolean csClrMetadataLTEvent(BluetoothDevice device);
+//    //public boolean csSetCameraErrorLTEvent(BluetoothDevice device);
+//    //public boolean csClrCameraErrorLTEvent(BluetoothDevice device);
+//    //public boolean csSoftAPConnect(BluetoothDevice device, String passwd);
+//    //public boolean csSetAutoBackupLTEvent(BluetoothDevice device);
+//    //public boolean csClrAutoBackupLTEvent(BluetoothDevice device);
+//    //public boolean csSetAutoBackupAP(BluetoothDevice device, String ssid, String passwd, byte security);
+//    //public boolean csClrAutoBackupAP(BluetoothDevice device, byte security, String ssid);
+//    public boolean csSetLTNotify(BluetoothDevice device);
+//    public boolean csClrLTNotify(BluetoothDevice device);
+//    //public boolean csSetAutoBackupToken(BluetoothDevice device, BackupProviderIdIndex pidx, BackupTokenType type, String token);
+//    //public boolean csSetAutoBackupAPScan(BluetoothDevice device, int startORstop , int option);
+//    //public boolean csSetAutoBackupProxy(BluetoothDevice device, int port, byte security, String ssid, String proxy);
+//    //public boolean csGetAutoBackupProxy(BluetoothDevice device, byte security, String ssid);
+//    public boolean csGetAllFwVersion(BluetoothDevice device);
+//    //public boolean csGetAutoBackupStatus(BluetoothDevice device);
+//    //public boolean csGetAutoBackupIsAvailable(BluetoothDevice device);
+//    //public boolean csSetAutoBackupAccount(BluetoothDevice device, String name);
+//    //public boolean csGetAutoBackupAccount(BluetoothDevice device);
+//    //public boolean csSetAutoBackupPreference(BluetoothDevice device, boolean enableBackup, boolean deleteAfterBackup, boolean backupWithoutAC);
+//    //public boolean csGetAutoBackupPreference(BluetoothDevice device);
+//    //public boolean csSetBroadcastSetting(BluetoothDevice device, BroadcastSetting setting);
+//    //public boolean csGetBroadcastSetting(BluetoothDevice device);
+//    //public boolean csSetBroadcastPlatform(BluetoothDevice device, BroadcastPlatform platform, BroadcastTokenType tokenType, String token);
+//    //public boolean csSetBroadcastInvitationList(BluetoothDevice device, List<String> invitationList);
+//    //public boolean csSetBroadcastPrivacy(BluetoothDevice device, BroadcastPrivacy privacy);
+//    //public boolean csGetBroadcastStatus(BluetoothDevice device);
+//    //public boolean csGetBroadcastInvitationList(BluetoothDevice device);
+//    //public boolean csGetBroadcastPrivacy(BluetoothDevice device);
+//    //public boolean csGetBroadcastPlatform(BluetoothDevice device);
+//    //public boolean csGetBroadcastVideoUrl(BluetoothDevice device);
+//    //public boolean csGetBroadcastErrorList(BluetoothDevice device);
+//    //public boolean csSetBroadcastUserName(BluetoothDevice device, String userName);
+//    //public boolean csSetBroadcastSMSContent(BluetoothDevice device, String smsContent);
+//    //public boolean csGetBroadcastUserName(BluetoothDevice device);
+//    //public boolean csGetBroadcastSMSContent(BluetoothDevice device);
+//    public boolean csSetGeneralPurposeCommandLTNotify(BluetoothDevice device);
+//    public boolean csClrGeneralPurposeCommandLTNotify(BluetoothDevice device);
+//    public boolean csGetLTECampingStatus(BluetoothDevice device);
+//    public boolean csSetLTECampingStatusLTEvent(BluetoothDevice device);
+//    public boolean csClrLTECampingStatusLTEvent(BluetoothDevice device);
+//    public boolean csGetModemStatus(BluetoothDevice device);
+//    //public boolean csUnlockSimPin(BluetoothDevice device, String pinCode);
 }

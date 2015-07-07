@@ -166,29 +166,36 @@ public class CsBleGattAttributeUtil {
 
         return ret;
     }
-
-    public static boolean isBootUpRTOSReady(BluetoothGattCharacteristic characteristic) {
+    //verfied
+    public static boolean isBootUpReady(BluetoothGattCharacteristic characteristic) {
         boolean ret = false;
         byte[] value = characteristic.getValue();
 
         if (value[0] == CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT.getID())
         {
-            //value[1] == 1: RTOS, value[2] == 1: turn on
-            if( (value[1] == 0x00) && (value[2] == 0x01))
+            // 0x00: Standby (Only BLE)
+            // 0x01: Sync (BLE, WiFi)
+            // 0x02: Normal (Could be measured)
+            // 0x03: Firmware updating
+            // 0x04: Factory reseting (WiFi & BLE disconnect??)
+            // 0x05: BLE Disconnection (Due to low battery)
+            // 0xFF: unknown
+            if( value[1] == 0x02 )
             {
                 ret = true;
             }
+            Log.v(TAG,"isBootUpReady data = " + String.format("0x%20x",value[1]));
         }
         return ret;
     }
-
+    //verified
     public static boolean isFirmwareUpdating(BluetoothGattCharacteristic characteristic) {
           boolean ret = false;
           byte[] value = characteristic.getValue();
            if (value[0] == CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT.getID())
            {
-              //value[1] == 1: RTOS, value[2] == 1: Firmware updating
-               if( (value[1] == 0x00) && (value[2] == 0x02))
+              //value[1] == 0x03: Firmware updating
+               if( (value[1] == 0x03))
                {
                   ret = true;
               }

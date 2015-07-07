@@ -83,6 +83,7 @@ public class CsBleWriteCallable implements Callable<BluetoothGattCharacteristic>
 		mBluetoothDevice = device;
 		mCommandID = commandID;
 		mWriteData = writeData;
+        Log.v(TAG,"[CS] CsBleWriteCallable mCommandID = "+mCommandID+", mWriteData = "+String.format("0x%20x",writeData[0])+","+String.format("0x%20x",writeData[1]));
 	}
 
 

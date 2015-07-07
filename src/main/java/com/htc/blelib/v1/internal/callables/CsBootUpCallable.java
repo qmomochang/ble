@@ -104,8 +104,8 @@ public class CsBootUpCallable implements Callable<Integer> {
 
 		futureA = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT, 30000));
 
-		byte[] bootCsArray = new byte[2];
-	    bootCsArray[0] = (byte) 0x01;
+		byte[] bootCsArray = new byte[1];
+	    bootCsArray[0] = (byte) 0x00;
 		futureC = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.POWER_ON_REQUEST, bootCsArray));
 		if (futureC.get() == null) {
 
