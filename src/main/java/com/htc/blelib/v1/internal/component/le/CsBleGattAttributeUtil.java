@@ -513,4 +513,26 @@ public class CsBleGattAttributeUtil {
         return ret[0];
     }
 
+    public static byte [] getWifiConfigEvent(BluetoothGattCharacteristic characteristic) {
+
+        Log.d(TAG, "[CS] getWifiConfigEvent uuid = " + characteristic.getUuid());
+
+        byte [] ret = characteristic.getValue();
+        Log.d(TAG, "[CS] getWifiConfigEvent ret = " + ret );
+
+        return ret;
+
+    }
+
+    public static byte [] getWifiScanResultEvent(BluetoothGattCharacteristic characteristic) {
+
+        Log.d(TAG, "[CS] getWifiScanResultEvent uuid = " + characteristic.getUuid());
+
+        byte [] ret = characteristic.getValue();
+        Log.d(TAG, "[CS] getWifiScanResultEvent ret = " + ret );
+
+        return ret;
+
+    }
+
 }

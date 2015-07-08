@@ -385,6 +385,10 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final int CB_BLE_CONNECT_RESULT                            = 8100;
     public static final int CB_BLE_DISCONNECT_RESULT                        = 8101;
     public static final int CB_BLE_DISCONNECT_FORCE_RESULT                    = 8102;
+    public static final int CB_WIFI_CONFIG_RESULT                            = 8200;
+    public static final int CB_WIFI_SET_SSID                            = 8201;
+    public static final int CB_WIFI_SCAN_RESULT                            = 8202;
+    public static final int CB_ERASE_WIFI_AP_CONFIG_RESULT                            = 8203;
 //    public static final int CB_WIFI_CONNECT_RESULT                            = 8200;
 //    public static final int CB_WIFI_DISCONNECT_RESULT                        = 8201;
     public static final int CB_SET_POWER_ONOFF_RESULT                        = 8300;
@@ -563,6 +567,8 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final String PARAM_GENERAL_PURPOSE_LANGUAGE               = "general_purpose_language";
     public static final String PARAM_GENERAL_PURPOSE_SOUND                  = "general_purpose_sound";
     public static final String PARAM_GENERAL_PURPOSE_BEI                    = "general_purpose_bei";
+
+    public static final String PARAM_CS_WIFI_SCAN_RESULT                    = "wifi_scan_result";
 
 
     /// Interfaces
