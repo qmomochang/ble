@@ -34,7 +34,7 @@ import com.htc.blelib.v1.internal.tasks.CsBleConnectTask;
 //import com.htc.blelib.v1.internal.tasks.CsGetCameraModeTask;
 //import com.htc.blelib.v1.internal.tasks.CsGetModemStatusTask;
 //import com.htc.blelib.v1.internal.tasks.CsGpsInfoTask;
-//import com.htc.blelib.v1.internal.tasks.CsHwStatusTask;
+import com.htc.blelib.v1.internal.tasks.CsHwStatusTask;
 //import com.htc.blelib.v1.internal.tasks.CsLTECampingStatusTask;
 //import com.htc.blelib.v1.internal.tasks.CsLongTermNotifyTask;
 //import com.htc.blelib.v1.internal.tasks.CsMetadataTask;
@@ -377,29 +377,29 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //
 //
 //
-//    @Override
-//    public boolean csGetHwStatus(BluetoothDevice device) {
-//
-//        Log.d(TAG, "[CS] csGetHwStatus++");
-//
-//        boolean ret = false;
-//
-//        try {
-//
-//            CsConnectivityTask task = new CsHwStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsHwStatusTask.ACTION_GET_HW_STATUS);
-//            addTask(task);
-//
-//            ret = true;
-//
-//        } catch (Exception e) {
-//
-//            Log.d(TAG, "[CS] csGetHwStatus exception: " + e);
-//        }
-//
-//        Log.d(TAG, "[CS] csGetHwStatus--");
-//
-//        return ret;
-//    }
+    @Override
+    public boolean csGetHwStatus(BluetoothDevice device) {
+
+        Log.d(TAG, "[CS] csGetHwStatus++");
+
+        boolean ret = false;
+
+        try {
+
+            CsConnectivityTask task = new CsHwStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsHwStatusTask.ACTION_GET_HW_STATUS);
+            addTask(task);
+
+            ret = true;
+
+        } catch (Exception e) {
+
+            Log.d(TAG, "[CS] csGetHwStatus exception: " + e);
+        }
+
+        Log.d(TAG, "[CS] csGetHwStatus--");
+
+        return ret;
+    }
 //
 //
 //
@@ -415,8 +415,8 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsHwStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsHwStatusTask.ACTION_SET_HW_STATUS_LTEVENT);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.HWSTATUS_EVENT);//CsBleGattAttributes.CS_HW_STATUS);
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.POWER_ON_STATUS_EVENT);//CsBleGattAttributes.CS_BOOT_UP_READY);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.HWSTATUS_EVENT);//CsBleGattAttributes.CS_HW_STATUS);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT);//CsBleGattAttributes.CS_BOOT_UP_READY);
 //
 //            ret = true;
 //
@@ -444,8 +444,8 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsHwStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsHwStatusTask.ACTION_CLR_HW_STATUS_LTEVENT);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.HWSTATUS_EVENT);//CsBleGattAttributes.CS_HW_STATUS);
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.POWER_ON_STATUS_EVENT);//CsBleGattAttributes.CS_BOOT_UP_READY);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.HWSTATUS_EVENT);//CsBleGattAttributes.CS_HW_STATUS);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT);//CsBleGattAttributes.CS_BOOT_UP_READY);
 //
 //            ret = true;
 //
@@ -498,7 +498,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsOperationTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsOperationTask.ACTION_SET_OPERATION_LTEVENT, Operation.OPERATION_NONE);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.OPERATION_STATUS_EVENT);//CsBleGattAttributes.CS_CAMERA_STATUS);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.OPERATION_STATUS_EVENT);//CsBleGattAttributes.CS_CAMERA_STATUS);
 //
 //            ret = true;
 //
@@ -526,7 +526,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsOperationTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsOperationTask.ACTION_CLR_OPERATION_LTEVENT, Operation.OPERATION_NONE);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.OPERATION_STATUS_EVENT);//CsBleGattAttributes.CS_CAMERA_STATUS);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.OPERATION_STATUS_EVENT);//CsBleGattAttributes.CS_CAMERA_STATUS);
 //
 //            ret = true;
 //
@@ -658,7 +658,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsGpsInfoTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsGpsInfoTask.ACTION_SET_GPS_INFO_LTEVENT, null, 0, 0, 0);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.REQUEST_GSP_DATE_EVENT);//CsBleGattAttributes.CS_REQUEST_GPS_DATA);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.REQUEST_GSP_DATE_EVENT);//CsBleGattAttributes.CS_REQUEST_GPS_DATA);
 //
 //            ret = true;
 //
@@ -686,7 +686,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsGpsInfoTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsGpsInfoTask.ACTION_CLR_GPS_INFO_LTEVENT, null, 0, 0, 0);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.REQUEST_GSP_DATE_EVENT);//CsBleGattAttributes.CS_REQUEST_GPS_DATA);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.REQUEST_GSP_DATE_EVENT);//CsBleGattAttributes.CS_REQUEST_GPS_DATA);
 //
 //            ret = true;
 //
@@ -817,7 +817,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsCameraModeNotifyTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsCameraModeNotifyTask.ACTION_SET_LTEVENT);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.GET_CAMERA_MODE_REQUEST_EVENT);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.GET_CAMERA_MODE_REQUEST_EVENT);
 //
 //            ret = true;
 //
@@ -844,7 +844,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsCameraModeNotifyTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsCameraModeNotifyTask.ACTION_CLR_LTEVENT);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.GET_CAMERA_MODE_REQUEST_EVENT);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.GET_CAMERA_MODE_REQUEST_EVENT);
 //
 //            ret = true;
 //
@@ -922,7 +922,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsMetadataTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsMetadataTask.ACTION_SET_METADATA_LTEVENT);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.GET_METADATA_EVENT);//CsBleGattAttributes.CS_METADATA);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.GET_METADATA_EVENT);//CsBleGattAttributes.CS_METADATA);
 //
 //            ret = true;
 //
@@ -950,7 +950,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsMetadataTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsMetadataTask.ACTION_CLR_METADATA_LTEVENT);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.GET_METADATA_EVENT);//CsBleGattAttributes.CS_METADATA);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.GET_METADATA_EVENT);//CsBleGattAttributes.CS_METADATA);
 //
 //            ret = true;
 //
@@ -978,7 +978,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsCameraErrorTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsCameraErrorTask.ACTION_SET_CAMERA_ERROR_LTEVENT);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.CAMERA_ERROR_EVENT);//CsBleGattAttributes.CS_CAMERA_ERROR);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.CAMERA_ERROR_EVENT);//CsBleGattAttributes.CS_CAMERA_ERROR);
 //
 //            ret = true;
 //
@@ -1006,7 +1006,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsCameraErrorTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsCameraErrorTask.ACTION_CLR_CAMERA_ERROR_LTEVENT);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.CAMERA_ERROR_EVENT);//CsBleGattAttributes.CS_CAMERA_ERROR);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.CAMERA_ERROR_EVENT);//CsBleGattAttributes.CS_CAMERA_ERROR);
 //
 //            ret = true;
 //
@@ -1060,7 +1060,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsAutoBackupTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsAutoBackupTask.ACTION_SET_AUTO_BACKUP_LTEVENT, -1);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.WIFI_SCAN_RESULT_EVENT);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.WIFI_SCAN_RESULT_EVENT);
 //
 //            ret = true;
 //
@@ -1088,7 +1088,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsAutoBackupTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsAutoBackupTask.ACTION_CLR_AUTO_BACKUP_LTEVENT, -1);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.WIFI_SCAN_RESULT_EVENT);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.WIFI_SCAN_RESULT_EVENT);
 //
 //            ret = true;
 //
@@ -1789,7 +1789,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsGeneralPurposeCommandNotifyTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsGeneralPurposeCommandNotifyTask.ACTION_SET_LTEVENT);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.GENERAL_PURPOSE_NOTIFY_EVENT);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.GENERAL_PURPOSE_NOTIFY_EVENT);
 //
 //            ret = true;
 //        } catch (Exception e) {
@@ -1809,7 +1809,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsGeneralPurposeCommandNotifyTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsGeneralPurposeCommandNotifyTask.ACTION_CLR_LTEVENT);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.GENERAL_PURPOSE_NOTIFY_EVENT);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.GENERAL_PURPOSE_NOTIFY_EVENT);
 //
 //            ret = true;
 //        } catch (Exception e) {
@@ -1846,7 +1846,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsLTECampingStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsLTECampingStatusTask.ACTION_SET_LTEVENT);
 //            addTask(task);
 //
-//            registerLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.LTE_CAMPING_STATUS_REQUEST_EVENT);
+//            registerLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.LTE_CAMPING_STATUS_REQUEST_EVENT);
 //
 //            ret = true;
 //        } catch (Exception e) {
@@ -1866,7 +1866,7 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //            CsConnectivityTask task = new CsLTECampingStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsLTECampingStatusTask.ACTION_CLR_LTEVENT);
 //            addTask(task);
 //
-//            unregisterLTEvent(device, CsBleGattAttributes.CsV2CommandEnum.LTE_CAMPING_STATUS_REQUEST_EVENT);
+//            unregisterLTEvent(device, CsBleGattAttributes.CsV1CommandEnum.LTE_CAMPING_STATUS_REQUEST_EVENT);
 //
 //            ret = true;
 //        } catch (Exception e) {

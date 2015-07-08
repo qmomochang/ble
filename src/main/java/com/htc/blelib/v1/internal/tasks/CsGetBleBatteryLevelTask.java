@@ -10,7 +10,6 @@ import com.htc.blelib.v1.internal.common.CsConnectivityTask;
 import com.htc.blelib.v1.internal.component.le.CsBleGattAttributeUtil;
 import com.htc.blelib.v1.internal.component.le.CsBleGattAttributes;
 import com.htc.blelib.v1.internal.component.le.CsBleTransceiver;
-import com.htc.blelib.v1.internal.component.wifi.CsWifiTransceiver;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -22,14 +21,14 @@ import android.util.Log;
 
 
 
-public class CsGetBleFWVersionTask extends CsConnectivityTask {
+public class CsGetBleBatteryLevelTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsGetBleFWVersionTask";
+	private final static String TAG = "CsGetBleBatteryLevelTask";
 	private BluetoothDevice mBluetoothDevice;
 
 
 
-	public CsGetBleFWVersionTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
+	public CsGetBleBatteryLevelTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
 
 		super(csBleTransceiver, messenger, executor);
 
@@ -58,7 +57,7 @@ public class CsGetBleFWVersionTask extends CsConnectivityTask {
 			Log.d(TAG, "[CS] csDevice = " + csDevice);
 			if (csDevice != null) {
 
-				Integer value = Integer.parseInt(batteryLevel);
+				Integer value = new Integer(batteryLevel);
 				if (value != null) {
 
 					csDevice.setVersionBle((int)(value));
@@ -77,7 +76,7 @@ public class CsGetBleFWVersionTask extends CsConnectivityTask {
 
 
 
-	private void sendMessage(boolean result, String version) {
+	private void sendMessage(boolean result, int powerLevel) {
 
 		try {
 
@@ -94,9 +93,9 @@ public class CsGetBleFWVersionTask extends CsConnectivityTask {
 				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
 			}
 
-			if (version != null) {
+			if (powerLevel != -1) {
 
-				outData.putString(ICsConnectivityService.PARAM_CS_POWER_LEVEL, version);
+				outData.putInt(ICsConnectivityService.PARAM_CS_POWER_LEVEL, powerLevel);
 			}
 
 			outMsg.setData(outData);
