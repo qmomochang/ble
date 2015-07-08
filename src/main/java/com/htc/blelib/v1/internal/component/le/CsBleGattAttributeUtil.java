@@ -456,38 +456,51 @@ public class CsBleGattAttributeUtil {
         return ret;
     }
 
+    public static byte [] getGeneralPurposeEvent(BluetoothGattCharacteristic characteristic) {
 
+        Log.d(TAG, "[CS] getGeneralPurposeEvent UUID = " + characteristic.getUuid());
 
-    public static String getProxy(BluetoothGattCharacteristic characteristic) {
-
-        String ret = null;
-
-        Log.d(TAG, "[CS] getProxy UUID = " + characteristic.getUuid());
-
-        if (characteristic.getUuid().toString().equals(CsBleGattAttributes.CS_AUTO_BACKUP_GET_PROXY)) {
-
-            byte[] value = characteristic.getValue();
-
-            Log.d(TAG, "[CS] getProxy value.length = " + value.length);
-
-            if ((value.length > 2) && value[0] == 0x00) {
-
-                ret = "";
-
-                for (int i = 0; i < value[3]; i++) {
-
-                    if ((value[i + 4] > 0) && (value[i + 4] < 128)) {
-
-                        ret = ret + String.format("%c", value[i + 4]);
-
-                    } else {
-
-                        break;
-                    }
-                }
-            }
+        byte[] ret = characteristic.getValue();
+        if ( ret[0] == CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST.getID()) {
+            Log.d(TAG, "[CS] getGeneralPurposeEvent = " + ret[1] +
+                                                   ", " + ret[2] +
+                                                   ", " + ret[3] +
+                                                   ", " + ret[4] );
         }
 
         return ret;
     }
+
+    //public static String getProxy(BluetoothGattCharacteristic characteristic) {
+
+    //    String ret = null;
+
+    //    Log.d(TAG, "[CS] getProxy UUID = " + characteristic.getUuid());
+
+    //    if (characteristic.getUuid().toString().equals(CsBleGattAttributes.CS_AUTO_BACKUP_GET_PROXY)) {
+
+    //        byte[] value = characteristic.getValue();
+
+    //        Log.d(TAG, "[CS] getProxy value.length = " + value.length);
+
+    //        if ((value.length > 2) && value[0] == 0x00) {
+
+    //            ret = "";
+
+    //            for (int i = 0; i < value[3]; i++) {
+
+    //                if ((value[i + 4] > 0) && (value[i + 4] < 128)) {
+
+    //                    ret = ret + String.format("%c", value[i + 4]);
+
+    //                } else {
+
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    return ret;
+    //}
 }

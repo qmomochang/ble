@@ -476,23 +476,23 @@ public class CsLongTermEventTask extends CsConnectivityTask {
                 outData.putSerializable(ICsConnectivityService.PARAM_BATTERY_LEVEL, ICsConnectivityService.HWStatusEvent.MCUBatteryLevel.findLevel(level));
             }
 
-            if (usbStorage == 0) {
+//            if (usbStorage == 0) {
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_USB_STORAGE, PlugIO.PLUG_OUT);
+//
+//            } else if (usbStorage == 1) {
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_USB_STORAGE, PlugIO.PLUG_IN);
+//            }
 
-                outData.putSerializable(ICsConnectivityService.PARAM_USB_STORAGE, PlugIO.PLUG_OUT);
-
-            } else if (usbStorage == 1) {
-
-                outData.putSerializable(ICsConnectivityService.PARAM_USB_STORAGE, PlugIO.PLUG_IN);
-            }
-
-            if (adapterPlugin == 0) {
-
-                outData.putSerializable(ICsConnectivityService.PARAM_ADAPTER_PLUGIN, PlugIO.PLUG_OUT);
-
-            } else if (adapterPlugin == 1) {
-
-                outData.putSerializable(ICsConnectivityService.PARAM_ADAPTER_PLUGIN, PlugIO.PLUG_IN);
-            }
+//            if (adapterPlugin == 0) {
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_ADAPTER_PLUGIN, PlugIO.PLUG_OUT);
+//
+//            } else if (adapterPlugin == 1) {
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_ADAPTER_PLUGIN, PlugIO.PLUG_IN);
+//            }
 
             if (csPower == 0) {
 
@@ -514,330 +514,330 @@ public class CsLongTermEventTask extends CsConnectivityTask {
 
     }
 
-    private final int METADATA_NO_GPS_INFO_LENGTH = 42;
-    private final int METADATA_FOLDERNAME_START_INDEX = 4;
-    private final int METADATA_FOLDERNAME_END_INDEX = 12;
-    private final int METADATA_FILENAME_START_INDEX = 13;
-    private final int METADATA_FILENAME_END_INDEX = 25;
-
-    private void processMetadata(BluetoothDevice device, byte[] metadataArray) {
-
-        int fileId;
-        String folderName = "";
-        String fileName = "";
-        int fileType;
-        Calendar fileCreateTime = Calendar.getInstance();
-        int fileSize;
-        int videoDuration;
-
-        try {
-
-            if (metadataArray.length < METADATA_NO_GPS_INFO_LENGTH) {
-
-                return;
-            }
-
-            fileId = CsBleGattAttributeUtil.byteArrayToInt(metadataArray, 0);
-
-            for (int cnt = METADATA_FOLDERNAME_START_INDEX; cnt <= METADATA_FOLDERNAME_END_INDEX; cnt++) {
-
-                if (metadataArray[cnt] != 0x00) {
-
-                    folderName = folderName + String.format("%c", metadataArray[cnt]);
-
-                } else {
-
-                    break;
-                }
-            }
-
-            if (folderName.length() <= 0) {
-
-                return;
-            }
-
-            for (int cnt = METADATA_FILENAME_START_INDEX; cnt <= METADATA_FILENAME_END_INDEX; cnt++) {
-
-                if (metadataArray[cnt] != 0x00) {
-
-                    fileName = fileName + String.format("%c", metadataArray[cnt]);
-
-                } else {
-
-                    break;
-                }
-            }
-
-            if (fileName.length() <= 0) {
-
-                return;
-            }
-
-            fileType = metadataArray[26];
-
-            int year = (metadataArray[27] & 0xff) | ((metadataArray[28] & 0xff) << 8);
-            int month = metadataArray[29];
-            int date = metadataArray[30];
-            int hour = metadataArray[31];
-            int minute = metadataArray[32];
-            int second = metadataArray[33];
-
-            Log.d(TAG, "[CS] year = " + year + ", month = " + month + ", date = " + date + ", hour = " + hour + ", minute = " + minute + ", second = " + second);
-
-            if ((year < 1970) ||
-                (month < 0) || (month > 11) ||
-                (date < 1) || (date > 31) ||
-                (hour < 0) || (hour > 23) ||
-                (minute < 0) ||    (minute > 59) ||
-                (second < 0) || (second > 59)) {
-
-                return;
-            }
-
-            fileCreateTime.clear();
-            fileCreateTime.set(year, month, date, hour, minute, second);
-
-            fileSize = CsBleGattAttributeUtil.byteArrayToInt(metadataArray, 34);
-
-            if (fileSize < 0) {
-
-                return;
-            }
-
-            videoDuration = CsBleGattAttributeUtil.byteArrayToInt(metadataArray, 38);
-
-            if (videoDuration < 0) {
-
-                return;
-            }
-
-            Message outMsg = Message.obtain();
-            outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
-            Bundle outData = new Bundle();
-            outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_METADATA);
-            outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-            outData.putInt(ICsConnectivityService.PARAM_FILE_ID, fileId);
-            outData.putString(ICsConnectivityService.PARAM_FOLDER_NAME, folderName);
-            outData.putString(ICsConnectivityService.PARAM_FILE_NAME, fileName);
-            outData.putInt(ICsConnectivityService.PARAM_FILE_TYPE, fileType);
-            outData.putSerializable(ICsConnectivityService.PARAM_FILE_CREATE_TIME, fileCreateTime);
-            outData.putInt(ICsConnectivityService.PARAM_FILE_SIZE, fileSize);
-            outData.putInt(ICsConnectivityService.PARAM_VIDEO_DURATION, videoDuration);
-
-            outMsg.setData(outData);
-
-            mMessenger.send(outMsg);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
-
-
-
-    private void processCameraStatus(BluetoothDevice device, byte[] statusArray) {
-
-        OperationEvent opEvent;
-        int eventType;
-        int fileType;
-        int readyBit;
-        int imageRemainCount;
-        int videoRemainSecond;
-        int timelapseRemainCount;
-        int timelapseTotalCount;
-        int slowmotionRemainSecond;
-        int timelapseCurrentCount;
-
-        try {
-
-            Message outMsg = Message.obtain();
-            outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
-            Bundle outData = new Bundle();
-            outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_CAMERA_STATUS);
-            outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-
-            eventType = statusArray[1];
-
-            if ((eventType == 0x01) || (eventType == 0x03)) {
-
-                opEvent = (eventType == 0x01) ? OperationEvent.OPEVENT_START_CAPTURING : OperationEvent.OPEVENT_START_RECORDING;
-                fileType = statusArray[2];
-
-                outData.putSerializable(ICsConnectivityService.PARAM_OPERATION_EVENT, opEvent);
-                outData.putInt(ICsConnectivityService.PARAM_FILE_TYPE, fileType);
-
-            } else if ((eventType == 0x02) || (eventType == 0x05)) {
-
-                opEvent = (eventType == 0x02) ? OperationEvent.OPEVENT_COMPLETE_CAPTURING : OperationEvent.OPEVENT_COMPLETE_RECORDING;
-                fileType = statusArray[2];
-                readyBit = statusArray[3];
-                imageRemainCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 4);
-                videoRemainSecond = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 8);
-                timelapseRemainCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 12);
-                slowmotionRemainSecond = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 16);
-
-                outData.putSerializable(ICsConnectivityService.PARAM_OPERATION_EVENT, opEvent);
-                outData.putInt(ICsConnectivityService.PARAM_FILE_TYPE, fileType);
-                outData.putInt(ICsConnectivityService.PARAM_READY_BIT, readyBit);
-                outData.putInt(ICsConnectivityService.PARAM_IMAGE_REMAIN_COUNT, imageRemainCount);
-                outData.putInt(ICsConnectivityService.PARAM_VIDEO_REMAIN_SECOND, videoRemainSecond);
-                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_REMAIN_COUNT, timelapseRemainCount);
-                outData.putInt(ICsConnectivityService.PARAM_SLOW_MOTION_REMAIN_SECOND, slowmotionRemainSecond);
-
-            } else if (eventType == 0x07) {
-
-                opEvent = OperationEvent.OPEVENT_TIME_LAPSE_CAPTURE_ONE;
-                timelapseCurrentCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 2);
-                timelapseRemainCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 6);
-                timelapseTotalCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 10);
-
-                outData.putSerializable(ICsConnectivityService.PARAM_OPERATION_EVENT, opEvent);
-                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_CURRENT_COUNT, timelapseCurrentCount);
-                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_REMAIN_COUNT, timelapseRemainCount);
-                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_TOTAL_COUNT, timelapseTotalCount);
-
-            } else {
-
-                return;
-            }
-
-            outMsg.setData(outData);
-
-            mMessenger.send(outMsg);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
-
-
-
-    private void processCameraError(BluetoothDevice device, byte[] errorArray) {
-
-        Log.d(TAG, "[CS] processCameraError statusArray.length = " + errorArray.length);
-
-        int errorIndex;
-        int errorCode;
-
-        try {
-
-            Message outMsg = Message.obtain();
-            outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
-            Bundle outData = new Bundle();
-            outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_CAMERA_ERROR);
-            outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-
-            errorIndex = CsBleGattAttributeUtil.byteArrayToInt(errorArray, 0);
-            errorCode = CsBleGattAttributeUtil.byteArrayToInt(errorArray, 4);
-
-            outData.putInt(ICsConnectivityService.PARAM_CAMERA_ERROR_INDEX, errorIndex);
-            outData.putInt(ICsConnectivityService.PARAM_CAMERA_ERROR_CODE, errorCode);
-
-            outMsg.setData(outData);
-
-            mMessenger.send(outMsg);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
-
-
-
-    private void processAutoBackupError(BluetoothDevice device, byte[] abErrorArray) {
-
-        try {
-
-            int type = abErrorArray[0];
-
-            if (type == 0) {
-
-                /// APP error code
-                Message outMsg = Message.obtain();
-                outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
-                Bundle outData = new Bundle();
-
-                int errorCode = (int) CsBleGattAttributeUtil.byteArrayToShort(abErrorArray, 1);
-
-                if (errorCode == 1) {
-
-                    SwitchOnOff onoff = SwitchOnOff.SWITCH_ON;
-
-                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_HOTSPOT_CONTROL);
-                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-                    outData.putSerializable(ICsConnectivityService.PARAM_SWITCH_ON_OFF, onoff);
-
-                } else if (errorCode == 2) {
-
-                    SwitchOnOff onoff = SwitchOnOff.SWITCH_OFF;
-
-                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_HOTSPOT_CONTROL);
-                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-                    outData.putSerializable(ICsConnectivityService.PARAM_SWITCH_ON_OFF, onoff);
-
-                } else {
-
-                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_AUTO_BACKUP_ERROR);
-                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-                    outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_TYPE, type);
-                    outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_CODE, errorCode);
-                }
-
-                outMsg.setData(outData);
-                mMessenger.send(outMsg);
-
-            } else if (type == 1) {
-
-                /// Progress
-                byte [] generalResultArray = abErrorArray;
-                int errorCode = generalResultArray[1];
-
-                if (errorCode == 0x00) {
-
-                    int remainFileCount = CsBleGattAttributeUtil.byteArrayToInt(generalResultArray, 3);
-                    int totalFileCount = CsBleGattAttributeUtil.byteArrayToInt(generalResultArray, 7);
-
-                    Log.d(TAG, "[CS] remainFileCount = " + remainFileCount);
-                    Log.d(TAG, "[CS] totalFileCount = " + totalFileCount);
-
-                    Message outMsg = Message.obtain();
-                    outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
-                    Bundle outData = new Bundle();
-                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_AUTO_BACKUP_PROGRESS);
-                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-                    outData.putInt(ICsConnectivityService.PARAM_REMAIN_FILE_COUNT, remainFileCount);
-                    outData.putInt(ICsConnectivityService.PARAM_TOTAL_FILE_COUNT, totalFileCount);
-
-                    outMsg.setData(outData);
-                    mMessenger.send(outMsg);
-                }
-
-            } else if (type == 2) {
-
-                /// CS error code
-                Message outMsg = Message.obtain();
-                outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
-                Bundle outData = new Bundle();
-
-                int errorCode = (int) CsBleGattAttributeUtil.byteArrayToShort(abErrorArray, 1);
-
-                outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_AUTO_BACKUP_ERROR);
-                outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-                outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_TYPE, type);
-                outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_CODE, errorCode);
-
-                outMsg.setData(outData);
-                mMessenger.send(outMsg);
-            }
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
+//    private final int METADATA_NO_GPS_INFO_LENGTH = 42;
+//    private final int METADATA_FOLDERNAME_START_INDEX = 4;
+//    private final int METADATA_FOLDERNAME_END_INDEX = 12;
+//    private final int METADATA_FILENAME_START_INDEX = 13;
+//    private final int METADATA_FILENAME_END_INDEX = 25;
+//
+//    private void processMetadata(BluetoothDevice device, byte[] metadataArray) {
+//
+//        int fileId;
+//        String folderName = "";
+//        String fileName = "";
+//        int fileType;
+//        Calendar fileCreateTime = Calendar.getInstance();
+//        int fileSize;
+//        int videoDuration;
+//
+//        try {
+//
+//            if (metadataArray.length < METADATA_NO_GPS_INFO_LENGTH) {
+//
+//                return;
+//            }
+//
+//            fileId = CsBleGattAttributeUtil.byteArrayToInt(metadataArray, 0);
+//
+//            for (int cnt = METADATA_FOLDERNAME_START_INDEX; cnt <= METADATA_FOLDERNAME_END_INDEX; cnt++) {
+//
+//                if (metadataArray[cnt] != 0x00) {
+//
+//                    folderName = folderName + String.format("%c", metadataArray[cnt]);
+//
+//                } else {
+//
+//                    break;
+//                }
+//            }
+//
+//            if (folderName.length() <= 0) {
+//
+//                return;
+//            }
+//
+//            for (int cnt = METADATA_FILENAME_START_INDEX; cnt <= METADATA_FILENAME_END_INDEX; cnt++) {
+//
+//                if (metadataArray[cnt] != 0x00) {
+//
+//                    fileName = fileName + String.format("%c", metadataArray[cnt]);
+//
+//                } else {
+//
+//                    break;
+//                }
+//            }
+//
+//            if (fileName.length() <= 0) {
+//
+//                return;
+//            }
+//
+//            fileType = metadataArray[26];
+//
+//            int year = (metadataArray[27] & 0xff) | ((metadataArray[28] & 0xff) << 8);
+//            int month = metadataArray[29];
+//            int date = metadataArray[30];
+//            int hour = metadataArray[31];
+//            int minute = metadataArray[32];
+//            int second = metadataArray[33];
+//
+//            Log.d(TAG, "[CS] year = " + year + ", month = " + month + ", date = " + date + ", hour = " + hour + ", minute = " + minute + ", second = " + second);
+//
+//            if ((year < 1970) ||
+//                (month < 0) || (month > 11) ||
+//                (date < 1) || (date > 31) ||
+//                (hour < 0) || (hour > 23) ||
+//                (minute < 0) ||    (minute > 59) ||
+//                (second < 0) || (second > 59)) {
+//
+//                return;
+//            }
+//
+//            fileCreateTime.clear();
+//            fileCreateTime.set(year, month, date, hour, minute, second);
+//
+//            fileSize = CsBleGattAttributeUtil.byteArrayToInt(metadataArray, 34);
+//
+//            if (fileSize < 0) {
+//
+//                return;
+//            }
+//
+//            videoDuration = CsBleGattAttributeUtil.byteArrayToInt(metadataArray, 38);
+//
+//            if (videoDuration < 0) {
+//
+//                return;
+//            }
+//
+//            Message outMsg = Message.obtain();
+//            outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
+//            Bundle outData = new Bundle();
+//            outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_METADATA);
+//            outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//            outData.putInt(ICsConnectivityService.PARAM_FILE_ID, fileId);
+//            outData.putString(ICsConnectivityService.PARAM_FOLDER_NAME, folderName);
+//            outData.putString(ICsConnectivityService.PARAM_FILE_NAME, fileName);
+//            outData.putInt(ICsConnectivityService.PARAM_FILE_TYPE, fileType);
+//            outData.putSerializable(ICsConnectivityService.PARAM_FILE_CREATE_TIME, fileCreateTime);
+//            outData.putInt(ICsConnectivityService.PARAM_FILE_SIZE, fileSize);
+//            outData.putInt(ICsConnectivityService.PARAM_VIDEO_DURATION, videoDuration);
+//
+//            outMsg.setData(outData);
+//
+//            mMessenger.send(outMsg);
+//
+//        } catch (Exception e) {
+//
+//            e.printStackTrace();
+//        }
+//    }
+
+
+
+//    private void processCameraStatus(BluetoothDevice device, byte[] statusArray) {
+//
+//        OperationEvent opEvent;
+//        int eventType;
+//        int fileType;
+//        int readyBit;
+//        int imageRemainCount;
+//        int videoRemainSecond;
+//        int timelapseRemainCount;
+//        int timelapseTotalCount;
+//        int slowmotionRemainSecond;
+//        int timelapseCurrentCount;
+//
+//        try {
+//
+//            Message outMsg = Message.obtain();
+//            outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
+//            Bundle outData = new Bundle();
+//            outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_CAMERA_STATUS);
+//            outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//
+//            eventType = statusArray[1];
+//
+//            if ((eventType == 0x01) || (eventType == 0x03)) {
+//
+//                opEvent = (eventType == 0x01) ? OperationEvent.OPEVENT_START_CAPTURING : OperationEvent.OPEVENT_START_RECORDING;
+//                fileType = statusArray[2];
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_OPERATION_EVENT, opEvent);
+//                outData.putInt(ICsConnectivityService.PARAM_FILE_TYPE, fileType);
+//
+//            } else if ((eventType == 0x02) || (eventType == 0x05)) {
+//
+//                opEvent = (eventType == 0x02) ? OperationEvent.OPEVENT_COMPLETE_CAPTURING : OperationEvent.OPEVENT_COMPLETE_RECORDING;
+//                fileType = statusArray[2];
+//                readyBit = statusArray[3];
+//                imageRemainCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 4);
+//                videoRemainSecond = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 8);
+//                timelapseRemainCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 12);
+//                slowmotionRemainSecond = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 16);
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_OPERATION_EVENT, opEvent);
+//                outData.putInt(ICsConnectivityService.PARAM_FILE_TYPE, fileType);
+//                outData.putInt(ICsConnectivityService.PARAM_READY_BIT, readyBit);
+//                outData.putInt(ICsConnectivityService.PARAM_IMAGE_REMAIN_COUNT, imageRemainCount);
+//                outData.putInt(ICsConnectivityService.PARAM_VIDEO_REMAIN_SECOND, videoRemainSecond);
+//                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_REMAIN_COUNT, timelapseRemainCount);
+//                outData.putInt(ICsConnectivityService.PARAM_SLOW_MOTION_REMAIN_SECOND, slowmotionRemainSecond);
+//
+//            } else if (eventType == 0x07) {
+//
+//                opEvent = OperationEvent.OPEVENT_TIME_LAPSE_CAPTURE_ONE;
+//                timelapseCurrentCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 2);
+//                timelapseRemainCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 6);
+//                timelapseTotalCount = CsBleGattAttributeUtil.byteArrayToInt(statusArray, 10);
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_OPERATION_EVENT, opEvent);
+//                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_CURRENT_COUNT, timelapseCurrentCount);
+//                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_REMAIN_COUNT, timelapseRemainCount);
+//                outData.putInt(ICsConnectivityService.PARAM_TIME_LAPSE_TOTAL_COUNT, timelapseTotalCount);
+//
+//            } else {
+//
+//                return;
+//            }
+//
+//            outMsg.setData(outData);
+//
+//            mMessenger.send(outMsg);
+//
+//        } catch (Exception e) {
+//
+//            e.printStackTrace();
+//        }
+//    }
+
+
+
+//    private void processCameraError(BluetoothDevice device, byte[] errorArray) {
+//
+//        Log.d(TAG, "[CS] processCameraError statusArray.length = " + errorArray.length);
+//
+//        int errorIndex;
+//        int errorCode;
+//
+//        try {
+//
+//            Message outMsg = Message.obtain();
+//            outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
+//            Bundle outData = new Bundle();
+//            outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_CAMERA_ERROR);
+//            outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//
+//            errorIndex = CsBleGattAttributeUtil.byteArrayToInt(errorArray, 0);
+//            errorCode = CsBleGattAttributeUtil.byteArrayToInt(errorArray, 4);
+//
+//            outData.putInt(ICsConnectivityService.PARAM_CAMERA_ERROR_INDEX, errorIndex);
+//            outData.putInt(ICsConnectivityService.PARAM_CAMERA_ERROR_CODE, errorCode);
+//
+//            outMsg.setData(outData);
+//
+//            mMessenger.send(outMsg);
+//
+//        } catch (Exception e) {
+//
+//            e.printStackTrace();
+//        }
+//    }
+
+
+
+//    private void processAutoBackupError(BluetoothDevice device, byte[] abErrorArray) {
+//
+//        try {
+//
+//            int type = abErrorArray[0];
+//
+//            if (type == 0) {
+//
+//                /// APP error code
+//                Message outMsg = Message.obtain();
+//                outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
+//                Bundle outData = new Bundle();
+//
+//                int errorCode = (int) CsBleGattAttributeUtil.byteArrayToShort(abErrorArray, 1);
+//
+//                if (errorCode == 1) {
+//
+//                    SwitchOnOff onoff = SwitchOnOff.SWITCH_ON;
+//
+//                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_HOTSPOT_CONTROL);
+//                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//                    outData.putSerializable(ICsConnectivityService.PARAM_SWITCH_ON_OFF, onoff);
+//
+//                } else if (errorCode == 2) {
+//
+//                    SwitchOnOff onoff = SwitchOnOff.SWITCH_OFF;
+//
+//                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_HOTSPOT_CONTROL);
+//                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//                    outData.putSerializable(ICsConnectivityService.PARAM_SWITCH_ON_OFF, onoff);
+//
+//                } else {
+//
+//                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_AUTO_BACKUP_ERROR);
+//                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//                    outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_TYPE, type);
+//                    outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_CODE, errorCode);
+//                }
+//
+//                outMsg.setData(outData);
+//                mMessenger.send(outMsg);
+//
+//            } else if (type == 1) {
+//
+//                /// Progress
+//                byte [] generalResultArray = abErrorArray;
+//                int errorCode = generalResultArray[1];
+//
+//                if (errorCode == 0x00) {
+//
+//                    int remainFileCount = CsBleGattAttributeUtil.byteArrayToInt(generalResultArray, 3);
+//                    int totalFileCount = CsBleGattAttributeUtil.byteArrayToInt(generalResultArray, 7);
+//
+//                    Log.d(TAG, "[CS] remainFileCount = " + remainFileCount);
+//                    Log.d(TAG, "[CS] totalFileCount = " + totalFileCount);
+//
+//                    Message outMsg = Message.obtain();
+//                    outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
+//                    Bundle outData = new Bundle();
+//                    outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_AUTO_BACKUP_PROGRESS);
+//                    outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//                    outData.putInt(ICsConnectivityService.PARAM_REMAIN_FILE_COUNT, remainFileCount);
+//                    outData.putInt(ICsConnectivityService.PARAM_TOTAL_FILE_COUNT, totalFileCount);
+//
+//                    outMsg.setData(outData);
+//                    mMessenger.send(outMsg);
+//                }
+//
+//            } else if (type == 2) {
+//
+//                /// CS error code
+//                Message outMsg = Message.obtain();
+//                outMsg.what = ICsConnectivityService.CB_LONG_TERM_EVENT_RESULT;
+//                Bundle outData = new Bundle();
+//
+//                int errorCode = (int) CsBleGattAttributeUtil.byteArrayToShort(abErrorArray, 1);
+//
+//                outData.putSerializable(ICsConnectivityService.PARAM_LONG_TERM_EVENT, LongTermEvent.LTEVENT_AUTO_BACKUP_ERROR);
+//                outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+//                outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_TYPE, type);
+//                outData.putInt(ICsConnectivityService.PARAM_AUTO_BACKUP_ERROR_CODE, errorCode);
+//
+//                outMsg.setData(outData);
+//                mMessenger.send(outMsg);
+//            }
+//
+//        } catch (Exception e) {
+//
+//            e.printStackTrace();
+//        }
+//    }
 
 
 

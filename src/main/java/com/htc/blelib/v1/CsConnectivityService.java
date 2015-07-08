@@ -1910,4 +1910,8 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //        Log.d(TAG, "[CS] csUnlockSimPin--");
 //        return ret;
 //    }
+//    @Override
+//    public boolean csSetWifiAcc(BluetoothDevice device,String account);
+//    @Override
+//    public boolean csSetWifiPw(BluetoothDevice device,String password);
 }
