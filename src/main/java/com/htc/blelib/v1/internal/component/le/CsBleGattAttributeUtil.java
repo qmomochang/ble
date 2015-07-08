@@ -503,4 +503,14 @@ public class CsBleGattAttributeUtil {
 
     //    return ret;
     //}
+    public static byte getBatteryLevel(BluetoothGattCharacteristic characteristic) {
+
+        Log.d(TAG, "[CS] getBatteryLevel UUID = " + characteristic.getUuid());
+
+        byte [] ret = characteristic.getValue();
+        Log.d(TAG, "[CS] getBatteryLevel ret = " + ret[0] );
+
+        return ret[0];
+    }
+
 }

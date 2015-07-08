@@ -103,6 +103,18 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
             private final byte val;
             ERROR_CODE (byte val) {this.val = val;}
             public byte getValue() {return this.val;}
+            public static FirmwareUpdateResuleEvent.ERROR_CODE findError(byte status)
+            {
+                for (FirmwareUpdateResuleEvent.ERROR_CODE error_selected:FirmwareUpdateResuleEvent.ERROR_CODE.values())
+                {
+                    if ( error_selected.getValue() == status)
+                    {
+                        return error_selected;
+                    }
+                }
+                //Should not be here
+                return null;
+            }
         }
 
         public enum UPDATE_STATUS {
@@ -113,6 +125,9 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
             private final byte val;
             UPDATE_STATUS (byte val) {this.val = val;}
+
+
+
             public byte getValue() {return this.val;}
         }
 
@@ -379,7 +394,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final int CB_GET_HW_STATUS_RESULT                            = 8304;
 //    public static final int CB_SET_FLIGHT_MODE_RESULT                        = 8305;
 //    public static final int CB_SET_AUTOSLEEP_TIMER_OFFSET_RESULT            = 8306;
-//    public static final int CB_TRIGGER_FWUPDATE_RESULT                        = 8307;
+    public static final int CB_TRIGGER_FWUPDATE_RESULT                        = 8307;
     public static final int CB_FWUPDATE_RESULT                                = 8308;
 //    public static final int CB_SET_SIM_HW_STATUS_LTEVENT_RESULT                = 8309;
 //    public static final int CB_CLR_SIM_HW_STATUS_LTEVENT_RESULT                = 8310;
@@ -474,7 +489,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final String PARAM_MOD_FW_VERSION                        = "modem_fw_version";
 //    public static final String PARAM_MCU_FW_VERSION                        = "mcu_fw_version";
 //    public static final String PARAM_BLE_FW_VERSION                        = "ble_fw_version";
-//    public static final String PARAM_TRIGGER_FWUPDATE_RESULT            = "trigger_fw_update_result";
+    public static final String PARAM_TRIGGER_FWUPDATE_RESULT            = "trigger_fw_update_result";
 //    public static final String PARAM_FWUPDATE_RESULT                    = "fw_update_result";
 //    public static final String PARAM_VERIFY_PASSWORD_STATUS                = "verify_password_status";
 //    public static final String PARAM_AUTO_BACKUP_ERROR_TYPE                = "auto_backup_error_type";
@@ -629,4 +644,6 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public boolean csClrLTECampingStatusLTEvent(BluetoothDevice device);
 //    public boolean csGetModemStatus(BluetoothDevice device);
 //    //public boolean csUnlockSimPin(BluetoothDevice device, String pinCode);
+    public boolean csBleReadBattery(BluetoothDevice device);
+
 }

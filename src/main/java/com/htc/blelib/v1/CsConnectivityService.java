@@ -58,6 +58,7 @@ import com.htc.blelib.v1.internal.tasks.CsNameTask;
 //import com.htc.blelib.v1.internal.tasks.CsWifiGroupTask;
 //import com.htc.blelib.v1.internal.tasks.CsWifiStationConnectTask;
 import com.htc.blelib.v1.internal.tasks.CsBootTask;
+import com.htc.blelib.v1.internal.tasks.CsBleReadBatteryTask;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -1914,4 +1915,29 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //    public boolean csSetWifiAcc(BluetoothDevice device,String account);
 //    @Override
 //    public boolean csSetWifiPw(BluetoothDevice device,String password);
+
+    @Override
+    public boolean csBleReadBattery(BluetoothDevice device) {
+
+        Log.d(TAG, "[CS] csBleReadBattery++");
+
+        boolean ret = false;
+
+        try {
+
+            CsConnectivityTask task = new CsBleReadBatteryTask(mCsBleTransceiver, mMessenger, mExecutor, device);
+            addTask(task);
+
+            ret = true;
+
+        } catch (Exception e) {
+
+            Log.d(TAG, "[CS] csBleReadBattery exception: " + e);
+        }
+
+        Log.d(TAG, "[CS] csBleReadBattery--");
+
+        return ret;
+    }
+
 }
