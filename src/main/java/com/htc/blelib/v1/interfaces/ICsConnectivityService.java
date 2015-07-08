@@ -581,7 +581,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public boolean csTriggerFWUpdate(BluetoothDevice device, boolean update_rtos, boolean update_modem, boolean update_mcu, String firmwareVersion);
 //    public boolean csSetHwStatusLTEvent(BluetoothDevice device);
 //    public boolean csClrHwStatusLTEvent(BluetoothDevice device);
-    public boolean csGetHwStatus(BluetoothDevice device);
+//    public boolean csGetHwStatus(BluetoothDevice device);
 //    //public boolean csGetSimHwStatus(BluetoothDevice device);
 //    //public boolean csSetFlightMode(BluetoothDevice device);
 //    //public boolean csSetAutoSleepTimerOffset(BluetoothDevice device, int offset_sec);

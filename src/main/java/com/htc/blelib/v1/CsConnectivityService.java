@@ -34,7 +34,6 @@ import com.htc.blelib.v1.internal.tasks.CsBleConnectTask;
 //import com.htc.blelib.v1.internal.tasks.CsGetCameraModeTask;
 //import com.htc.blelib.v1.internal.tasks.CsGetModemStatusTask;
 //import com.htc.blelib.v1.internal.tasks.CsGpsInfoTask;
-import com.htc.blelib.v1.internal.tasks.CsHwStatusTask;
 //import com.htc.blelib.v1.internal.tasks.CsLTECampingStatusTask;
 //import com.htc.blelib.v1.internal.tasks.CsLongTermNotifyTask;
 //import com.htc.blelib.v1.internal.tasks.CsMetadataTask;
@@ -357,29 +356,29 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
 //
 //
 //
-    @Override
-    public boolean csGetHwStatus(BluetoothDevice device) {
-
-        Log.d(TAG, "[CS] csGetHwStatus++");
-
-        boolean ret = false;
-
-        try {
-
-            CsConnectivityTask task = new CsHwStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsHwStatusTask.ACTION_GET_HW_STATUS);
-            addTask(task);
-
-            ret = true;
-
-        } catch (Exception e) {
-
-            Log.d(TAG, "[CS] csGetHwStatus exception: " + e);
-        }
-
-        Log.d(TAG, "[CS] csGetHwStatus--");
-
-        return ret;
-    }
+//    @Override
+//    public boolean csGetHwStatus(BluetoothDevice device) {
+//
+//        Log.d(TAG, "[CS] csGetHwStatus++");
+//
+//        boolean ret = false;
+//
+//        try {
+//
+//            CsConnectivityTask task = new CsHwStatusTask(mCsBleTransceiver, mMessenger, mExecutor, device, CsHwStatusTask.ACTION_GET_HW_STATUS);
+//            addTask(task);
+//
+//            ret = true;
+//
+//        } catch (Exception e) {
+//
+//            Log.d(TAG, "[CS] csGetHwStatus exception: " + e);
+//        }
+//
+//        Log.d(TAG, "[CS] csGetHwStatus--");
+//
+//        return ret;
+//    }
 //
 //
 //
