@@ -9,7 +9,7 @@ import android.util.Log;
 public class CsBleGattAttributes {
 
     static public enum CsV1CommandEnum{
-        CS_SERVICE                        ((byte)0x01), // GENERAL_REQUEST
+        CS_GENERAL_PURPOSE_REQUEST                ((byte)0x01), // GENERAL_REQUEST
         CS_DESCRIPTOR                     ((byte)0x11),
 
         POWER_ON_REQUEST                  ((byte)0x11),
@@ -128,7 +128,7 @@ public class CsBleGattAttributes {
 
     static {
         //mUuidV1Map.put(CsV1CommandEnum.GENERAL_REQUEST.getID()                  , CS_V1_COMMANDTYPE1);     //((byte)0x01),
-        mUuidV1Map.put(CsV1CommandEnum.CS_SERVICE.getID()                       , CS_V1_COMMANDTYPE1);     //((byte)0x01),
+        mUuidV1Map.put(CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST.getID()               , CS_V1_COMMANDTYPE1);     //((byte)0x01),
         mUuidV1Map.put(CsV1CommandEnum.CS_DESCRIPTOR.getID()                    , CS_V1_COMMANDTYPE1);     //((byte)0x11),
 
         mUuidV1Map.put(CsV1CommandEnum.POWER_ON_REQUEST.getID()                 , CS_V1_COMMANDTYPE1);     //((byte)0x11),

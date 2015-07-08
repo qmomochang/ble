@@ -898,7 +898,7 @@ public class CsBleTransceiver implements IGattRequest {
             return -1;
         }
 
-        UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_SERVICE));
+        UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST));
         UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
 
         Log.d(TAG, "[CS] writeCsCommand command id= " + commandID.getID() + ", length = " + writeData.length);
@@ -1074,7 +1074,7 @@ public class CsBleTransceiver implements IGattRequest {
             return -1;
         }
         Log.d(TAG, "[CS] UUID:" + commandID + " uuid(bytes):" + commandID.getID());
-        UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_SERVICE));
+        UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST));
         UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
         UUID uuidDescriptor = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_DESCRIPTOR));
         byte[] writeData = (enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
