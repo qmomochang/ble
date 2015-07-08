@@ -8,7 +8,6 @@ import com.htc.blelib.v1.internal.callables.CsBleReadCallable;
 import com.htc.blelib.v1.internal.callables.CsBleReceiveNotificationCallable;
 import com.htc.blelib.v1.internal.callables.CsBleSetNotificationCallable;
 import com.htc.blelib.v1.internal.callables.CsBleWriteCallable;
-import com.htc.blelib.v1.internal.callables.CsBootUpCallable;
 import com.htc.blelib.v1.internal.common.Common;
 import com.htc.blelib.v1.internal.common.CsConnectivityTask;
 import com.htc.blelib.v1.internal.component.le.CsBleGattAttributeUtil;
@@ -70,99 +69,83 @@ public class CsNameTask extends CsConnectivityTask {
 
 		super.from();
 
-		Future<Integer> futureBoot;
-		Integer bootResult;
-		futureBoot = mExecutor.submit(new CsBootUpCallable(mCsBleTransceiver, mExecutor, mBluetoothDevice, mMessenger));
-		bootResult = futureBoot.get();
+        BluetoothGattCharacteristic result;
+        Future<BluetoothGattCharacteristic> futureA0, futureA1, futureB;
 
-		if (bootResult == Common.ERROR_SUCCESS)
-		{
-			BluetoothGattCharacteristic result;
-			Future<BluetoothGattCharacteristic> futureA0, futureA1, futureB;
+        if (mAction == ACTION_SET_NAME) {
 
-			if (mAction == ACTION_SET_NAME) {
+            char[] temp = mName.toCharArray();
 
-				char[] temp = mName.toCharArray();
+            if (temp.length > MAX_DATA_LENGTH) {
+                sendMessage(false, null);
+                return;
+            }
 
-				if (temp.length > MAX_DATA_LENGTH) {
-					sendMessage(false, null);
-					return;
-				}
+            byte[] nameArray = new byte[temp.length + DATA_OFFSET_INDEX + DATA_ADD_END];
+            nameArray[0] = (byte)ACTION_SET_NAME;
+            nameArray[temp.length + DATA_OFFSET_INDEX] = 0x00;
+            for (int cnt = 0; cnt < temp.length; cnt++) {
+                nameArray[cnt + DATA_OFFSET_INDEX] = (byte) temp[cnt];
+            }
+            Log.d(TAG, "[CS] setName:" + mName + ", length:" + mName.length());
 
-				byte[] nameArray = new byte[temp.length + DATA_OFFSET_INDEX + DATA_ADD_END];
-				nameArray[0] = (byte)ACTION_SET_NAME;
-				nameArray[temp.length + DATA_OFFSET_INDEX] = 0x00;
-				for (int cnt = 0; cnt < temp.length; cnt++) {
-					nameArray[cnt + DATA_OFFSET_INDEX] = (byte) temp[cnt];
-				}
-				Log.d(TAG, "[CS] setName:" + mName + ", length:" + mName.length());
+            futureA0 = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST, nameArray));
 
-				futureA0 = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST, nameArray));
+            result = futureA0.get();
 
-				result = futureA0.get();
+            if (result != null) {
 
-				if (result != null) {
+                sendMessage(true, null);
 
-					sendMessage(true, null);
+            } else {
 
-				} else {
+                sendMessage(false, null);
+            }
 
-					sendMessage(false, null);
-				}
+        } else if (mAction == ACTION_GET_NAME) {
 
-			} else if (mAction == ACTION_GET_NAME) {
+            byte[] nameArray = new byte[DATA_OFFSET_INDEX];
+            nameArray[0] = (byte)ACTION_GET_NAME;
+            //Here is no data!!
+            futureA0 = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST));
+            futureA1 = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST, true));
 
-				byte[] nameArray = new byte[DATA_OFFSET_INDEX];
-				nameArray[0] = (byte)ACTION_GET_NAME;
-				//Here is no data!!
-				futureA0 = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST));
-				futureA1 = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST, true));
+            if (futureA1.get() == null) {
 
-				if (futureA1.get() == null) {
+                sendMessage(false, null);
+                unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST);
+                return;
+            }
 
-					sendMessage(false, null);
-					unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST);
-					return;
-				}
+            futureB = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST, nameArray));
 
-				futureB = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST, nameArray));
+            result = futureB.get();
 
-				result = futureB.get();
+            if (result != null) {
 
-				if (result != null) {
+                result = futureA0.get();
+                if (result != null)
+                {
+                    setName(CsBleGattAttributeUtil.getCsName(result));
+                    sendMessage(true, mName);
+                }
+                else
+                {
+                    sendMessage(false, null);
+                    unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST);
+                }
 
-					result = futureA0.get();
-					if (result != null)
-					{
-						setName(CsBleGattAttributeUtil.getCsName(result));
-						sendMessage(true, mName);
-					}
-					else
-					{
-						sendMessage(false, null);
-						unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CS_BLE_NAME_REQUEST);
-					}
+            } else {
 
-				} else {
+                sendMessage(false, null);
+            }
+        }
+        super.to(TAG);
+    }
 
-					sendMessage(false, null);
-				}
-			}
-		}
-		else
-		{
-			Log.d(TAG, "[CS] boot up is fail");
-			sendMessage(false, null);
-		}
+    private void sendMessage(boolean result, String name) {
 
-		super.to(TAG);
-	}
-
-
-
-	private void sendMessage(boolean result, String name) {
-
-		try {
+        try {
 
 			Message outMsg = Message.obtain();
 

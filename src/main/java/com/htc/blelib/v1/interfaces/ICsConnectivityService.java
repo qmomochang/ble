@@ -566,7 +566,6 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
 
     /// Interfaces
-    public boolean csBootUp(BluetoothDevice device);
     public boolean csOpen();
     public boolean csClose();
 

@@ -5,7 +5,6 @@ import java.util.concurrent.Future;
 
 import com.htc.blelib.v1.interfaces.ICsConnectivityService;
 import com.htc.blelib.v1.internal.callables.CsBleReadCallable;
-import com.htc.blelib.v1.internal.callables.CsBootUpCallable;
 import com.htc.blelib.v1.internal.common.Common;
 import com.htc.blelib.v1.internal.common.CsConnectivityTask;
 import com.htc.blelib.v1.internal.component.le.CsBleGattAttributeUtil;
@@ -49,34 +48,23 @@ public class CsBleReadBatteryTask extends CsConnectivityTask {
 
 		super.from();
 
-		Future<Integer> futureBoot;
 		Integer bootResult;
-        bootResult = Common.ERROR_SUCCESS;
-		//futureBoot = mExecutor.submit(new CsBootUpCallable(mCsBleTransceiver, mExecutor, mBluetoothDevice, mMessenger));
-		//bootResult = futureBoot.get();
 
-		if (bootResult == Common.ERROR_SUCCESS)
-		{
-            Log.v(TAG,"[CS] CsBleReadBatteryTask");
-			BluetoothGattCharacteristic result;
-			Future<BluetoothGattCharacteristic> future;
+        Log.v(TAG,"[CS] executing CsBleReadBatteryTask");
+        BluetoothGattCharacteristic result;
+        Future<BluetoothGattCharacteristic> future;
 
-            future = mExecutor.submit(new CsBleReadCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CS_BATTERY_SERVICE, CsBleGattAttributes.CS_V1_BATTERY_LEVEL));
+        future = mExecutor.submit(new CsBleReadCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CS_BATTERY_SERVICE, CsBleGattAttributes.CS_V1_BATTERY_LEVEL));
 
-            result = future.get();
+        result = future.get();
 
-            if (result != null) {
-                sendMessage(true, CsBleGattAttributeUtil.getBatteryLevel(result));
-            } else {
+        if (result != null) {
+            sendMessage(true, CsBleGattAttributeUtil.getBatteryLevel(result));
+        } else {
 
-                sendMessage(false, (byte)-1);
-            }
-		}
-		else
-		{
-			Log.d(TAG, "[CS] boot up is fail");
-			sendMessage(false, (byte)-1);
-		}
+            sendMessage(false, (byte)-1);
+        }
+
 
 		super.to(TAG);
 	}

@@ -57,7 +57,6 @@ import com.htc.blelib.v1.internal.tasks.CsNameTask;
 //import com.htc.blelib.v1.internal.tasks.CsWifiDisconnectTask;
 //import com.htc.blelib.v1.internal.tasks.CsWifiGroupTask;
 //import com.htc.blelib.v1.internal.tasks.CsWifiStationConnectTask;
-import com.htc.blelib.v1.internal.tasks.CsBootTask;
 import com.htc.blelib.v1.internal.tasks.CsBleReadBatteryTask;
 
 import android.bluetooth.BluetoothDevice;
@@ -76,26 +75,6 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
     public CsConnectivityService(Context context, Messenger messenger) {
 
         super(context, messenger);
-    }
-
-    @Override
-    public boolean csBootUp(BluetoothDevice device)
-    {
-        Log.d(TAG, "[CS] csBootUp++");
-        boolean ret = false;
-
-        try {
-
-            CsConnectivityTask task = new CsBootTask(mCsBleTransceiver, mMessenger, mExecutor, device);
-            addTask(task);
-            ret = true;
-        } catch (Exception e) {
-            Log.d(TAG, "[CS] csBootUp exception: " + e);
-        }
-
-        Log.d(TAG, "[CS] csBootUp--");
-
-        return ret;
     }
 
     @Override

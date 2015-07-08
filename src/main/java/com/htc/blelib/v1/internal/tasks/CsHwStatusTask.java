@@ -8,7 +8,6 @@ import com.htc.blelib.v1.interfaces.ICsConnectivityService;
 import com.htc.blelib.v1.interfaces.ICsConnectivityService.HWStatusEvent.MCUBatteryLevel;
 import com.htc.blelib.v1.internal.callables.CsBleReceiveNotificationCallable;
 import com.htc.blelib.v1.internal.callables.CsBleWriteCallable;
-import com.htc.blelib.v1.internal.callables.CsBootUpCallable;
 import com.htc.blelib.v1.internal.common.Common;
 import com.htc.blelib.v1.internal.common.CsConnectivityTask;
 import com.htc.blelib.v1.internal.component.le.CsBleGattAttributeUtil;
@@ -59,42 +58,29 @@ public class CsHwStatusTask extends CsConnectivityTask {
 		Future<BluetoothGattCharacteristic> future, futureA;
 
 		if (mAction == ACTION_GET_HW_STATUS) {
-			Future<Integer> futureBoot;
-			Integer bootResult;
-			futureBoot = mExecutor.submit(new CsBootUpCallable(mCsBleTransceiver, mExecutor, mBluetoothDevice, mMessenger));
-			bootResult = futureBoot.get();
-			if (bootResult == Common.ERROR_SUCCESS)
-			{
+            byte[] getType = {(byte)0x00}; // 0x00 battery level, 0x01 reserved
+            futureA = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.HWSTATUS_EVENT));
+            future  = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.HWSTATUS_EVENT, getType));
+            result = future.get();
+            if (result != null)
+            {
+                result = futureA.get();
+                if (result != null)
+                {
+                    int battery_cap = CsBleGattAttributeUtil.getHwStatus_BatteryLevel(result);
 
-				byte[] getType = {(byte)0x00}; // 0x00 battery level, 0x01 reserved
-				futureA = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.HWSTATUS_EVENT));
-				future  = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.HWSTATUS_EVENT, getType));
-				result = future.get();
-				if (result != null)
-				{
-					result = futureA.get();
-					if (result != null)
-					{
-						int battery_cap = CsBleGattAttributeUtil.getHwStatus_BatteryLevel(result);
-
-						sendMessage(true, battery_cap);
-					}
-					else
-					{
-						sendMessage(false, -1);
-					}
-				}
-				else
-				{
-					sendMessage(false, -1);
-				}
-			}
-			else
-			{
-				Log.d(TAG, "[CS] boot up is fail");
-				sendMessage(false, -1);
-			}
-		} else if (mAction == ACTION_SET_HW_STATUS_LTEVENT) {
+                    sendMessage(true, battery_cap);
+                }
+                else
+                {
+                    sendMessage(false, -1);
+                }
+            }
+            else
+            {
+                sendMessage(false, -1);
+            }
+        } else if (mAction == ACTION_SET_HW_STATUS_LTEVENT) {
 
 			sendMessage(true, -1);
 

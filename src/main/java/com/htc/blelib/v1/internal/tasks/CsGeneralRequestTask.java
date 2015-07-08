@@ -9,7 +9,6 @@ import com.htc.blelib.v1.interfaces.ICsConnectivityService.GeneralRequest;
 
 import com.htc.blelib.v1.internal.callables.CsBleReceiveNotificationCallable;
 import com.htc.blelib.v1.internal.callables.CsBleWriteCallable;
-import com.htc.blelib.v1.internal.callables.CsBootUpCallable;
 import com.htc.blelib.v1.internal.common.Common;
 import com.htc.blelib.v1.internal.common.CsConnectivityTask;
 import com.htc.blelib.v1.internal.component.le.CsBleGattAttributeUtil;
@@ -73,48 +72,33 @@ public class CsGeneralRequestTask extends CsConnectivityTask {
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> future, futureA;
 
-        if (mAction == ACTION_GET_HW_STATUS) {
-            Future<Integer> futureBoot;
-            Integer bootResult;
-            futureBoot = mExecutor.submit(new CsBootUpCallable(mCsBleTransceiver, mExecutor, mBluetoothDevice, mMessenger));
-            bootResult = futureBoot.get();
-            if (bootResult == Common.ERROR_SUCCESS)
+        byte[] dataArray = new byte[5];
+        dataArray[0] = (byte) mAction;
+        dataArray[1] = (byte) mUnit;
+        dataArray[2] = (byte) mLanguage;
+        dataArray[3] = (byte) mSound;
+        dataArray[4] = (byte) mBei;
+
+        futureA = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST));
+        future  = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST, dataArray));
+        result = future.get();
+        if (result != null)
+        {
+            result = futureA.get();
+            if (result != null)
             {
+                byte[] retArray = CsBleGattAttributeUtil.getGeneralPurposeEvent(result);
 
-                byte[] dataArray = new byte[5];
-                dataArray[0] = (byte) mAction;
-                dataArray[1] = (byte) mUnit;
-                dataArray[2] = (byte) mLanguage;
-                dataArray[3] = (byte) mSound;
-                dataArray[4] = (byte) mBei;
-
-                futureA = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST));
-                future  = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST, dataArray));
-                result = future.get();
-                if (result != null)
-                {
-                    result = futureA.get();
-                    if (result != null)
-                    {
-                         byte[] retArray = CsBleGattAttributeUtil.getGeneralPurposeEvent(result);
-
-                        sendMessage(true, retArray);
-                    }
-                    else
-                    {
-                        sendMessage(false, null);
-                    }
-                }
-                else
-                {
-                    sendMessage(false, null);
-                }
+                sendMessage(true, retArray);
             }
             else
             {
-                Log.d(TAG, "[CS] boot up is fail");
                 sendMessage(false, null);
             }
+        }
+        else
+        {
+            sendMessage(false, null);
         }
 
         super.to(TAG);
