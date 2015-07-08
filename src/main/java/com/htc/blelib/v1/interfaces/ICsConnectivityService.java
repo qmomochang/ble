@@ -358,7 +358,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     }
 
 
-    /// Callback
+    /// Callback  used in callable.sendMessage()
     public static final int CB_OPEN_RESULT                                     = 7000;
     public static final int CB_CLOSE_RESULT                                 = 7001;
     public static final int CB_LONG_TERM_EVENT_RESULT                        = 7002;
@@ -445,6 +445,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final int CB_GET_MODEM_STATUS_RESULT                        = 9500;
     public static final int CB_UNLOCK_SIM_PIN_RESULT                        = 9501;
 
+    public static final int CB_GET_POWER_LEVEL_RESULT                        = 10000;
 
     /// Parameters
     public static final String PARAM_RESULT                                = "result";
@@ -464,6 +465,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final String PARAM_ADAPTER_PLUGIN                        = "adapter_plugin";
     public static final String PARAM_SIM_HW_STATUS                        = "sim_hw_status";
     public static final String PARAM_CS_POWER                            = "cs_power";
+    public static final String PARAM_CS_POWER_LEVEL                            = "cs_power_level";// spec v0.6
     public static final String PARAM_OPERATION                            = "operation";
     public static final String PARAM_OPERATION_ERROR_CODE                = "operation_error_code";
     public static final String PARAM_CAMERA_MODE                        = "camera_mode";

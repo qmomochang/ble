@@ -40,7 +40,10 @@ public class CsBleGattAttributes {
         SET_DATETIME_REQUEST              ((byte)0x51),
         CS_VERSION_EVENT                  ((byte)0x52),
         GET_DATETIME_REQUEST              ((byte)0x53),
-        DEVICEINFO_REQUEST_EVENT          ((byte)0x54);
+        DEVICEINFO_REQUEST_EVENT          ((byte)0x54),
+        LATEST_SYNC_STATUS_REQUEST        ((byte)0x55),
+        LATEST_SYNC_STATUS_EVENT          ((byte)0x56);
+
 
         private final byte id;
         CsV1CommandEnum(byte idx)
@@ -66,14 +69,20 @@ public class CsBleGattAttributes {
             return null;
         }
     }
-    public static String CS_V1_COMMANDTYPE1             = "0000cf01-0000-1000-8000-00805f9b34fb";// short command write/notify
-    public static String CS_V1_COMMANDTYPE2             = "0000cf02-0000-1000-8000-00805f9b34fb";// long command write/notify
+    public static String CS_V1_COMMANDTYPE1             = "0000df01-0000-1000-8000-00805f9b34fb";// short command write/notify
+    public static String CS_V1_COMMANDTYPE2             = "0000df02-0000-1000-8000-00805f9b34fb";// long command write/notify
+    public static String CS_V1_BATTERY_LEVEL            = "00002a19-0000-1000-8000-00805f9b34fb";
+    public static String CS_V1_MFG_NAME_STRING          = "00002a29-0000-1000-8000-00805f9b34fb";
+    public static String CS_V1_MODEL_NUMBER_STRING      = "00002a24-0000-1000-8000-00805f9b34fb";
+    public static String CS_V1_FIRMWARE_REV_STRING      = "00002a26-0000-1000-8000-00805f9b34fb";
+
 
     public static String CS_SERVICE                     = "0000a000-0000-1000-8000-00805f9b34fb";
-    public static String CS_DEVICE_INFORMATION          = "0000180a-0000-1000-8000-00805f9b34fb";
+    public static String CS_DEVICE_INFORMATION          = "0000180a-0000-1000-8000-00805f9b34fb";// CS_BLE_SDK_v0.6
+    public static String CS_BATTERY_SERVICE             = "0000180f-0000-1000-8000-00805f9b34fb";// CS_BLE_SDK_v0.6
     public static String CS_DESCRIPTOR                  = "00002902-0000-1000-8000-00805f9b34fb";
 
-    public static String CS_FW_REVISION                 = "00002a26-0000-1000-8000-00805f9b34fb";
+    public static String CS_FW_REVISION                 = "00002a26-0000-1000-8000-00805f9b34fb";// dupe with CS_V1_FIRMWARE_REV_STRING
 
     public static String CS_BOOT_UP_READY               = "0000a101-0000-1000-8000-00805f9b34fb";
     public static String CS_HW_STATUS                   = "0000a102-0000-1000-8000-00805f9b34fb";
