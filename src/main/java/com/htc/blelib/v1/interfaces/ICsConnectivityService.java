@@ -400,7 +400,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final int CB_GET_HW_STATUS_RESULT                            = 8304;
 //    public static final int CB_SET_FLIGHT_MODE_RESULT                        = 8305;
 //    public static final int CB_SET_AUTOSLEEP_TIMER_OFFSET_RESULT            = 8306;
-    public static final int CB_TRIGGER_FWUPDATE_REQUEST                        = 8307;
+//    public static final int CB_TRIGGER_FWUPDATE_REQUEST                        = 8307;
 
     public static final int CB_FACTORY_RESET_REQUEST                        = 8400;
 
@@ -501,7 +501,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final String PARAM_MOD_FW_VERSION                        = "modem_fw_version";
 //    public static final String PARAM_MCU_FW_VERSION                        = "mcu_fw_version";
 //    public static final String PARAM_BLE_FW_VERSION                        = "ble_fw_version";
-    public static final String PARAM_TRIGGER_FWUPDATE_RESULT            = "trigger_fw_update_result";
+//    public static final String PARAM_TRIGGER_FWUPDATE_RESULT            = "trigger_fw_update_result";
     public static final String PARAM_FACTORY_RESET_RESULT            = "factory_reset_result";
 //    public static final String PARAM_FWUPDATE_RESULT                    = "fw_update_result";
 //    public static final String PARAM_VERIFY_PASSWORD_STATUS                = "verify_password_status";

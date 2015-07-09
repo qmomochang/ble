@@ -14,9 +14,9 @@ public class CsBleGattAttributes {
 
         POWER_REQUEST                  ((byte)0x11),
         POWER_STATUS_EVENT             ((byte)0x12),
-        TRIGGER_FWUPDATE_REQUEST          ((byte)0x13),
-        TRIGGER_FWUPDATE_RESULT_EVENT     ((byte)0x14),
-        LAST_FWUPDATE_RESULT_EVENT        ((byte)0x15),
+//        TRIGGER_FWUPDATE_REQUEST          ((byte)0x13),
+//        TRIGGER_FWUPDATE_RESULT_EVENT     ((byte)0x14),
+//        LAST_FWUPDATE_RESULT_EVENT        ((byte)0x15),
         FACTORY_RESET_REQUEST             ((byte)0x16),
         FACTORY_RESET_RESULT_EVENT        ((byte)0x17),
 
@@ -133,9 +133,9 @@ public class CsBleGattAttributes {
 
         mUuidV1Map.put(CsV1CommandEnum.POWER_REQUEST.getID()                 , CS_V1_COMMANDTYPE1);     //((byte)0x11),
         mUuidV1Map.put(CsV1CommandEnum.POWER_STATUS_EVENT.getID()            , CS_V1_COMMANDTYPE1);     //((byte)0x12),
-        mUuidV1Map.put(CsV1CommandEnum.TRIGGER_FWUPDATE_REQUEST.getID()         , CS_V1_COMMANDTYPE1);     //((byte)0x13),
-        mUuidV1Map.put(CsV1CommandEnum.TRIGGER_FWUPDATE_RESULT_EVENT.getID()    , CS_V1_COMMANDTYPE1);     //((byte)0x14),
-        mUuidV1Map.put(CsV1CommandEnum.LAST_FWUPDATE_RESULT_EVENT.getID()       , CS_V1_COMMANDTYPE1);     //((byte)0x15),
+//        mUuidV1Map.put(CsV1CommandEnum.TRIGGER_FWUPDATE_REQUEST.getID()         , CS_V1_COMMANDTYPE1);     //((byte)0x13),
+//        mUuidV1Map.put(CsV1CommandEnum.TRIGGER_FWUPDATE_RESULT_EVENT.getID()    , CS_V1_COMMANDTYPE1);     //((byte)0x14),
+//        mUuidV1Map.put(CsV1CommandEnum.LAST_FWUPDATE_RESULT_EVENT.getID()       , CS_V1_COMMANDTYPE1);     //((byte)0x15),
         mUuidV1Map.put(CsV1CommandEnum.FACTORY_RESET_REQUEST.getID()      , CS_V1_COMMANDTYPE1);     //((byte)0x16),
         mUuidV1Map.put(CsV1CommandEnum.FACTORY_RESET_RESULT_EVENT.getID()       , CS_V1_COMMANDTYPE1);     //((byte)0x17),
 
