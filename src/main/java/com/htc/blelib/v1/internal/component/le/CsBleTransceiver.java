@@ -340,11 +340,7 @@ public class CsBleTransceiver implements IGattRequest {
 
             Log.d(TAG, "[CS] onCharacteristicChanged NOTIFICATION!!");
 
-            // Test code
-            printCharacteristic("NOTIFY", characteristic);
-
-            BluetoothGattCharacteristic ltNotify = CsBleGattAttributeUtil.convertLTNotify(characteristic);
-            if (ltNotify != null) {
+            if (characteristic != null) {
 
                 final LinkedList<CsBleTransceiverListener> listeners;
                 synchronized(mListeners){
@@ -354,7 +350,7 @@ public class CsBleTransceiver implements IGattRequest {
 
                 for (CsBleTransceiverListener listener : listeners) {
 
-                    listener.onNotificationReceive(gatt.getDevice(), ltNotify);
+                    listener.onNotificationReceive(gatt.getDevice(), characteristic);
                 }
             }
         }

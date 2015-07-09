@@ -3,9 +3,6 @@ package com.htc.blelib.v1.internal.component.le;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
-import com.htc.blelib.v1.interfaces.ICsConnectivityService.Operation;
-import com.htc.blelib.v1.interfaces.ICsConnectivityService.OperationEvent;
-
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
 
@@ -106,46 +103,6 @@ public class CsBleGattAttributeUtil {
         }
 
         return ret;
-    }
-
-
-
-    public static BluetoothGattCharacteristic convertLTNotify(BluetoothGattCharacteristic characteristic) {
-
-        BluetoothGattCharacteristic retCharacteristic =    characteristic;
-/*
-        if (characteristic != null) {
-
-            UUID uuidCurr = characteristic.getUuid();
-
-            if (uuidCurr.toString().equals(CsBleGattAttributes.CS_SHORT_COMMAND_NOTIFY) || uuidCurr.toString().equals(CsBleGattAttributes.CS_LONG_COMMAND_NOTIFY)) {
-
-                byte[] value = characteristic.getValue();
-                Byte id = value[0];
-                String uuidString = CsBleGattAttributes.lookupUuid(id);
-
-                if ((value.length > 1) && (uuidString != null)) {
-
-                    UUID uuidNew = UUID.fromString(uuidString);
-
-                    retCharacteristic =    new BluetoothGattCharacteristic(uuidNew, characteristic.getProperties(), characteristic.getPermissions());
-
-                    byte[] valueNew = new byte[value.length - 1];
-                    for (int cnt = 0; cnt < (value.length - 1); cnt++) {
-
-                        valueNew[cnt] = value[cnt + 1];
-                    }
-
-                    retCharacteristic.setValue(valueNew);
-                }
-
-            } else if (uuidCurr.toString().equals(CsBleGattAttributes.CS_PSW_VERIFY)) {
-
-                retCharacteristic = characteristic;
-            }
-        }
-*/
-        return retCharacteristic;
     }
 
 
@@ -336,44 +293,6 @@ public class CsBleGattAttributeUtil {
 
 
 
-    public static int getOperationResult(BluetoothGattCharacteristic characteristic, Operation operation) {
-
-        int ret = -1;
-        byte[] resultArray = characteristic.getValue();
-
-        Log.d(TAG, "[CS] getOperationResult CommandID = " + resultArray[0]);
-
-        //if (resultArray[0] == CsBleGattAttributes.CsV1CommandEnum.OPERATION_STATUS_EVENT.getID()) {
-
-        //    byte type = resultArray[1];
-
-        //    if (OperationEvent.OPEVENT_START_CAPTURING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_CAPTURE_START))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_START_RECORDING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_VIDEO_RECORDING_NORMAL_START) || operation.equals(Operation.OPERATION_VIDEO_RECORDING_SLOW_MOTION_START) || operation.equals(Operation.OPERATION_BROADCAST_START))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_STOP_RECORDING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_VIDEO_RECORDING_NORMAL_STOP) || operation.equals(Operation.OPERATION_VIDEO_RECORDING_SLOW_MOTION_STOP) || operation.equals(Operation.OPERATION_BROADCAST_STOP))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_START.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_START))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_STOP.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_STOP))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_PAUSE.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_PAUSE))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_TIME_LAPSE_RECORDING_RESUME.ordinal() == (int)type && (operation.equals(Operation.OPERATION_TIME_LAPS_RECORDING_RESUME))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_GET_DR_STATUS.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_DR_STATUS))) {
-        //        ret = 0;
-        //    } else if (OperationEvent.OPEVENT_GET_FREE_SPACE.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_FREE_SPACE))) {
-        //        ret = 0;
-        //    } else if (Operation.OPERATION_GET_TIME_LAPS_SETTING.ordinal() == (int)type && (operation.equals(Operation.OPERATION_GET_TIME_LAPS_SETTING))){
-        //        ret = 0;
-        //    }
-        //}
-
-        return ret;
-    }
-
-
     public static String getCsName(BluetoothGattCharacteristic characteristic) {
 
         String ret = "";
@@ -417,38 +336,6 @@ public class CsBleGattAttributeUtil {
         return ret;
     }
 
-    //public static String getProxy(BluetoothGattCharacteristic characteristic) {
-
-    //    String ret = null;
-
-    //    Log.d(TAG, "[CS] getProxy UUID = " + characteristic.getUuid());
-
-    //    if (characteristic.getUuid().toString().equals(CsBleGattAttributes.CS_AUTO_BACKUP_GET_PROXY)) {
-
-    //        byte[] value = characteristic.getValue();
-
-    //        Log.d(TAG, "[CS] getProxy value.length = " + value.length);
-
-    //        if ((value.length > 2) && value[0] == 0x00) {
-
-    //            ret = "";
-
-    //            for (int i = 0; i < value[3]; i++) {
-
-    //                if ((value[i + 4] > 0) && (value[i + 4] < 128)) {
-
-    //                    ret = ret + String.format("%c", value[i + 4]);
-
-    //                } else {
-
-    //                    break;
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    return ret;
-    //}
     public static byte getBatteryLevel(BluetoothGattCharacteristic characteristic) {
 
         Log.d(TAG, "[CS] getBatteryLevel UUID = " + characteristic.getUuid());

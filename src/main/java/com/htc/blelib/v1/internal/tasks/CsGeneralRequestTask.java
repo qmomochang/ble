@@ -3,9 +3,7 @@ package com.htc.blelib.v1.internal.tasks;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import com.htc.blelib.interfaces.ICsConnectivityServiceBase.PlugIO;
 import com.htc.blelib.v1.interfaces.ICsConnectivityService;
-import com.htc.blelib.v1.interfaces.ICsConnectivityService.GeneralRequest;
 
 import com.htc.blelib.v1.internal.callables.CsBleReceiveNotificationCallable;
 import com.htc.blelib.v1.internal.callables.CsBleWriteCallable;
@@ -42,22 +40,17 @@ public class CsGeneralRequestTask extends CsConnectivityTask {
 
 
 
-    public CsGeneralRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device,
-        GeneralRequest.ACTION action,
-        GeneralRequest.UNIT unit,
-        GeneralRequest.LANGUAGE language,
-        GeneralRequest.SOUND sound,
-        GeneralRequest.BEI bei ) {
+    public CsGeneralRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int action, int unit, int language, int sound, int bei ) {
 
         super(csBleTransceiver, messenger, executor);
 
         mBluetoothDevice    = device;
 
-        mAction             = action.getValue();
-        mUnit               = unit.getValue();
-        mLanguage           = language.getValue();
-        mSound              = sound.getValue();
-        mBei                = bei.getValue();
+        mAction             = action;
+        mUnit               = unit;
+        mLanguage           = language;
+        mSound              = sound;
+        mBei                = bei;
     }
 
 

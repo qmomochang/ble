@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.htc.blelib.v1.internal.common.CsConnectivityTask;
 import com.htc.blelib.v1.internal.component.le.CsBleGattAttributes;
 import com.htc.blelib.v1.internal.component.le.CsBleTransceiver;
-import com.htc.blelib.v1.internal.tasks.CsLongTermEventTask;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -36,7 +35,6 @@ public class CsConnectivityServiceImpl {
 	private AtomicBoolean mIsTaskThreadInterrupted = new AtomicBoolean(false);
 
 	private Thread mLongTermEventThread;
-	private CsLongTermEventTask mCsConnectivityLongTermEventTask;
 
 	private int mSkipTaskCount;
 
@@ -91,8 +89,6 @@ public class CsConnectivityServiceImpl {
 
 			mCsBleTransceiver = new CsBleTransceiver(mContext, mBluetoothManager);
 
-			mCsConnectivityLongTermEventTask = new CsLongTermEventTask(mCsBleTransceiver, mMessenger, mExecutor, mCsConnectivityServiceListener);
-
 			open();
 
 		} catch (Exception e) {
@@ -134,22 +130,6 @@ public class CsConnectivityServiceImpl {
 		bServiceAvailable = value;
 	}
 
-
-
-	protected void registerLTEvent(BluetoothDevice device, CsBleGattAttributes.CsV1CommandEnum commandID) {
-
-		mCsConnectivityLongTermEventTask.registerUuid(device, commandID);
-	}
-
-
-
-	protected void unregisterLTEvent(BluetoothDevice device, CsBleGattAttributes.CsV1CommandEnum commandID) {
-
-		mCsConnectivityLongTermEventTask.unregisterUuid(device, commandID);
-	}
-
-
-
 	protected void open() {
 
 		Log.d(TAG, "[CS] open");
@@ -170,12 +150,6 @@ public class CsConnectivityServiceImpl {
 
 						mTaskThread = new Thread(mTaskRunnable, "CsConnectivityTaskThread");
 						mTaskThread.start();
-					}
-
-					if (mLongTermEventThread == null) {
-
-						mLongTermEventThread = new Thread(mLongTermEventRunnable, "CsConnectivityLongTermEventThread");
-						mLongTermEventThread.start();
 					}
 
 				} catch (Exception e) {
@@ -257,32 +231,6 @@ public class CsConnectivityServiceImpl {
 						task.error(e);
 					}
 				}
-			}
-		}
-	};
-
-
-
-	private final Runnable mLongTermEventRunnable = new Runnable() {
-
-		@Override
-		public void run() {
-
-			while (mLongTermEventThread.isInterrupted() == false) {
-
-				try {
-
-					mCsConnectivityLongTermEventTask.execute();
-
-				} catch (InterruptedException e) {
-
-					Log.d(TAG, "[CS] mLongTermEventRunnable interrupted");
-					break;
-				} catch (Exception e) {
-
-					Log.d(TAG, "[CS] mLongTermEventRunnable e = " + e);
-				}
-
 			}
 		}
 	};
