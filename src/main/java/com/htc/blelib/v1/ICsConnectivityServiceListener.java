@@ -4,5 +4,5 @@ package com.htc.blelib.v1;
 
 public interface ICsConnectivityServiceListener {
 
-   	public void onError(int errorCode);
+       public void onError(int errorCode);
 }

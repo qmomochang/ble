@@ -26,34 +26,34 @@ import android.util.Log;
 
 public class CsSetClientCredentialsRequestTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsSetClientCredentialsRequestTask";
+    private final static String TAG = "CsSetClientCredentialsRequestTask";
 
-	private BluetoothDevice mBluetoothDevice;
-	private int mAction;
-	private String mClientID;
-	private String mClientSecret;
-	private byte [] mClientAccessToken;
-	private byte [] mClientRefreshToken;
+    private BluetoothDevice mBluetoothDevice;
+    private int mAction;
+    private String mClientID;
+    private String mClientSecret;
+    private byte [] mClientAccessToken;
+    private byte [] mClientRefreshToken;
 
-	public CsSetClientCredentialsRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int action, String clientID, String clientSecret, byte [] clientAccessToken, byte [] clientRefreshToken) {
+    public CsSetClientCredentialsRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int action, String clientID, String clientSecret, byte [] clientAccessToken, byte [] clientRefreshToken) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
+        mBluetoothDevice = device;
 
-		mAction = action;
+        mAction = action;
         mClientID = clientID;
         mClientSecret = clientSecret;
         mClientAccessToken = clientAccessToken;
         mClientRefreshToken = clientRefreshToken;
-	}
+    }
 
-	@Override
-	public void execute() throws Exception {
+    @Override
+    public void execute() throws Exception {
 
-		super.execute();
+        super.execute();
 
-		super.from();
+        super.from();
 
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> futureA0, futureA1, futureB;
@@ -113,46 +113,46 @@ public class CsSetClientCredentialsRequestTask extends CsConnectivityTask {
 
         try {
 
-			Message outMsg = Message.obtain();
+            Message outMsg = Message.obtain();
 
             outMsg.what = ICsConnectivityService.CB_SET_NAME_RESULT;
 
-			Bundle outData = new Bundle();
+            Bundle outData = new Bundle();
 
-			if (result) {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-			} else {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            if (result) {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            } else {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
 
             outData.putByteArray(ICsConnectivityService.PARAM_CLIENT_CREDENTIALS_EVENT_RESULT, retArray);
 
-			outMsg.setData(outData);
+            outMsg.setData(outData);
 
-			mMessenger.send(outMsg);
+            mMessenger.send(outMsg);
 
-		} catch (RemoteException e) {
+        } catch (RemoteException e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-		sendMessage(false, null);
-	}
+        sendMessage(false, null);
+    }
 
-	private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
+    private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
 
-		Future<BluetoothGattCharacteristic> future;
+        Future<BluetoothGattCharacteristic> future;
 
-		future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
-		if (future.get() == null) {
+        future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
+        if (future.get() == null) {
 
-			Log.d(TAG, "[CS] unregisterNotify error!!!");
-			return;
-		}
-	}
+            Log.d(TAG, "[CS] unregisterNotify error!!!");
+            return;
+        }
+    }
 
 }

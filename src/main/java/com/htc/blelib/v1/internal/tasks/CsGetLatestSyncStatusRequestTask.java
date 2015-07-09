@@ -26,23 +26,23 @@ import android.util.Log;
 
 public class CsGetLatestSyncStatusRequestTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsGetLatestSyncStatusRequestTask";
+    private final static String TAG = "CsGetLatestSyncStatusRequestTask";
 
-	private BluetoothDevice mBluetoothDevice;
+    private BluetoothDevice mBluetoothDevice;
 
-	public CsGetLatestSyncStatusRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
+    public CsGetLatestSyncStatusRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
-	}
+        mBluetoothDevice = device;
+    }
 
-	@Override
-	public void execute() throws Exception {
+    @Override
+    public void execute() throws Exception {
 
-		super.execute();
+        super.execute();
 
-		super.from();
+        super.from();
 
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> futureA0, futureA1, futureB;
@@ -88,46 +88,46 @@ public class CsGetLatestSyncStatusRequestTask extends CsConnectivityTask {
 
         try {
 
-			Message outMsg = Message.obtain();
+            Message outMsg = Message.obtain();
 
             outMsg.what = ICsConnectivityService.CB_SET_NAME_RESULT;
 
-			Bundle outData = new Bundle();
+            Bundle outData = new Bundle();
 
-			if (result) {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-			} else {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            if (result) {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            } else {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
 
             outData.putByteArray(ICsConnectivityService.PARAM_CS_LATEST_SYNC_STATUS_RESULT, retArray);
 
-			outMsg.setData(outData);
+            outMsg.setData(outData);
 
-			mMessenger.send(outMsg);
+            mMessenger.send(outMsg);
 
-		} catch (RemoteException e) {
+        } catch (RemoteException e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-		sendMessage(false, null);
-	}
+        sendMessage(false, null);
+    }
 
-	private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
+    private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
 
-		Future<BluetoothGattCharacteristic> future;
+        Future<BluetoothGattCharacteristic> future;
 
-		future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
-		if (future.get() == null) {
+        future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
+        if (future.get() == null) {
 
-			Log.d(TAG, "[CS] unregisterNotify error!!!");
-			return;
-		}
-	}
+            Log.d(TAG, "[CS] unregisterNotify error!!!");
+            return;
+        }
+    }
 
 }

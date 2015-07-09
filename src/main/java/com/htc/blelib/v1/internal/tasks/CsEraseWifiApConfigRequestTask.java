@@ -26,31 +26,31 @@ import android.util.Log;
 
 public class CsEraseWifiApConfigRequestTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsEraseWifiApConfigRequestTask";
+    private final static String TAG = "CsEraseWifiApConfigRequestTask";
     private final static int DATA_OFFSET_INDEX = 2;
     private final static int DATA_ADD_END = 1;
     private final static int MAX_DATA_LENGTH = 33;
 
-	private BluetoothDevice mBluetoothDevice;
-	private int mSecurity;
-	private int mSsidLength;
-	private String mSsid;
+    private BluetoothDevice mBluetoothDevice;
+    private int mSecurity;
+    private int mSsidLength;
+    private String mSsid;
 
-	public CsEraseWifiApConfigRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int security, String ssid) {
+    public CsEraseWifiApConfigRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int security, String ssid) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
-		mSecurity = security;
+        mBluetoothDevice = device;
+        mSecurity = security;
         mSsid = ssid;
-	}
+    }
 
-	@Override
-	public void execute() throws Exception {
+    @Override
+    public void execute() throws Exception {
 
-		super.execute();
+        super.execute();
 
-		super.from();
+        super.from();
 
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> futureA0, futureA1, futureB;
@@ -86,31 +86,31 @@ public class CsEraseWifiApConfigRequestTask extends CsConnectivityTask {
 
         try {
 
-			Message outMsg = Message.obtain();
+            Message outMsg = Message.obtain();
 
             outMsg.what = ICsConnectivityService.CB_ERASE_WIFI_AP_CONFIG_RESULT;
 
-			Bundle outData = new Bundle();
+            Bundle outData = new Bundle();
 
-			if (result) {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-			} else {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            if (result) {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            } else {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
 
-			outMsg.setData(outData);
-			mMessenger.send(outMsg);
+            outMsg.setData(outData);
+            mMessenger.send(outMsg);
 
-		} catch (RemoteException e) {
+        } catch (RemoteException e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-		sendMessage(false, null);
-	}
+        sendMessage(false, null);
+    }
 
 }

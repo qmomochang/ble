@@ -26,9 +26,9 @@ import android.util.Log;
 
 public class CsSetDatetimeRequestTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsSetDatetimeRequestTask";
+    private final static String TAG = "CsSetDatetimeRequestTask";
 
-	private BluetoothDevice mBluetoothDevice;
+    private BluetoothDevice mBluetoothDevice;
     private int mUwYear16;
     private int mMonth;
     private int mDay;
@@ -37,11 +37,11 @@ public class CsSetDatetimeRequestTask extends CsConnectivityTask {
     private int mSecond;
     private int mTimeZone;
 
-	public CsSetDatetimeRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int uwYear16, int month, int day, int hour, int minute, int second, int timeZone) {
+    public CsSetDatetimeRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int uwYear16, int month, int day, int hour, int minute, int second, int timeZone) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
+        mBluetoothDevice = device;
 
         mUwYear16   = uwYear16;
         mMonth      = month;    // 0-11
@@ -50,14 +50,14 @@ public class CsSetDatetimeRequestTask extends CsConnectivityTask {
         mMinute     = minute;   // 0-59
         mSecond     = second;   // 0-59
         mTimeZone   = timeZone; // offset in minutes (Default offset: 1000, Range:280 ~ 1840(Original Range: -720 ~ 840))  (0x0: non Time zone)
-	}
+    }
 
-	@Override
-	public void execute() throws Exception {
+    @Override
+    public void execute() throws Exception {
 
-		super.execute();
+        super.execute();
 
-		super.from();
+        super.from();
 
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> futureB;
@@ -88,32 +88,32 @@ public class CsSetDatetimeRequestTask extends CsConnectivityTask {
 
         try {
 
-			Message outMsg = Message.obtain();
+            Message outMsg = Message.obtain();
 
             outMsg.what = ICsConnectivityService.CB_SET_DATE_TIME_RESULT;
 
-			Bundle outData = new Bundle();
+            Bundle outData = new Bundle();
 
-			if (result) {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-			} else {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            if (result) {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            } else {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
 
-			//outMsg.setData(outData);
+            //outMsg.setData(outData);
 
-			mMessenger.send(outMsg);
+            mMessenger.send(outMsg);
 
-		} catch (RemoteException e) {
+        } catch (RemoteException e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-		sendMessage(false, null);
-	}
+        sendMessage(false, null);
+    }
 
 }

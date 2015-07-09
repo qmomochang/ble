@@ -26,11 +26,11 @@ import android.util.Log;
 
 public class CsSetProfileGeneralRequest extends CsConnectivityTask {
 
-	private final static String TAG = "CsSetProfileGeneralRequest";
+    private final static String TAG = "CsSetProfileGeneralRequest";
 
-	private BluetoothDevice mBluetoothDevice;
-	private int mAction;
-	private String mName;
+    private BluetoothDevice mBluetoothDevice;
+    private int mAction;
+    private String mName;
     private String mUserID;
     private String mUserName;
     private String mDataSrcId;
@@ -43,14 +43,14 @@ public class CsSetProfileGeneralRequest extends CsConnectivityTask {
     private int mWeight;
     private byte [] mUserNamePic;
 
-	public CsSetProfileGeneralRequest(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device,
+    public CsSetProfileGeneralRequest(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device,
         int action,     String userID,  String userName,    byte [] accessToken,    byte [] refreshToken,   String dataSrcId,
         int birthYear,  int birthMonth, int birthDay,       int height,             int weight,             byte [] userNamePic) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
-		mAction = action;
+        mBluetoothDevice = device;
+        mAction = action;
         mUserID = userID;
         mUserName = userName;
         mDataSrcId = dataSrcId;
@@ -63,19 +63,19 @@ public class CsSetProfileGeneralRequest extends CsConnectivityTask {
         mHeight = height;
         mWeight = weight;
         mUserNamePic = userNamePic;
-	}
+    }
 
-	private void setName(String name)
-	{
-		mName = name;
-	}
+    private void setName(String name)
+    {
+        mName = name;
+    }
 
-	@Override
-	public void execute() throws Exception {
+    @Override
+    public void execute() throws Exception {
 
-		super.execute();
+        super.execute();
 
-		super.from();
+        super.from();
 
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> futureA0, futureA1, futureB;
@@ -147,46 +147,46 @@ public class CsSetProfileGeneralRequest extends CsConnectivityTask {
 
         try {
 
-			Message outMsg = Message.obtain();
+            Message outMsg = Message.obtain();
 
             outMsg.what = ICsConnectivityService.CB_SET_PROFILE_RESULT;
 
-			Bundle outData = new Bundle();
+            Bundle outData = new Bundle();
 
-			if (result) {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-			} else {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            if (result) {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            } else {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
 
             outData.putByteArray(ICsConnectivityService.PARAM_PROFILE_GENERAL_EVENT_RESULT, retArray);
 
-			outMsg.setData(outData);
+            outMsg.setData(outData);
 
-			mMessenger.send(outMsg);
+            mMessenger.send(outMsg);
 
-		} catch (RemoteException e) {
+        } catch (RemoteException e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-		sendMessage(false, null);
-	}
+        sendMessage(false, null);
+    }
 
-	private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
+    private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
 
-		Future<BluetoothGattCharacteristic> future;
+        Future<BluetoothGattCharacteristic> future;
 
-		future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
-		if (future.get() == null) {
+        future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
+        if (future.get() == null) {
 
-			Log.d(TAG, "[CS] unregisterNotify error!!!");
-			return;
-		}
-	}
+            Log.d(TAG, "[CS] unregisterNotify error!!!");
+            return;
+        }
+    }
 
 }

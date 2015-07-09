@@ -16,101 +16,101 @@ import android.util.Log;
 
 public class CsBleConnectCallable implements Callable<Integer> {
 
-	private final static String TAG = "CsBleConnectCallable";
+    private final static String TAG = "CsBleConnectCallable";
 
-	private final static int DEFAULT_CALLABLE_TIMEOUT = 60000;
+    private final static int DEFAULT_CALLABLE_TIMEOUT = 60000;
 
-	protected CsBleTransceiver mCsBleTransceiver;
-	protected BluetoothDevice mBluetoothDevice;
+    protected CsBleTransceiver mCsBleTransceiver;
+    protected BluetoothDevice mBluetoothDevice;
 
-	private final LinkedBlockingQueue<CsBleTransceiverErrorCode> mCallbackQueue = new LinkedBlockingQueue<CsBleTransceiverErrorCode>();
-	private Integer mStatus;
+    private final LinkedBlockingQueue<CsBleTransceiverErrorCode> mCallbackQueue = new LinkedBlockingQueue<CsBleTransceiverErrorCode>();
+    private Integer mStatus;
 
-	private CsBleTransceiverListener mCsBleTransceiverListener = new CsBleTransceiverListener() {
+    private CsBleTransceiverListener mCsBleTransceiverListener = new CsBleTransceiverListener() {
 
-		@Override
-		public void onConnected(BluetoothDevice device) {
+        @Override
+        public void onConnected(BluetoothDevice device) {
 
-			Log.d(TAG, "[CS] onConnected. device = " + device);
+            Log.d(TAG, "[CS] onConnected. device = " + device);
 
-			if (device.equals(mBluetoothDevice)) {
+            if (device.equals(mBluetoothDevice)) {
 
-				addCallback(CsBleTransceiverErrorCode.ERROR_NONE);
-			}
-		}
+                addCallback(CsBleTransceiverErrorCode.ERROR_NONE);
+            }
+        }
 
-		@Override
-		public void onDisconnectedFromGattServer(BluetoothDevice device) {
+        @Override
+        public void onDisconnectedFromGattServer(BluetoothDevice device) {
 
-			Log.d(TAG, "[CS] onDisconnectedFromGattServer device = " + device);
+            Log.d(TAG, "[CS] onDisconnectedFromGattServer device = " + device);
 
-			if (device.equals(mBluetoothDevice)) {
+            if (device.equals(mBluetoothDevice)) {
 
-				addCallback(CsBleTransceiverErrorCode.ERROR_DISCONNECTED_FROM_GATT_SERVER);
-			}
-		}
+                addCallback(CsBleTransceiverErrorCode.ERROR_DISCONNECTED_FROM_GATT_SERVER);
+            }
+        }
 
-		@Override
-		public void onError(BluetoothDevice device, BluetoothGattCharacteristic characteristic, CsBleTransceiverErrorCode errorCode) {
+        @Override
+        public void onError(BluetoothDevice device, BluetoothGattCharacteristic characteristic, CsBleTransceiverErrorCode errorCode) {
 
-			Log.d(TAG, "[CS] onError. device = " + device + ", errorCode = " + errorCode);
+            Log.d(TAG, "[CS] onError. device = " + device + ", errorCode = " + errorCode);
 
-			if (device.equals(mBluetoothDevice)) {
+            if (device.equals(mBluetoothDevice)) {
 
-				addCallback(errorCode);
-			}
-		}
-	};
+                addCallback(errorCode);
+            }
+        }
+    };
 
-	public CsBleConnectCallable(CsBleTransceiver transceiver, BluetoothDevice device) {
+    public CsBleConnectCallable(CsBleTransceiver transceiver, BluetoothDevice device) {
 
-		mCsBleTransceiver = transceiver;
-		mBluetoothDevice = device;
-	}
+        mCsBleTransceiver = transceiver;
+        mBluetoothDevice = device;
+    }
 
-	@Override
-	public Integer call() throws Exception {
+    @Override
+    public Integer call() throws Exception {
 
-		Integer ret = 0;
+        Integer ret = 0;
 
-		mCsBleTransceiver.registerListener(mCsBleTransceiverListener);
+        mCsBleTransceiver.registerListener(mCsBleTransceiverListener);
 
-		mStatus = 0;
+        mStatus = 0;
 
-		if (mCsBleTransceiver.connect(mBluetoothDevice, false)) {
+        if (mCsBleTransceiver.connect(mBluetoothDevice, false)) {
 
-			CsBleTransceiverErrorCode errorCode = mCallbackQueue.poll(DEFAULT_CALLABLE_TIMEOUT, TimeUnit.MILLISECONDS);
+            CsBleTransceiverErrorCode errorCode = mCallbackQueue.poll(DEFAULT_CALLABLE_TIMEOUT, TimeUnit.MILLISECONDS);
 
-			if (errorCode == null) {
+            if (errorCode == null) {
 
-				mCsBleTransceiver.disconnectForce(mBluetoothDevice);
+                mCsBleTransceiver.disconnectForce(mBluetoothDevice);
 
-				mStatus = -2;
+                mStatus = -2;
 
-			} else if (errorCode != CsBleTransceiverErrorCode.ERROR_NONE) {
+            } else if (errorCode != CsBleTransceiverErrorCode.ERROR_NONE) {
 
-				mStatus = -1;
-			}
+                mStatus = -1;
+            }
 
-		} else {
+        } else {
 
-			mStatus = -3;
-		}
+            mStatus = -3;
+        }
 
-		mCsBleTransceiver.unregisterListener(mCsBleTransceiverListener);
+        mCsBleTransceiver.unregisterListener(mCsBleTransceiverListener);
 
-		ret = mStatus;
+        ret = mStatus;
 
-		return ret;
-	}
+        return ret;
+    }
 
-	protected synchronized void addCallback(CsBleTransceiverErrorCode errorCode) {
+    protected synchronized void addCallback(CsBleTransceiverErrorCode errorCode) {
 
-		Log.d(TAG, "[CS] addCallback errorCode = " + errorCode);
+        Log.d(TAG, "[CS] addCallback errorCode = " + errorCode);
 
-		if (errorCode != null) {
+        if (errorCode != null) {
 
-			mCallbackQueue.add(errorCode);
-		}
-	}
+            mCallbackQueue.add(errorCode);
+        }
+    }
 }

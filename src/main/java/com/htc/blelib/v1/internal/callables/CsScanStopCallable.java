@@ -13,47 +13,47 @@ import android.os.Messenger;
 
 public class CsScanStopCallable implements Callable<Integer> {
 
-	private final static String TAG = "CsScanStopCallable";
+    private final static String TAG = "CsScanStopCallable";
 
-	protected CsBleScanner mCsBleScanner;
-	protected Messenger mMessenger;
-
-
-
-	public CsScanStopCallable(CsBleScanner scanner, Messenger messenger) {
-
-		mCsBleScanner = scanner;
-		mMessenger = messenger;
-	}
+    protected CsBleScanner mCsBleScanner;
+    protected Messenger mMessenger;
 
 
 
-	@Override
-	public Integer call() throws Exception {
+    public CsScanStopCallable(CsBleScanner scanner, Messenger messenger) {
 
-		Integer ret = 0;
+        mCsBleScanner = scanner;
+        mMessenger = messenger;
+    }
 
-		if (mCsBleScanner.scanStop()) {
 
-			Message outMsg = Message.obtain();
-			outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
-			Bundle outData = new Bundle();
-			outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_COMPLETE);
-			outMsg.setData(outData);
 
-			mMessenger.send(outMsg);
+    @Override
+    public Integer call() throws Exception {
 
-		} else {
+        Integer ret = 0;
 
-			Message outMsg = Message.obtain();
-			outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
-			Bundle outData = new Bundle();
-			outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_ERROR);
-			outMsg.setData(outData);
+        if (mCsBleScanner.scanStop()) {
 
-			mMessenger.send(outMsg);
-		}
+            Message outMsg = Message.obtain();
+            outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
+            Bundle outData = new Bundle();
+            outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_COMPLETE);
+            outMsg.setData(outData);
 
-		return ret;
-	}
+            mMessenger.send(outMsg);
+
+        } else {
+
+            Message outMsg = Message.obtain();
+            outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
+            Bundle outData = new Bundle();
+            outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_ERROR);
+            outMsg.setData(outData);
+
+            mMessenger.send(outMsg);
+        }
+
+        return ret;
+    }
 }

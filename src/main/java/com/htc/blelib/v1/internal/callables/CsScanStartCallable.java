@@ -19,74 +19,74 @@ import android.util.Log;
 
 public class CsScanStartCallable implements Callable<Integer> {
 
-	private static final String TAG = "CsScanStartCallable";
+    private static final String TAG = "CsScanStartCallable";
 
-	protected CsBleScanner mCsBleScanner;
-	protected Messenger mMessenger;
-
-
-
-	private CsBleScannerListener mCsBleScannerListener = new CsBleScannerListener() {
-
-		@Override
-		public void onScanHit(BluetoothDevice device, CsVersion deviceVersion) {
-
-			Log.d(TAG, "[CS] onScanHit. device = " + device);
-
-			try {
-
-				Message outMsg = Message.obtain();
-				outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
-				Bundle outData = new Bundle();
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_HIT);
-				outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
-				outData.putSerializable(ICsConnectivityScanner.PARAM_BLUETOOTH_DEVICE_VERSION, deviceVersion);
-				outMsg.setData(outData);
-
-				mMessenger.send(outMsg);
-
-			} catch (RemoteException e) {
-
-				e.printStackTrace();
-			}
-		}
-	};
+    protected CsBleScanner mCsBleScanner;
+    protected Messenger mMessenger;
 
 
 
-	public CsScanStartCallable(CsBleScanner scanner, Messenger messenger) {
+    private CsBleScannerListener mCsBleScannerListener = new CsBleScannerListener() {
 
-		mCsBleScanner = scanner;
-		mMessenger = messenger;
-	}
+        @Override
+        public void onScanHit(BluetoothDevice device, CsVersion deviceVersion) {
+
+            Log.d(TAG, "[CS] onScanHit. device = " + device);
+
+            try {
+
+                Message outMsg = Message.obtain();
+                outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
+                Bundle outData = new Bundle();
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_HIT);
+                outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, device);
+                outData.putSerializable(ICsConnectivityScanner.PARAM_BLUETOOTH_DEVICE_VERSION, deviceVersion);
+                outMsg.setData(outData);
+
+                mMessenger.send(outMsg);
+
+            } catch (RemoteException e) {
+
+                e.printStackTrace();
+            }
+        }
+    };
 
 
 
-	@Override
-	public Integer call() throws Exception {
+    public CsScanStartCallable(CsBleScanner scanner, Messenger messenger) {
 
-		Integer ret = 0;
-
-		mCsBleScanner.registerListener(mCsBleScannerListener);
-
-		if (mCsBleScanner.scanStart()) {
+        mCsBleScanner = scanner;
+        mMessenger = messenger;
+    }
 
 
-		} else {
 
-			Message outMsg = Message.obtain();
-			outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
-			Bundle outData = new Bundle();
-			outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_ERROR);
-			outMsg.setData(outData);
+    @Override
+    public Integer call() throws Exception {
 
-			mMessenger.send(outMsg);
+        Integer ret = 0;
 
-			ret = -1;
-		}
+        mCsBleScanner.registerListener(mCsBleScannerListener);
 
-		mCsBleScanner.unregisterListener(mCsBleScannerListener);
+        if (mCsBleScanner.scanStart()) {
 
-		return ret;
-	}
+
+        } else {
+
+            Message outMsg = Message.obtain();
+            outMsg.what = ICsConnectivityService.CB_BLE_SCAN_RESULT;
+            Bundle outData = new Bundle();
+            outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ScanResult.SCAN_RESULT_ERROR);
+            outMsg.setData(outData);
+
+            mMessenger.send(outMsg);
+
+            ret = -1;
+        }
+
+        mCsBleScanner.unregisterListener(mCsBleScannerListener);
+
+        return ret;
+    }
 }

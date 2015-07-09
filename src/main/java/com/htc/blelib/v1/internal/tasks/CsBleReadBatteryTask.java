@@ -23,32 +23,32 @@ import android.util.Log;
 
 public class CsBleReadBatteryTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsBleReadBatteryTask";
+    private final static String TAG = "CsBleReadBatteryTask";
 
-	public final static int ACTION_SET_NAME = 1;
-	public final static int ACTION_GET_NAME = 0;
-	public final static int MAX_DATA_LENGTH = 15;
-	public final static int DATA_OFFSET_INDEX = 1;
-	public final static int DATA_ADD_END = 1;
+    public final static int ACTION_SET_NAME = 1;
+    public final static int ACTION_GET_NAME = 0;
+    public final static int MAX_DATA_LENGTH = 15;
+    public final static int DATA_OFFSET_INDEX = 1;
+    public final static int DATA_ADD_END = 1;
 
-	private BluetoothDevice mBluetoothDevice;
-	private int mAction;
+    private BluetoothDevice mBluetoothDevice;
+    private int mAction;
 
-	public CsBleReadBatteryTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
+    public CsBleReadBatteryTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
-	}
+        mBluetoothDevice = device;
+    }
 
-	@Override
-	public void execute() throws Exception {
+    @Override
+    public void execute() throws Exception {
 
-		super.execute();
+        super.execute();
 
-		super.from();
+        super.from();
 
-		Integer bootResult;
+        Integer bootResult;
 
         Log.v(TAG,"[CS] executing CsBleReadBatteryTask");
         BluetoothGattCharacteristic result;
@@ -66,42 +66,42 @@ public class CsBleReadBatteryTask extends CsConnectivityTask {
         }
 
 
-		super.to(TAG);
-	}
+        super.to(TAG);
+    }
 
 
 
-	private void sendMessage(boolean result, byte batteryLevel) {
+    private void sendMessage(boolean result, byte batteryLevel) {
 
-		try {
+        try {
 
-			Message outMsg = Message.obtain();
+            Message outMsg = Message.obtain();
 
             outMsg.what = ICsConnectivityService.CB_GET_POWER_LEVEL_RESULT;
 
-			Bundle outData = new Bundle();
+            Bundle outData = new Bundle();
 
-			if (result) {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-			} else {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            if (result) {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            } else {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
 
             outData.putByte(ICsConnectivityService.PARAM_BATTERY_LEVEL, batteryLevel);
 
-			outMsg.setData(outData);
-			mMessenger.send(outMsg);
+            outMsg.setData(outData);
+            mMessenger.send(outMsg);
 
-		} catch (RemoteException e) {
+        } catch (RemoteException e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-		sendMessage(false, (byte)-1);
-	}
+        sendMessage(false, (byte)-1);
+    }
 
 }

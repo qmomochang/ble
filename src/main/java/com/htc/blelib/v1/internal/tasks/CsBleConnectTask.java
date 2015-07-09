@@ -22,132 +22,132 @@ import android.util.Log;
 
 public class CsBleConnectTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsBleConnectTask";
+    private final static String TAG = "CsBleConnectTask";
 
-	protected BluetoothDevice mBluetoothDevice;
-	protected boolean bConnect;
-	protected boolean bForce;
+    protected BluetoothDevice mBluetoothDevice;
+    protected boolean bConnect;
+    protected boolean bForce;
 
-	public CsBleConnectTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, boolean connect) {
+    public CsBleConnectTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, boolean connect) {
 
-		this(csBleTransceiver, messenger, executor, device, connect, false);
-	}
+        this(csBleTransceiver, messenger, executor, device, connect, false);
+    }
 
-	public CsBleConnectTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, boolean connect, boolean force) {
+    public CsBleConnectTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, boolean connect, boolean force) {
 
-		super(csBleTransceiver, messenger, executor);
-		mBluetoothDevice = device;
-		bConnect = connect;
-		bForce = force;
-	}
-
-
-
-	@Override
-	public void execute() throws Exception {
-
-		super.execute();
-
-		super.from();
-
-		if (mCsBleTransceiver != null) {
-
-			Integer result;
-			Callable<Integer> callable;
-			Future<Integer> future;
-
-			if (bConnect) {
-
-				callable = new CsBleConnectCallable(mCsBleTransceiver, mBluetoothDevice);
-
-				future = mExecutor.submit(callable);
-
-				if (future.get() != 0) {
-
-					sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, -1);
-
-				} else {
-
-/*					callable = new CsBleBondCallable(mCsBleTransceiver, mBluetoothDevice);
-					future = mExecutor.submit(callable);
-
-					if (future.get() != 0) {
-
-						sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, -1);
-
-					} else {
-
-						sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, 0);
-					}*/
-					sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, 0);
-				}
-
-			} else {
-
-				callable = new CsBleDisconnectCallable(mCsBleTransceiver, mBluetoothDevice, bForce);
-
-				future = mExecutor.submit(callable);
-
-				result = future.get();
-				Log.d(TAG, "[CS] future result = " + result);
-
-				if (bForce) {
-
-					sendMessage(ICsConnectivityService.CB_BLE_DISCONNECT_FORCE_RESULT, result);
-
-				} else {
-
-					sendMessage(ICsConnectivityService.CB_BLE_DISCONNECT_RESULT, result);
-				}
-			}
-		}
-
-		super.to(TAG);
-	}
+        super(csBleTransceiver, messenger, executor);
+        mBluetoothDevice = device;
+        bConnect = connect;
+        bForce = force;
+    }
 
 
 
-	private void sendMessage(int type, int result) {
+    @Override
+    public void execute() throws Exception {
 
-		try {
+        super.execute();
 
-			Message outMsg = Message.obtain();
-			outMsg.what = type;
-			Bundle outData = new Bundle();
+        super.from();
 
-			if (result == 0) {
+        if (mCsBleTransceiver != null) {
 
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            Integer result;
+            Callable<Integer> callable;
+            Future<Integer> future;
 
-			} else {
+            if (bConnect) {
 
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+                callable = new CsBleConnectCallable(mCsBleTransceiver, mBluetoothDevice);
 
-			outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, mBluetoothDevice);
+                future = mExecutor.submit(callable);
 
-			outMsg.setData(outData);
+                if (future.get() != 0) {
 
-			mMessenger.send(outMsg);
+                    sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, -1);
 
-		} catch (RemoteException e) {
+                } else {
 
-			e.printStackTrace();
-		}
-	}
+/*                    callable = new CsBleBondCallable(mCsBleTransceiver, mBluetoothDevice);
+                    future = mExecutor.submit(callable);
+
+                    if (future.get() != 0) {
+
+                        sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, -1);
+
+                    } else {
+
+                        sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, 0);
+                    }*/
+                    sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, 0);
+                }
+
+            } else {
+
+                callable = new CsBleDisconnectCallable(mCsBleTransceiver, mBluetoothDevice, bForce);
+
+                future = mExecutor.submit(callable);
+
+                result = future.get();
+                Log.d(TAG, "[CS] future result = " + result);
+
+                if (bForce) {
+
+                    sendMessage(ICsConnectivityService.CB_BLE_DISCONNECT_FORCE_RESULT, result);
+
+                } else {
+
+                    sendMessage(ICsConnectivityService.CB_BLE_DISCONNECT_RESULT, result);
+                }
+            }
+        }
+
+        super.to(TAG);
+    }
 
 
 
-	@Override
-	public void error(Exception e) {
+    private void sendMessage(int type, int result) {
 
-		if (bConnect) {
+        try {
 
-			sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, -1);
+            Message outMsg = Message.obtain();
+            outMsg.what = type;
+            Bundle outData = new Bundle();
 
-		} else {
+            if (result == 0) {
 
-			sendMessage(ICsConnectivityService.CB_BLE_DISCONNECT_RESULT, -1);
-		}
-	}
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+
+            } else {
+
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
+
+            outData.putParcelable(ICsConnectivityService.PARAM_BLUETOOTH_DEVICE, mBluetoothDevice);
+
+            outMsg.setData(outData);
+
+            mMessenger.send(outMsg);
+
+        } catch (RemoteException e) {
+
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Override
+    public void error(Exception e) {
+
+        if (bConnect) {
+
+            sendMessage(ICsConnectivityService.CB_BLE_CONNECT_RESULT, -1);
+
+        } else {
+
+            sendMessage(ICsConnectivityService.CB_BLE_DISCONNECT_RESULT, -1);
+        }
+    }
 }

@@ -23,96 +23,96 @@ import android.util.Log;
 
 public class CsGetBleBatteryLevelTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsGetBleBatteryLevelTask";
-	private BluetoothDevice mBluetoothDevice;
+    private final static String TAG = "CsGetBleBatteryLevelTask";
+    private BluetoothDevice mBluetoothDevice;
 
 
 
-	public CsGetBleBatteryLevelTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
+    public CsGetBleBatteryLevelTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
-	}
-
-
-
-	@Override
-	public void execute() throws Exception {
-
-		super.execute();
-
-		super.from();
-
-		BluetoothGattCharacteristic result;
-		Future<BluetoothGattCharacteristic> future;
-
-		future = mExecutor.submit(new CsBleReadCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CS_BATTERY_SERVICE, CsBleGattAttributes.CS_V1_BATTERY_LEVEL));
-		result = future.get();
-		if (result != null) {
-
-			int batteryLevel = CsBleGattAttributeUtil.getHwStatus_BatteryLevel(result);
-
-			CsConnectivityDevice csDevice = mCsBleTransceiver.getCsConnectivityDeviceGroup().getDevice(mBluetoothDevice);
-			Log.d(TAG, "[CS] csDevice = " + csDevice);
-			if (csDevice != null) {
-
-				Integer value = new Integer(batteryLevel);
-				if (value != null) {
-
-					csDevice.setVersionBle((int)(value));
-				}
-			}
-
-			sendMessage(true, batteryLevel);
-
-		} else {
-
-			sendMessage(false, -1);
-		}
-
-		super.to(TAG);
-	}
+        mBluetoothDevice = device;
+    }
 
 
 
-	private void sendMessage(boolean result, int powerLevel) {
+    @Override
+    public void execute() throws Exception {
 
-		try {
+        super.execute();
 
-			Message outMsg = Message.obtain();
-			outMsg.what = ICsConnectivityService.CB_GET_POWER_LEVEL_RESULT;
-			Bundle outData = new Bundle();
+        super.from();
 
-			if (result) {
+        BluetoothGattCharacteristic result;
+        Future<BluetoothGattCharacteristic> future;
 
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+        future = mExecutor.submit(new CsBleReadCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CS_BATTERY_SERVICE, CsBleGattAttributes.CS_V1_BATTERY_LEVEL));
+        result = future.get();
+        if (result != null) {
 
-			} else {
+            int batteryLevel = CsBleGattAttributeUtil.getHwStatus_BatteryLevel(result);
 
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            CsConnectivityDevice csDevice = mCsBleTransceiver.getCsConnectivityDeviceGroup().getDevice(mBluetoothDevice);
+            Log.d(TAG, "[CS] csDevice = " + csDevice);
+            if (csDevice != null) {
 
-			if (powerLevel != -1) {
+                Integer value = new Integer(batteryLevel);
+                if (value != null) {
 
-				outData.putInt(ICsConnectivityService.PARAM_CS_POWER_LEVEL, powerLevel);
-			}
+                    csDevice.setVersionBle((int)(value));
+                }
+            }
 
-			outMsg.setData(outData);
+            sendMessage(true, batteryLevel);
 
-			mMessenger.send(outMsg);
+        } else {
 
-		} catch (RemoteException e) {
+            sendMessage(false, -1);
+        }
 
-			e.printStackTrace();
-		}
-	}
+        super.to(TAG);
+    }
 
 
 
-	@Override
-	public void error(Exception e) {
+    private void sendMessage(boolean result, int powerLevel) {
 
-		sendMessage(false, -1);
-	}
+        try {
+
+            Message outMsg = Message.obtain();
+            outMsg.what = ICsConnectivityService.CB_GET_POWER_LEVEL_RESULT;
+            Bundle outData = new Bundle();
+
+            if (result) {
+
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+
+            } else {
+
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
+
+            if (powerLevel != -1) {
+
+                outData.putInt(ICsConnectivityService.PARAM_CS_POWER_LEVEL, powerLevel);
+            }
+
+            outMsg.setData(outData);
+
+            mMessenger.send(outMsg);
+
+        } catch (RemoteException e) {
+
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Override
+    public void error(Exception e) {
+
+        sendMessage(false, -1);
+    }
 }

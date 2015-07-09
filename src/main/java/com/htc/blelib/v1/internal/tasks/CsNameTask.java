@@ -26,48 +26,48 @@ import android.util.Log;
 
 public class CsNameTask extends CsConnectivityTask {
 
-	private final static String TAG = "CsNameTask";
+    private final static String TAG = "CsNameTask";
 
-	public final static int ACTION_SET_NAME = 1;
-	public final static int ACTION_GET_NAME = 0;
-	public final static int MAX_DATA_LENGTH = 15;
-	public final static int DATA_OFFSET_INDEX = 1;
-	public final static int DATA_ADD_END = 1;
+    public final static int ACTION_SET_NAME = 1;
+    public final static int ACTION_GET_NAME = 0;
+    public final static int MAX_DATA_LENGTH = 15;
+    public final static int DATA_OFFSET_INDEX = 1;
+    public final static int DATA_ADD_END = 1;
 
-	private BluetoothDevice mBluetoothDevice;
-	private int mAction;
-	private String mName;
+    private BluetoothDevice mBluetoothDevice;
+    private int mAction;
+    private String mName;
 
 
 
-	public CsNameTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int action, String name) {
+    public CsNameTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int action, String name) {
 
-		super(csBleTransceiver, messenger, executor);
+        super(csBleTransceiver, messenger, executor);
 
-		mBluetoothDevice = device;
-		mAction = action;
+        mBluetoothDevice = device;
+        mAction = action;
 
-		if (name != null) {
+        if (name != null) {
 
-			mName = name;
+            mName = name;
 
-		} else {
+        } else {
 
-			mName = "hTC CS";
-		}
-	}
+            mName = "hTC CS";
+        }
+    }
 
-	private void setName(String name)
-	{
-		mName = name;
-	}
+    private void setName(String name)
+    {
+        mName = name;
+    }
 
-	@Override
-	public void execute() throws Exception {
+    @Override
+    public void execute() throws Exception {
 
-		super.execute();
+        super.execute();
 
-		super.from();
+        super.from();
 
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> futureA0, futureA1, futureB;
@@ -147,52 +147,52 @@ public class CsNameTask extends CsConnectivityTask {
 
         try {
 
-			Message outMsg = Message.obtain();
+            Message outMsg = Message.obtain();
 
-			if (mAction == ACTION_SET_NAME) {
-				outMsg.what = ICsConnectivityService.CB_SET_NAME_RESULT;
-			} else if (mAction == ACTION_GET_NAME) {
-				outMsg.what = ICsConnectivityService.CB_GET_NAME_RESULT;
-			}
+            if (mAction == ACTION_SET_NAME) {
+                outMsg.what = ICsConnectivityService.CB_SET_NAME_RESULT;
+            } else if (mAction == ACTION_GET_NAME) {
+                outMsg.what = ICsConnectivityService.CB_GET_NAME_RESULT;
+            }
 
-			Bundle outData = new Bundle();
+            Bundle outData = new Bundle();
 
-			if (result) {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-			} else {
-				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
-			}
+            if (result) {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
+            } else {
+                outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
+            }
 
-			if (name != null) {
-				outData.putString(ICsConnectivityService.PARAM_CS_NAME, name);
-			}
+            if (name != null) {
+                outData.putString(ICsConnectivityService.PARAM_CS_NAME, name);
+            }
 
-			outMsg.setData(outData);
+            outMsg.setData(outData);
 
-			mMessenger.send(outMsg);
+            mMessenger.send(outMsg);
 
-		} catch (RemoteException e) {
+        } catch (RemoteException e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void error(Exception e) {
+    @Override
+    public void error(Exception e) {
 
-		sendMessage(false, null);
-	}
+        sendMessage(false, null);
+    }
 
-	private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
+    private void unregisterNotify(CsBleGattAttributes.CsV1CommandEnum commandID) throws Exception {
 
-		Future<BluetoothGattCharacteristic> future;
+        Future<BluetoothGattCharacteristic> future;
 
-		future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
-		if (future.get() == null) {
+        future = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, commandID, false));
+        if (future.get() == null) {
 
-			Log.d(TAG, "[CS] unregisterNotify error!!!");
-			return;
-		}
-	}
+            Log.d(TAG, "[CS] unregisterNotify error!!!");
+            return;
+        }
+    }
 
 }

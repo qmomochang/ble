@@ -20,218 +20,218 @@ import android.util.Log;
 
 public class CsConnectivityServiceImpl {
 
-	private final static String TAG = "CsConnectivityServiceImpl";
+    private final static String TAG = "CsConnectivityServiceImpl";
 
-	protected Context mContext;
-	protected Messenger mMessenger;
-	protected ExecutorService mExecutor;
-	protected BluetoothManager mBluetoothManager;
-	protected CsBleTransceiver mCsBleTransceiver;
+    protected Context mContext;
+    protected Messenger mMessenger;
+    protected ExecutorService mExecutor;
+    protected BluetoothManager mBluetoothManager;
+    protected CsBleTransceiver mCsBleTransceiver;
 
-	private boolean bServiceAvailable = false;
+    private boolean bServiceAvailable = false;
 
-	private Thread mTaskThread;
-	private final LinkedBlockingQueue<CsConnectivityTask> mTaskQueue = new LinkedBlockingQueue<CsConnectivityTask>();
-	private AtomicBoolean mIsTaskThreadInterrupted = new AtomicBoolean(false);
+    private Thread mTaskThread;
+    private final LinkedBlockingQueue<CsConnectivityTask> mTaskQueue = new LinkedBlockingQueue<CsConnectivityTask>();
+    private AtomicBoolean mIsTaskThreadInterrupted = new AtomicBoolean(false);
 
-	private Thread mLongTermEventThread;
+    private Thread mLongTermEventThread;
 
-	private int mSkipTaskCount;
+    private int mSkipTaskCount;
 
 
 
-	private ICsConnectivityServiceListener mCsConnectivityServiceListener = new ICsConnectivityServiceListener() {
+    private ICsConnectivityServiceListener mCsConnectivityServiceListener = new ICsConnectivityServiceListener() {
 
-		@Override
-		public void onError(int errorCode) {
+        @Override
+        public void onError(int errorCode) {
 
-			Log.d(TAG, "[CS] onError errorCode = " + errorCode);
+            Log.d(TAG, "[CS] onError errorCode = " + errorCode);
 
-			if (errorCode == 881) {
+            if (errorCode == 881) {
 
-				try {
+                try {
 
-					mSkipTaskCount = mTaskQueue.size();
+                    mSkipTaskCount = mTaskQueue.size();
 
-					Log.d(TAG, "[CS] onError mSkipTaskCount = " + mSkipTaskCount);
+                    Log.d(TAG, "[CS] onError mSkipTaskCount = " + mSkipTaskCount);
 
-					///clearTaskQueue();
+                    ///clearTaskQueue();
 
-				} catch (Exception e) {
+                } catch (Exception e) {
 
-					e.printStackTrace();
-				}
-			}
-		}
-	};
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
 
 
-	public CsConnectivityServiceImpl(Context context, Messenger messenger) {
+    public CsConnectivityServiceImpl(Context context, Messenger messenger) {
 
-		try {
+        try {
 
-			Log.d(TAG, "[CS] onCreate");
+            Log.d(TAG, "[CS] onCreate");
 
-			mContext = context;
-			mMessenger = messenger;
-			mSkipTaskCount = 0;
+            mContext = context;
+            mMessenger = messenger;
+            mSkipTaskCount = 0;
 
-			// For API level 18 and above, get a reference to BluetoothAdapter through BluetoothManager.
-	        if (mBluetoothManager == null) {
+            // For API level 18 and above, get a reference to BluetoothAdapter through BluetoothManager.
+            if (mBluetoothManager == null) {
 
-	        	mBluetoothManager = (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
-	            if (mBluetoothManager == null) {
-	                Log.e(TAG, "Unable to initialize BluetoothManager.");
-	                return;
-	            }
-	        }
+                mBluetoothManager = (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
+                if (mBluetoothManager == null) {
+                    Log.e(TAG, "Unable to initialize BluetoothManager.");
+                    return;
+                }
+            }
 
-			mCsBleTransceiver = new CsBleTransceiver(mContext, mBluetoothManager);
+            mCsBleTransceiver = new CsBleTransceiver(mContext, mBluetoothManager);
 
-			open();
+            open();
 
-		} catch (Exception e) {
+        } catch (Exception e) {
 
-			e.printStackTrace();
-		}
-	}
+            e.printStackTrace();
+        }
+    }
 
 
 
-	protected synchronized void addTask(CsConnectivityTask task) throws Exception {
+    protected synchronized void addTask(CsConnectivityTask task) throws Exception {
 
-		Log.d(TAG, "[CS] addTask task = " + task);
+        Log.d(TAG, "[CS] addTask task = " + task);
 
-		if (task != null) {
+        if (task != null) {
 
-			mTaskQueue.add(task);
-		}
-	}
+            mTaskQueue.add(task);
+        }
+    }
 
 
 
-	protected synchronized void clearTaskQueue() throws Exception {
+    protected synchronized void clearTaskQueue() throws Exception {
 
-		mTaskQueue.clear();
-	}
+        mTaskQueue.clear();
+    }
 
 
 
-	protected synchronized boolean getServiceAvailable() {
+    protected synchronized boolean getServiceAvailable() {
 
-		return bServiceAvailable;
-	}
+        return bServiceAvailable;
+    }
 
 
 
-	protected synchronized void setServiceAvailable(boolean value) {
+    protected synchronized void setServiceAvailable(boolean value) {
 
-		bServiceAvailable = value;
-	}
+        bServiceAvailable = value;
+    }
 
-	protected void open() {
+    protected void open() {
 
-		Log.d(TAG, "[CS] open");
+        Log.d(TAG, "[CS] open");
 
-		if (mExecutor == null) {
+        if (mExecutor == null) {
 
-			mExecutor = Executors.newFixedThreadPool(6);
-		}
+            mExecutor = Executors.newFixedThreadPool(6);
+        }
 
-		new Thread(new Runnable() {
+        new Thread(new Runnable() {
 
-			@Override
-			public void run() {
+            @Override
+            public void run() {
 
-				try {
+                try {
 
-					if (mTaskThread == null) {
+                    if (mTaskThread == null) {
 
-						mTaskThread = new Thread(mTaskRunnable, "CsConnectivityTaskThread");
-						mTaskThread.start();
-					}
+                        mTaskThread = new Thread(mTaskRunnable, "CsConnectivityTaskThread");
+                        mTaskThread.start();
+                    }
 
-				} catch (Exception e) {
+                } catch (Exception e) {
 
-					Log.d(TAG, "[CS] open e" + e);
-				}
-			}
+                    Log.d(TAG, "[CS] open e" + e);
+                }
+            }
 
-		}).start();
-	}
+        }).start();
+    }
 
 
 
-	protected void close() {
+    protected void close() {
 
-		Log.d(TAG, "[CS] close");
+        Log.d(TAG, "[CS] close");
 
-		try {
+        try {
 
-			if (mExecutor != null) {
+            if (mExecutor != null) {
 
-				mExecutor.shutdown();
-			}
+                mExecutor.shutdown();
+            }
 
-			if (mTaskThread != null) {
+            if (mTaskThread != null) {
 
-				mIsTaskThreadInterrupted.set(true);
+                mIsTaskThreadInterrupted.set(true);
 
-				Log.d(TAG, "[CS] waiting for task executing...");
+                Log.d(TAG, "[CS] waiting for task executing...");
 
-				mTaskThread.join();
-			}
+                mTaskThread.join();
+            }
 
-			if (mLongTermEventThread != null) {
+            if (mLongTermEventThread != null) {
 
-				mLongTermEventThread.interrupt();
-				mLongTermEventThread.join();
-			}
+                mLongTermEventThread.interrupt();
+                mLongTermEventThread.join();
+            }
 
-			mCsBleTransceiver.deInit();
+            mCsBleTransceiver.deInit();
 
-		} catch (Exception e) {
+        } catch (Exception e) {
 
-			Log.d(TAG, "[CS] close e" + e);
-		}
-	}
+            Log.d(TAG, "[CS] close e" + e);
+        }
+    }
 
 
 
-	private final Runnable mTaskRunnable = new Runnable() {
+    private final Runnable mTaskRunnable = new Runnable() {
 
-		@Override
-		public void run() {
+        @Override
+        public void run() {
 
-			while (mIsTaskThreadInterrupted.get() == false) {
+            while (mIsTaskThreadInterrupted.get() == false) {
 
-				CsConnectivityTask task = null;
+                CsConnectivityTask task = null;
 
-				try {
-					task = mTaskQueue.poll(500, TimeUnit.MILLISECONDS);
+                try {
+                    task = mTaskQueue.poll(500, TimeUnit.MILLISECONDS);
 
-					if (task != null) {
-						Log.d(TAG, "[CS] got task, reamin mTaskQueue.size() = " + mTaskQueue.size() + ", mSkipTaskCount = " + mSkipTaskCount);
+                    if (task != null) {
+                        Log.d(TAG, "[CS] got task, reamin mTaskQueue.size() = " + mTaskQueue.size() + ", mSkipTaskCount = " + mSkipTaskCount);
 
-						if (mSkipTaskCount > 0) {
-							mSkipTaskCount--;
-							Log.d(TAG, "[CS] Skipping task = " + task);
-							task.error(null);
-						} else {
-							mSkipTaskCount = 0;
-							Log.d(TAG, "[CS] Executing task = " + task);
-							task.execute();
-						}
-					}
-				} catch (Exception e) {
-					Log.d(TAG, "[CS] mTaskRunnable e = " + e);
-					e.printStackTrace();
-					if (task != null) {
-						task.error(e);
-					}
-				}
-			}
-		}
-	};
+                        if (mSkipTaskCount > 0) {
+                            mSkipTaskCount--;
+                            Log.d(TAG, "[CS] Skipping task = " + task);
+                            task.error(null);
+                        } else {
+                            mSkipTaskCount = 0;
+                            Log.d(TAG, "[CS] Executing task = " + task);
+                            task.execute();
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "[CS] mTaskRunnable e = " + e);
+                    e.printStackTrace();
+                    if (task != null) {
+                        task.error(e);
+                    }
+                }
+            }
+        }
+    };
 }
