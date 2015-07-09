@@ -410,9 +410,12 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final int CB_CLR_CAMERA_MODE_LTEVENT_RESULT                = 8404;
 //    public static final int CB_SET_CAMERA_MODE_RESULT                        = 8405;
 //    public static final int CB_GET_CAMERA_MODE_RESULT                        = 8406;
-//    public static final int CB_SET_DATE_TIME_RESULT                            = 8500;
-    public static final int CB_SET_NAME_RESULT                                = 8501;
-    public static final int CB_GET_NAME_RESULT                                = 8502;
+    public static final int CB_SET_DATE_TIME_RESULT                            = 8500;
+    public static final int CB_GET_DATE_TIME_RESULT                            = 8501;
+    public static final int CB_SET_NAME_RESULT                                = 8510;
+    public static final int CB_GET_NAME_RESULT                                = 8511;
+
+    public static final int CB_GET_DEVICE_INFO_RESULT                           = 8560;
 //    public static final int CB_SET_GPS_INFO_LTEVENT_RESULT                    = 8503;
 //    public static final int CB_CLR_GPS_INFO_LTEVENT_RESULT                    = 8504;
 //    public static final int CB_SET_GPS_INFO_RESULT                            = 8505;
@@ -569,6 +572,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final String PARAM_GENERAL_PURPOSE_BEI                    = "general_purpose_bei";
 
     public static final String PARAM_CS_WIFI_SCAN_RESULT                    = "wifi_scan_result";
+    public static final String PARAM_CS_LATEST_SYNC_STATUS_RESULT           = "latest_sync_status";
 
 
     /// Interfaces

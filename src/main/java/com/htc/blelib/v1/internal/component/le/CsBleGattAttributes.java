@@ -37,7 +37,7 @@ public class CsBleGattAttributes {
         CLIENT_CREDENTIALS_REQUEST        ((byte)0x43),
         CLIENT_CREDENTIALS_EVENT          ((byte)0x44),
 
-        SET_DATETIME_REQUEST              ((byte)0x51),
+        SET_DATETIME_REQUEST              ((byte)0x51), //spec defined SET_DATETIME_REQUEST, GET_DATETIME_EVENT
         CS_VERSION_EVENT                  ((byte)0x52),
         GET_DATETIME_REQUEST              ((byte)0x53),
         DEVICEINFO_REQUEST_EVENT          ((byte)0x54),
