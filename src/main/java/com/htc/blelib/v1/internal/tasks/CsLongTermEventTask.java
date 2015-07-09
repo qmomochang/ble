@@ -319,7 +319,7 @@ public class CsLongTermEventTask extends CsConnectivityTask {
 
                         processHwStatus(notification.mDevice, level, usbStorage, adapterPlugin, -1);
 
-                    } else if (command == CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT) {
+                    } else if (command == CsBleGattAttributes.CsV1CommandEnum.POWER_STATUS_EVENT) {
 
                         if (characteristic.getValue().length > 0) {
 

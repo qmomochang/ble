@@ -12,12 +12,12 @@ public class CsBleGattAttributes {
         CS_GENERAL_PURPOSE_REQUEST                ((byte)0x01), // GENERAL_REQUEST
         CS_DESCRIPTOR                     ((byte)0x11),
 
-        POWER_ON_REQUEST                  ((byte)0x11),
-        POWER_ON_STATUS_EVENT             ((byte)0x12),
+        POWER_REQUEST                  ((byte)0x11),
+        POWER_STATUS_EVENT             ((byte)0x12),
         TRIGGER_FWUPDATE_REQUEST          ((byte)0x13),
         TRIGGER_FWUPDATE_RESULT_EVENT     ((byte)0x14),
         LAST_FWUPDATE_RESULT_EVENT        ((byte)0x15),
-        FACTORY_RESET_REQUEST_EVENT       ((byte)0x16),
+        FACTORY_RESET_REQUEST             ((byte)0x16),
         FACTORY_RESET_RESULT_EVENT        ((byte)0x17),
 
         WIFI_CONFIG_REQUEST               ((byte)0x21),
@@ -131,12 +131,12 @@ public class CsBleGattAttributes {
         mUuidV1Map.put(CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST.getID()               , CS_V1_COMMANDTYPE1);     //((byte)0x01),
         mUuidV1Map.put(CsV1CommandEnum.CS_DESCRIPTOR.getID()                    , CS_V1_COMMANDTYPE1);     //((byte)0x11),
 
-        mUuidV1Map.put(CsV1CommandEnum.POWER_ON_REQUEST.getID()                 , CS_V1_COMMANDTYPE1);     //((byte)0x11),
-        mUuidV1Map.put(CsV1CommandEnum.POWER_ON_STATUS_EVENT.getID()            , CS_V1_COMMANDTYPE1);     //((byte)0x12),
+        mUuidV1Map.put(CsV1CommandEnum.POWER_REQUEST.getID()                 , CS_V1_COMMANDTYPE1);     //((byte)0x11),
+        mUuidV1Map.put(CsV1CommandEnum.POWER_STATUS_EVENT.getID()            , CS_V1_COMMANDTYPE1);     //((byte)0x12),
         mUuidV1Map.put(CsV1CommandEnum.TRIGGER_FWUPDATE_REQUEST.getID()         , CS_V1_COMMANDTYPE1);     //((byte)0x13),
         mUuidV1Map.put(CsV1CommandEnum.TRIGGER_FWUPDATE_RESULT_EVENT.getID()    , CS_V1_COMMANDTYPE1);     //((byte)0x14),
         mUuidV1Map.put(CsV1CommandEnum.LAST_FWUPDATE_RESULT_EVENT.getID()       , CS_V1_COMMANDTYPE1);     //((byte)0x15),
-        mUuidV1Map.put(CsV1CommandEnum.FACTORY_RESET_REQUEST_EVENT.getID()      , CS_V1_COMMANDTYPE1);     //((byte)0x16),
+        mUuidV1Map.put(CsV1CommandEnum.FACTORY_RESET_REQUEST.getID()      , CS_V1_COMMANDTYPE1);     //((byte)0x16),
         mUuidV1Map.put(CsV1CommandEnum.FACTORY_RESET_RESULT_EVENT.getID()       , CS_V1_COMMANDTYPE1);     //((byte)0x17),
 
         mUuidV1Map.put(CsV1CommandEnum.WIFI_CONFIG_REQUEST.getID()              , CS_V1_COMMANDTYPE1);     //((byte)0x21),

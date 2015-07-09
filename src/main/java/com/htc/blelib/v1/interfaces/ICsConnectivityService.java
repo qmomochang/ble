@@ -392,14 +392,19 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final int CB_WIFI_CONNECT_RESULT                            = 8200;
 //    public static final int CB_WIFI_DISCONNECT_RESULT                        = 8201;
     public static final int CB_SET_POWER_ONOFF_RESULT                        = 8300;
-//    public static final int CB_GET_POWER_ONOFF_RESULT                        = 8301;
+
+    public static final int CB_GET_POWER_RESULT                                = 8301;
+
     public static final int CB_SET_HW_STATUS_LTEVENT_RESULT                    = 8302;
     public static final int CB_CLR_HW_STATUS_LTEVENT_RESULT                    = 8303;
     public static final int CB_GET_HW_STATUS_RESULT                            = 8304;
 //    public static final int CB_SET_FLIGHT_MODE_RESULT                        = 8305;
 //    public static final int CB_SET_AUTOSLEEP_TIMER_OFFSET_RESULT            = 8306;
-    public static final int CB_TRIGGER_FWUPDATE_RESULT                        = 8307;
-    public static final int CB_FWUPDATE_RESULT                                = 8308;
+    public static final int CB_TRIGGER_FWUPDATE_REQUEST                        = 8307;
+
+    public static final int CB_FACTORY_RESET_REQUEST                        = 8400;
+
+//    public static final int CB_TRIGGER_FWUPDATE_RESULT                         = 8308;
 //    public static final int CB_SET_SIM_HW_STATUS_LTEVENT_RESULT                = 8309;
 //    public static final int CB_CLR_SIM_HW_STATUS_LTEVENT_RESULT                = 8310;
 //    public static final int CB_GET_SIM_HW_STATUS_RESULT                        = 8311;
@@ -497,6 +502,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final String PARAM_MCU_FW_VERSION                        = "mcu_fw_version";
 //    public static final String PARAM_BLE_FW_VERSION                        = "ble_fw_version";
     public static final String PARAM_TRIGGER_FWUPDATE_RESULT            = "trigger_fw_update_result";
+    public static final String PARAM_FACTORY_RESET_RESULT            = "factory_reset_result";
 //    public static final String PARAM_FWUPDATE_RESULT                    = "fw_update_result";
 //    public static final String PARAM_VERIFY_PASSWORD_STATUS                = "verify_password_status";
 //    public static final String PARAM_AUTO_BACKUP_ERROR_TYPE                = "auto_backup_error_type";

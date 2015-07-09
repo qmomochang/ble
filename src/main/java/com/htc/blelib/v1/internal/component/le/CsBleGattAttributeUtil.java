@@ -67,8 +67,6 @@ public class CsBleGattAttributeUtil {
         return ret;
     }
 
-
-
     public static String byteArrayToString(byte[] byteArray, int offset, int arrayLength) {
 
         String ret = "";
@@ -150,58 +148,6 @@ public class CsBleGattAttributeUtil {
         return retCharacteristic;
     }
 
-
-    public static boolean isBootUpLinuxReady(BluetoothGattCharacteristic characteristic) {
-        boolean ret = false;
-        byte[] value = characteristic.getValue();
-
-        if (value[0] == CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT.getID())
-        {
-            //value[1] == 1: linux, value[2] == 1: turn on
-            if( (value[1] == 0x01) && (value[2] == 0x01))
-            {
-                ret = true;
-            }
-        }
-
-        return ret;
-    }
-    //verfied
-    public static boolean isBootUpReady(BluetoothGattCharacteristic characteristic) {
-        boolean ret = false;
-        byte[] value = characteristic.getValue();
-
-        if (value[0] == CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT.getID())
-        {
-            // 0x00: Standby (Only BLE)
-            // 0x01: Sync (BLE, WiFi)
-            // 0x02: Normal (Could be measured)
-            // 0x03: Firmware updating
-            // 0x04: Factory reseting (WiFi & BLE disconnect??)
-            // 0x05: BLE Disconnection (Due to low battery)
-            // 0xFF: unknown
-            if( value[1] == 0x02 )
-            {
-                ret = true;
-            }
-            Log.v(TAG,"isBootUpReady data = " + String.format("0x%20x",value[1]));
-        }
-        return ret;
-    }
-    //verified
-    public static boolean isFirmwareUpdating(BluetoothGattCharacteristic characteristic) {
-          boolean ret = false;
-          byte[] value = characteristic.getValue();
-           if (value[0] == CsBleGattAttributes.CsV1CommandEnum.POWER_ON_STATUS_EVENT.getID())
-           {
-              //value[1] == 0x03: Firmware updating
-               if( (value[1] == 0x03))
-               {
-                  ret = true;
-              }
-           }
-        return ret;
-    }
 
     public static byte[] getWifiConnectResult(BluetoothGattCharacteristic characteristic) {
 
@@ -561,5 +507,24 @@ public class CsBleGattAttributeUtil {
 
         return ret;
     }
+
+    public static byte [] getPowerStatus(BluetoothGattCharacteristic characteristic) {
+        Log.d(TAG, "[CS] getPowerStatus uuid = " + characteristic.getUuid());
+
+        byte [] ret = characteristic.getValue();
+        Log.d(TAG, "[CS] getPowerStatus ret = " + ret );
+
+        return ret;
+    }
+
+    public static byte [] getCharValue(BluetoothGattCharacteristic characteristic) {
+        Log.d(TAG, "[CS] getCharValue uuid = " + characteristic.getUuid());
+
+        byte [] ret = characteristic.getValue();
+        Log.d(TAG, "[CS] getCharValue ret = " + ret );
+
+        return ret;
+    }
+
 
 }
