@@ -1,0 +1,80 @@
+
+BLE
+    Android Doc:        https://developer.android.com/guide/topics/connectivity/bluetooth-le.html
+    Sample Code link:   http://developer.android.com/samples/index.html  (need Android Studio, search BlueTooth in step2 )
+    Sample Apk:         http://ppt.cc/cjiCT (on inner server, will fail by today)
+
+    pdf spec:               https://www.bluetooth.org/en-us/specification/adopted-specifications
+    assigned numbers:       https://www.bluetooth.org/en-us/specification/assigned-numbers
+        ex:
+        GATT services:          https://developer.bluetooth.org/gatt/services/Pages/ServicesHome.aspx?_ga=1.251433670.1396310558.1433937296
+
+    HT543YV00003 90:E7:c4:47:2F:5B
+    00a0:    d0:5f:b8:19:0b:0c
+
+=====================
+
+Same architecture as RE, all requests are executed with a thread pool. once the request begin to be handled,
+it's commands will be enqueued to another thread pool to do write/read/setNotification.
+
+            request ->              task/callable thread pool       ->         ble command thread pool         -> device
+
+            mHandler              LinkedBlockingQueue mTaskQueue            LinkedBlockingQueue mFlushQueue
+    (interfaces)
+    (v1/CsConnectivityService)          (tasks) -> (callables)
+
+
+tasks:     pass high level parameter to callables
+callables: implement listener, callback
+
+======================
+
+complete service api and corresponding events
+complete callables
+
+request commands must use be a task with BleWriteCallable
+event commands(with corresponding request command) always attached within the request task.
+
+Task <=> spec commands, to write a new Task
+1. each request must map to a Task, copy CsNameTask as sample
+2. Tasks WITHOUT result event id => use CsBleWriteCallable
+3. Tasks WITH    result event id => CsBleReceiveNotificationCallable, CsBleSetNotificationCallable, CsBleWriteCallable
+4. sendMsg when task is done
+
+======================
+interfaces
+interfaces/ICsConnectivityServiceBase.java                  service related enum states
+interfaces/ICsConnectivityDevice.java                       device related enum states
+interfaces/ICsConnectivityScanner.java                      scan device related enum states
+
+internal/common/CsConnectivityDeviceGroup.java              record "filtered" and paired devices
+internal/common/CsConnectivityDevice.java                   extend CsConnectivityDevice   importantApi:   BluetoothDevice getBluetoothDevice()
+internal/common/CommonBase.java                             error code enum states
+
+v1/CsConnectivityServiceImpl.java                           callable thread pool
+v1/CsConnectivityService.java                               extend CsConnectivityServiceImpl implements ICsConnectivityServiceBase
+v1/interfaces/ICsConnectivityService.java                   service interface, need to overwrite all functions
+
+
+v1/internal/component/le/CsBleAPIInvoker.java
+v1/internal/component/le/ICsBleTransceiverListener.java
+
+v1/internal/component/le/CsBleTransceiver.java              ble command thread pool
+                                                            readCsCommand
+                                                            writeCsCommand
+                                                            setCsNotification
+
+v1/internal/component/le/CsBleScanner.java                  android BLE scan api extension
+v1/internal/component/le/CsBleTransceiverListener.java
+
+v1/internal/component/le/CsBleGattAttributes.java           CS_BLE_SDK.xlsx defined command ID, command type
+v1/internal/component/le/CsBleGattAttributeUtil.java        some tools, such as:byte transformation, characteristic recognition functions
+
+v1/internal/component/le/CsBleScannerListener.java
+v1/internal/component/le/ICsBleScannerListener.java
+
+v1/internal/component/le/queue/GattQueueManager.java        threading pool for handling request to GATT
+
+
+v1/internal/callables/CsBleReceiveNotificationCallable      received notifications(including long command handling)
+v1/internal/callables/CsBleSetNotificationCallable.java     enable BLE device notification
