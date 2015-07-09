@@ -471,6 +471,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final int CB_CLR_LTE_CAMPING_STATUS_LTEVENT_RESULT        = 9402;
 //    public static final int CB_GET_MODEM_STATUS_RESULT                        = 9500;
 //    public static final int CB_UNLOCK_SIM_PIN_RESULT                        = 9501;
+    public static final int CB_SET_PROFILE_RESULT                           = 9000;
 
     public static final int CB_GET_POWER_LEVEL_RESULT                        = 10000;
     public static final int CB_GET_GENERAL_PURPOSE_RESULT                    = 10001;
@@ -542,6 +543,7 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final String PARAM_TOTAL_SPACE                        = "total_space";
 //    public static final String PARAM_OPERATION_EVENT                    = "operation_event";
 //    public static final String PARAM_READY_BIT                            = "ready_bit";
+    public static final String PARAM_PROFILE_GENERAL_EVENT_RESULT                    = "profile_general_event";
 //    public static final String PARAM_IMAGE_REMAIN_COUNT                    = "image_remain_count";
 //    public static final String PARAM_VIDEO_REMAIN_SECOND                = "video_remain_second";
 //    public static final String PARAM_TIME_LAPSE_REMAIN_COUNT            = "time_lapse_remain_count";
@@ -579,6 +581,8 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 
     public static final String PARAM_CS_WIFI_SCAN_RESULT                    = "wifi_scan_result";
     public static final String PARAM_CS_LATEST_SYNC_STATUS_RESULT           = "latest_sync_status";
+
+    public static final String PARAM_CLIENT_CREDENTIALS_EVENT_RESULT        = "client_credentials";
 
 
     /// Interfaces
