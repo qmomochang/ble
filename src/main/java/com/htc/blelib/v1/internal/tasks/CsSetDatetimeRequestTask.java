@@ -28,8 +28,6 @@ public class CsSetDatetimeRequestTask extends CsConnectivityTask {
 
 	private final static String TAG = "CsSetDatetimeRequestTask";
 
-	public final static int MAX_DATA_LENGTH = 8;
-
 	private BluetoothDevice mBluetoothDevice;
     private int mUwYear16;
     private int mMonth;
@@ -64,7 +62,7 @@ public class CsSetDatetimeRequestTask extends CsConnectivityTask {
         BluetoothGattCharacteristic result;
         Future<BluetoothGattCharacteristic> futureB;
 
-        byte [] inArray = new byte[MAX_DATA_LENGTH];
+        byte [] inArray = new byte[8];
         inArray[0] = (byte) ((mUwYear16) & (int)0x00FF);
         inArray[1] = (byte) ((mUwYear16 >> 8) & (int)0x00FF);
         inArray[2] = (byte) mMonth;

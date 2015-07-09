@@ -150,27 +150,20 @@ public class CsNameTask extends CsConnectivityTask {
 			Message outMsg = Message.obtain();
 
 			if (mAction == ACTION_SET_NAME) {
-
 				outMsg.what = ICsConnectivityService.CB_SET_NAME_RESULT;
-
 			} else if (mAction == ACTION_GET_NAME) {
-
 				outMsg.what = ICsConnectivityService.CB_GET_NAME_RESULT;
 			}
 
 			Bundle outData = new Bundle();
 
 			if (result) {
-
 				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_SUCCESS);
-
 			} else {
-
 				outData.putSerializable(ICsConnectivityService.PARAM_RESULT, ICsConnectivityService.Result.RESULT_FAIL);
 			}
 
 			if (name != null) {
-
 				outData.putString(ICsConnectivityService.PARAM_CS_NAME, name);
 			}
 
