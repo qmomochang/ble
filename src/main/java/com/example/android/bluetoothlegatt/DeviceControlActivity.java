@@ -71,6 +71,7 @@ public class DeviceControlActivity extends Activity {
     private TextView mDataField;
     private String mDeviceName;
     private String mDeviceAddress;
+    private Context mContext;
 
     private Messenger mMessenger;
     private Handler mHandler;
@@ -179,6 +180,7 @@ public class DeviceControlActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gatt_services_characteristics);
 
+        mContext = this;
         final Intent intent = getIntent();
         //mDeviceName = "ww_e1411";
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
@@ -208,6 +210,8 @@ public class DeviceControlActivity extends Activity {
                     Bundle b;
                     ICsConnectivityServiceBase.Result result;
                     String str;
+                    byte value;
+                    byte [] valueArr;
                     switch(msg.what){
 
                         case ICsConnectivityService.CB_BLE_CONNECT_RESULT:
@@ -229,7 +233,35 @@ public class DeviceControlActivity extends Activity {
                             result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
                             str = b.getString(ICsConnectivityService.PARAM_CS_NAME);
 
+                            Toast.makeText(mContext, str, Toast.LENGTH_LONG).show();
+
                             Log.v(TAG,"[CS] handleMessage CB_GET_NAME_RESULT r = "+result+", name = "+str);
+                            break;
+                        case ICsConnectivityService.CB_GET_POWER_LEVEL_RESULT:
+                            b = msg.getData();
+                            result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                            value = b.getByte(ICsConnectivityService.PARAM_BATTERY_LEVEL);
+
+                            Log.v(TAG,"[CS] handleMessage CB_GET_POWER_LEVEL_RESULT r = "+result+", battery_level = "+value);
+                            String str2 = "battery level = "+value;
+
+                            Toast.makeText(mContext, str2, Toast.LENGTH_LONG).show();
+
+                            break;
+                        case ICsConnectivityService.CB_SET_CLIENT_CREDENTIALS_RESULT:
+                            b = msg.getData();
+                            result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                            valueArr = b.getByteArray(ICsConnectivityService.PARAM_CLIENT_CREDENTIALS_EVENT_RESULT);
+                            String str3;
+                            if (valueArr != null) {
+                                Log.v(TAG,"[CS] handleMessage CB_SET_CLIENT_CREDENTIALS_RESULT r = "+result+", array = "+ new String(valueArr));
+                                str3 = "ret array = "+new String(valueArr);
+                            } else {
+                                Log.v(TAG,"[CS] handleMessage CB_SET_CLIENT_CREDENTIALS_RESULT r = "+result+", array = null");
+                                str3 = "ret array = null";
+                            }
+
+                            Toast.makeText(mContext, str3, Toast.LENGTH_LONG).show();
                             break;
 
                         default:break;
@@ -243,7 +275,6 @@ public class DeviceControlActivity extends Activity {
         if (m_CsConnectivityService == null) {
             m_CsConnectivityService = new CsConnectivityService(this,mMessenger);
             m_CsConnectivityService.csBleConnect(m_device);
-            m_CsConnectivityService.csSetName(m_device,"HT543YV11113");
         }
     }
 
@@ -289,8 +320,13 @@ public class DeviceControlActivity extends Activity {
             case R.id.menu_connect:
 
                 //boolean connect = mBluetoothLeService.connect(mDeviceAddress);
-                m_CsConnectivityService.csSetName(m_device,"HT543YV11113");
-                Log.v("CS","m_CsConnectivityService.csSetName");
+                //m_CsConnectivityService.csSetName(m_device,"HT543YV11113");
+                byte [] clientToken =  "0000000000aaaaaaaaaa1111111111bbbbbbbbbb2222222222cccccccccc3333".getBytes();
+                byte [] clientSecret =  "4444444444dddddddddd5555555555eeeeeeeeee6666666666ffffffffff7777".getBytes();
+
+                m_CsConnectivityService.csBleSetCredentials(m_device, 0, "MikeTestToken", clientToken, clientSecret );
+                Log.v("CS", "m_CsConnectivityService.csSetCredentials");
+                //Log.v("CS","m_CsConnectivityService.csSetName");
                 //Log.v("MC","BDA is "+mDeviceAddress.toString()+", suc = "+connect);
                 return true;
             case R.id.menu_disconnect:

@@ -53,10 +53,10 @@ public class CsConnectivityDeviceGroup {
             boolean isCs1Device = checkCs1DeviceKey(scanRecord);
             boolean isCs2Device = checkCs2DeviceKey(scanRecord);
 
-            if ((isCs1Device) ||
-                (isCs2Device) ||
-                ((device.getName() != null) && (device.getName().contains("hTC CS")))) {
-
+//            if ((isCs1Device) ||
+//                (isCs2Device) ||
+//                ((device.getName() != null) && (device.getName().contains("hTC CS")))) {
+              if ( isCs2Device ||  device.getAddress().contains("43:43:A1:12:00:00") || (device.getName()!=null && ( device.getName().contains("CS_BDA")|| device.getName().contains("RE"))) ) {
                 CsVersion csVersion = isCs2Device ? CsVersion.CS2 : (isCs1Device ? CsVersion.CS1 : CsVersion.UNKNOWN);
 
                 for (int cnt = 0; cnt < getCount(); cnt++) {

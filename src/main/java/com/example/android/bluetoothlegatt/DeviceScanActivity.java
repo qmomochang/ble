@@ -81,10 +81,10 @@ public class DeviceScanActivity extends ListActivity {
                         if (device != null ) {
                             Log.v(TAG,"[CS] ScanResult = "+r+", CsVersion = "+csv+", device = "+device.getName()+", hit = "+"HT543YV00003".equals(device.getName()));
 
-                            if("HT543YV00003".equals(device.getName())) {
+                            //if("HT543YV00003".equals(device.getName())) {
                             mLeDeviceListAdapter.addDevice(device);
                             mLeDeviceListAdapter.notifyDataSetChanged();
-                            }
+                            //}
                         }
                         break;
 
