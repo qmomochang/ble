@@ -114,6 +114,8 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
     public static final int CB_GET_POWER_LEVEL_RESULT                        = 10000;
     public static final int CB_GET_GENERAL_PURPOSE_RESULT                    = 10001;
 
+    public static final int CB_SET_CLIENT_CREDENTIALS_RESULT                    = 10002;
+
 //    /// Parameters
     public static final String PARAM_RESULT                                = "result";
 //    public static final String PARAM_RESULT_SOFTAP                        = "result_softap";
@@ -302,5 +304,5 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public boolean csGetModemStatus(BluetoothDevice device);
 //    //public boolean csUnlockSimPin(BluetoothDevice device, String pinCode);
     public boolean csBleReadBattery(BluetoothDevice device);
-
+    public boolean csBleSetCredentials(BluetoothDevice device, int action, String clientID, byte [] clientAccessToken, byte [] clientSecrety);
 }

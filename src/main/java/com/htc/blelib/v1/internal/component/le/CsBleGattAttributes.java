@@ -34,8 +34,9 @@ public class CsBleGattAttributes {
 
         PROFILE_GENERAL_REQUEST           ((byte)0x41),
         PROFILE_GENERAL_EVENT             ((byte)0x42),
-        CLIENT_CREDENTIALS_REQUEST        ((byte)0x43),
-        CLIENT_CREDENTIALS_EVENT          ((byte)0x44),
+
+        CLIENT_CREDENTIALS_REQUEST        ((byte)0x45),
+        CLIENT_CREDENTIALS_EVENT          ((byte)0x46),
 
         SET_DATETIME_REQUEST              ((byte)0x51), //spec defined SET_DATETIME_REQUEST, GET_DATETIME_EVENT
         CS_VERSION_EVENT                  ((byte)0x52),
@@ -77,7 +78,7 @@ public class CsBleGattAttributes {
     public static String CS_V1_FIRMWARE_REV_STRING      = "00002a26-0000-1000-8000-00805f9b34fb";
 
 
-    public static String CS_SERVICE                     = "0000a000-0000-1000-8000-00805f9b34fb";
+    public static String CS_SERVICE                     = "00005678-0000-1000-8000-00805f9b34fb";
     public static String CS_DEVICE_INFORMATION          = "0000180a-0000-1000-8000-00805f9b34fb";// CS_BLE_SDK_v0.6
     public static String CS_BATTERY_SERVICE             = "0000180f-0000-1000-8000-00805f9b34fb";// CS_BLE_SDK_v0.6
     public static String CS_DESCRIPTOR                  = "00002902-0000-1000-8000-00805f9b34fb";
@@ -153,8 +154,8 @@ public class CsBleGattAttributes {
 
         mUuidV1Map.put(CsV1CommandEnum.PROFILE_GENERAL_REQUEST.getID()          , CS_V1_COMMANDTYPE2);     //((byte)0x41),
         mUuidV1Map.put(CsV1CommandEnum.PROFILE_GENERAL_EVENT.getID()            , CS_V1_COMMANDTYPE1);     //((byte)0x42),
-        mUuidV1Map.put(CsV1CommandEnum.CLIENT_CREDENTIALS_REQUEST.getID()       , CS_V1_COMMANDTYPE2);     //((byte)0x43),
-        mUuidV1Map.put(CsV1CommandEnum.CLIENT_CREDENTIALS_EVENT.getID()         , CS_V1_COMMANDTYPE1);     //((byte)0x44),
+        mUuidV1Map.put(CsV1CommandEnum.CLIENT_CREDENTIALS_REQUEST.getID()       , CS_V1_COMMANDTYPE2);     //((byte)0x45),
+        mUuidV1Map.put(CsV1CommandEnum.CLIENT_CREDENTIALS_EVENT.getID()         , CS_V1_COMMANDTYPE2);     //((byte)0x46),
 
         mUuidV1Map.put(CsV1CommandEnum.SET_DATETIME_REQUEST.getID()             , CS_V1_COMMANDTYPE1);     //((byte)0x51),
         mUuidV1Map.put(CsV1CommandEnum.CS_VERSION_EVENT.getID()                 , CS_V1_COMMANDTYPE1);     //((byte)0x52),

@@ -31,11 +31,10 @@ public class CsSetClientCredentialsRequestTask extends CsConnectivityTask {
     private BluetoothDevice mBluetoothDevice;
     private int mAction;
     private String mClientID;
-    private String mClientSecret;
-    private byte [] mClientAccessToken;
-    private byte [] mClientRefreshToken;
+    private byte [] mClientAccessToken = new byte[64];
+    private byte [] mClientRefreshToken = new byte[64];
 
-    public CsSetClientCredentialsRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int action, String clientID, String clientSecret, byte [] clientAccessToken, byte [] clientRefreshToken) {
+    public CsSetClientCredentialsRequestTask(CsBleTransceiver csBleTransceiver, Messenger messenger, ExecutorService executor, BluetoothDevice device, int action, String clientID, byte [] clientAccessToken, byte [] clientRefreshToken) {
 
         super(csBleTransceiver, messenger, executor);
 
@@ -43,7 +42,6 @@ public class CsSetClientCredentialsRequestTask extends CsConnectivityTask {
 
         mAction = action;
         mClientID = clientID;
-        mClientSecret = clientSecret;
         mClientAccessToken = clientAccessToken;
         mClientRefreshToken = clientRefreshToken;
     }
@@ -60,30 +58,42 @@ public class CsSetClientCredentialsRequestTask extends CsConnectivityTask {
 
 
         byte[] byteClientID       = mClientID.getBytes("ISO-8859-1");
-        byte[] byteClientSecret   = mClientSecret.getBytes("ISO-8859-1");
-
-        byte[] inArray = new byte[96];
+        byte[] inArray = new byte[193];
 
         int i;
         inArray[0] = (byte) mAction;
-        for(i=1;i<=15;i++)
-            inArray[i] = byteClientID[i-1];
-        for(i=16;i<=31;i++)
-            inArray[i] = byteClientSecret[i-16];
-        for(i=32;i<=63;i++)
-            inArray[i] = mClientAccessToken[i-32];
-        for(i=64;i<=95;i++)
-            inArray[i] = mClientRefreshToken[i-64];
+
+        for(i=1;i<=64;i++) {
+            if (i-1 < byteClientID.length)
+                inArray[i] = byteClientID[i-1];
+            else
+                inArray[i] = 0;
+        }
+
+        for(i=65;i<=128;i++) {
+            if (i-65 < mClientAccessToken.length)
+                inArray[i] = mClientAccessToken[i-65];
+            else
+                inArray[i] = 0;
+        }
+
+        for(i=129;i<=192;i++) {
+            if (i-129 < mClientRefreshToken.length)
+                inArray[i] = mClientRefreshToken[i-129];
+            else
+                inArray[i] = 0;
+        }
 
         futureA0 = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CLIENT_CREDENTIALS_EVENT));
         futureA1 = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CLIENT_CREDENTIALS_EVENT, true));
+        //if (futureA1.get() == null) {
 
-        if (futureA1.get() == null) {
+        //    Log.v(TAG,"[CS] futureA1.get == null, notification enable failed.");
 
-            sendMessage(false, null);
-            unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CLIENT_CREDENTIALS_EVENT);
-            return;
-        }
+        //    sendMessage(false, null);
+        //    unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CLIENT_CREDENTIALS_EVENT);
+        //    return;
+        //}
 
         futureB = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CLIENT_CREDENTIALS_REQUEST, inArray));
 
@@ -115,7 +125,7 @@ public class CsSetClientCredentialsRequestTask extends CsConnectivityTask {
 
             Message outMsg = Message.obtain();
 
-            outMsg.what = ICsConnectivityService.CB_SET_NAME_RESULT;
+            outMsg.what = ICsConnectivityService.CB_SET_CLIENT_CREDENTIALS_RESULT;
 
             Bundle outData = new Bundle();
 
