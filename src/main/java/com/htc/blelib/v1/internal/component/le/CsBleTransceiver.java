@@ -894,7 +894,7 @@ public class CsBleTransceiver implements IGattRequest {
             return -1;
         }
 
-        UUID uuidService = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST));
+        UUID uuidService = UUID.fromString(CsBleGattAttributes.CS_SERVICE);
         UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
 
         Log.d(TAG, "[CS] writeCsCommand command id= " + commandID.getID() + ", length = " + writeData.length);
@@ -1126,7 +1126,7 @@ public class CsBleTransceiver implements IGattRequest {
 
     private boolean writeCharacteristic(BluetoothDevice device, byte[] value, UUID service, UUID characteristic, int writeType) {
 
-        ///Log.i(TAG, "gattReadWrite - writeCharacteristic: " + device + ", " + service + ", " + characteristic + ", " + writeType);
+        //Log.i(TAG, "gattReadWrite - writeCharacteristic: " + device + ", " + service + ", " + characteristic + ", " + writeType);
 
         BluetoothGatt gatt = mGatt.get(device);
         if (gatt == null) {
@@ -1237,7 +1237,7 @@ public class CsBleTransceiver implements IGattRequest {
             ret = readCharacteristicIntValue(request.device, request.service, request.characteristic);
         }
 
-        Log.d(TAG, "[CS] processGattRequest OK: " + request.device + ", " + request.request_type + ", " + request.characteristic);
+        Log.d(TAG, "[CS] processGattRequest OK: " + request.device + ", " + request.request_type + ", " + request.characteristic + " ret = " + ret);
         return ret;
     }
 
