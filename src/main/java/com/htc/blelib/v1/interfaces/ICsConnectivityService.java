@@ -214,10 +214,11 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    public static final String PARAM_SIM_PUK_RETRY_COUNT                = "sim_puk_retry_count";
 //    public static final String PARAM_SIM_UNLOCK_PIN_RESULT                = "sim_unlock_pin_result";
 
-    public static final String PARAM_GENERAL_PURPOSE_UNITS                  = "general_purpose_unit";
-    public static final String PARAM_GENERAL_PURPOSE_LANGUAGE               = "general_purpose_language";
-    public static final String PARAM_GENERAL_PURPOSE_SOUND                  = "general_purpose_sound";
-    public static final String PARAM_GENERAL_PURPOSE_BEI                    = "general_purpose_bei";
+//    public static final String PARAM_GENERAL_PURPOSE_UNITS                  = "general_purpose_unit";
+//    public static final String PARAM_GENERAL_PURPOSE_LANGUAGE               = "general_purpose_language";
+//    public static final String PARAM_GENERAL_PURPOSE_SOUND                  = "general_purpose_sound";
+//    public static final String PARAM_GENERAL_PURPOSE_BEI                    = "general_purpose_bei";
+    public static final String PARAM_GENERAL_PURPOSE_EVENT_RESULT           = "general_purpose";
 
     public static final String PARAM_CS_WIFI_SCAN_RESULT                    = "wifi_scan_result";
     public static final String PARAM_CS_LATEST_SYNC_STATUS_RESULT           = "latest_sync_status";
@@ -305,4 +306,6 @@ public interface ICsConnectivityService extends ICsConnectivityServiceBase {
 //    //public boolean csUnlockSimPin(BluetoothDevice device, String pinCode);
     public boolean csBleReadBattery(BluetoothDevice device);
     public boolean csBleSetCredentials(BluetoothDevice device, int action, String clientID, byte [] clientAccessToken, byte [] clientSecrety);
+    public boolean csBleSetGeneralRequest(BluetoothDevice device, int action, int unit, int language, int sound, int bei);
+
 }

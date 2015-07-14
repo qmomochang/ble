@@ -11,6 +11,7 @@ import com.htc.blelib.v1.internal.tasks.CsBleConnectTask;
 import com.htc.blelib.v1.internal.tasks.CsNameTask;
 import com.htc.blelib.v1.internal.tasks.CsBleReadBatteryTask;
 import com.htc.blelib.v1.internal.tasks.CsSetClientCredentialsRequestTask;
+import com.htc.blelib.v1.internal.tasks.CsGeneralRequestTask;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -247,6 +248,30 @@ public class CsConnectivityService extends CsConnectivityServiceImpl implements 
         }
 
         Log.d(TAG, "[CS] csBleSetCredentials--");
+
+        return ret;
+
+    }
+
+    @Override
+    public boolean csBleSetGeneralRequest(BluetoothDevice device, int action, int unit, int language, int sound, int bei) {
+        Log.d(TAG, "[CS] csBleSetGeneralRequest++");
+
+        boolean ret = false;
+
+        try {
+
+            CsConnectivityTask task = new CsGeneralRequestTask(mCsBleTransceiver, mMessenger, mExecutor, device, action, unit, language, sound, bei);
+            addTask(task);
+
+            ret = true;
+
+        } catch (Exception e) {
+
+            Log.d(TAG, "[CS] csBleSetGeneralRequest exception: " + e);
+        }
+
+        Log.d(TAG, "[CS] csBleSetGeneralRequest--");
 
         return ret;
 
