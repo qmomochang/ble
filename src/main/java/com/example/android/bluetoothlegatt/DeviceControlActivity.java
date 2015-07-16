@@ -218,6 +218,7 @@ public class DeviceControlActivity extends Activity {
                             b = msg.getData();
                             result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
                             Log.v(TAG,"[CS] handleMessage ICsConnectivityService.CB_BLE_CONNECT_RESULT: result = "+ result);
+                            Toast.makeText(mContext, "ICsConnectivityService.CB_BLE_CONNECT_RESULT:"+result.toString(), Toast.LENGTH_LONG).show();
                             break;
 
                         case ICsConnectivityService.CB_SET_NAME_RESULT:
@@ -252,16 +253,36 @@ public class DeviceControlActivity extends Activity {
                             b = msg.getData();
                             result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
                             valueArr = b.getByteArray(ICsConnectivityService.PARAM_CLIENT_CREDENTIALS_EVENT_RESULT);
-                            String str3;
+                            StringBuilder str3 = new StringBuilder();
+
                             if (valueArr != null) {
-                                Log.v(TAG,"[CS] handleMessage CB_SET_CLIENT_CREDENTIALS_RESULT r = "+result+", array = "+ new String(valueArr));
-                                str3 = "ret array = "+new String(valueArr);
+                                for (int i = 0; i < valueArr.length; i++) {
+                                    str3.append(String.format("%s", valueArr[i]));
+                                }
+                                Log.v(TAG,"[CS] handleMessage CB_SET_CLIENT_CREDENTIALS_RESULT r = "+result+", array = "+ str3);
                             } else {
                                 Log.v(TAG,"[CS] handleMessage CB_SET_CLIENT_CREDENTIALS_RESULT r = "+result+", array = null");
-                                str3 = "ret array = null";
+                                str3.append("null");
                             }
 
-                            Toast.makeText(mContext, str3, Toast.LENGTH_LONG).show();
+                            Toast.makeText(mContext, "device return result = "+str3, Toast.LENGTH_LONG).show();
+                            break;
+                        case ICsConnectivityService.CB_GET_GENERAL_PURPOSE_RESULT:
+                            b = msg.getData();
+                            result = (ICsConnectivityServiceBase.Result) b.getSerializable(ICsConnectivityService.PARAM_RESULT);
+                            valueArr = b.getByteArray(ICsConnectivityService.PARAM_GENERAL_PURPOSE_EVENT_RESULT);
+                            StringBuilder str4 = new StringBuilder();
+                            if (valueArr != null) {
+                                for (int i = 0; i < valueArr.length; i++) {
+                                    str4.append(String.format("%s", valueArr[i]));
+                                }
+                                Log.v(TAG,"[CS] handleMessage ICsConnectivityService.CB_GET_GENERAL_PURPOSE_RESULT: r = "+result+", array = "+ str4);
+                            } else {
+                                Log.v(TAG,"[CS] handleMessage ICsConnectivityService.CB_GET_GENERAL_PURPOSE_RESULT: r = "+result+", array = null");
+                                str4.append("null");
+                            }
+                            Toast.makeText(mContext, "device return result = "+str4, Toast.LENGTH_LONG).show();
+
                             break;
 
                         default:break;
@@ -311,23 +332,28 @@ public class DeviceControlActivity extends Activity {
             menu.findItem(R.id.menu_connect).setVisible(true);
             menu.findItem(R.id.menu_disconnect).setVisible(false);
         }
+        menu.findItem(R.id.menu_0x01).setVisible(true);
+        menu.findItem(R.id.menu_0x45).setVisible(true);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.menu_connect:
-
-                //boolean connect = mBluetoothLeService.connect(mDeviceAddress);
-                //m_CsConnectivityService.csSetName(m_device,"HT543YV11113");
+            case R.id.menu_0x01:
+                // 0x01 test code
+                m_CsConnectivityService.csBleSetGeneralRequest(m_device, 1, 1, 6, 1, 1);
+                Log.v("CS", "m_CsConnectivityService.csBleSetGeneralRequest");
+                return true;
+            case R.id.menu_0x45:
+                // 0x45, 0x46 test code
                 byte [] clientToken =  "0000000000aaaaaaaaaa1111111111bbbbbbbbbb2222222222cccccccccc3333".getBytes();
                 byte [] clientSecret =  "4444444444dddddddddd5555555555eeeeeeeeee6666666666ffffffffff7777".getBytes();
-
                 m_CsConnectivityService.csBleSetCredentials(m_device, 0, "MikeTestToken", clientToken, clientSecret );
                 Log.v("CS", "m_CsConnectivityService.csSetCredentials");
-                //Log.v("CS","m_CsConnectivityService.csSetName");
-                //Log.v("MC","BDA is "+mDeviceAddress.toString()+", suc = "+connect);
+                return true;
+
+            case R.id.menu_connect:
                 return true;
             case R.id.menu_disconnect:
                 //mBluetoothLeService.disconnect();

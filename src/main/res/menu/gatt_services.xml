@@ -26,4 +26,14 @@
           android:title="@string/menu_disconnect"
           android:orderInCategory="101"
           android:showAsAction="ifRoom|withText"/>
+    <item android:id="@+id/menu_0x01"
+          android:title="0x01"
+          android:orderInCategory="200"
+          android:showAsAction="ifRoom|withText"
+          />
+    <item android:id="@+id/menu_0x45"
+          android:title="0x45"
+          android:orderInCategory="200"
+          android:showAsAction="ifRoom|withText"
+          />
 </menu>
