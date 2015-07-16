@@ -52,6 +52,15 @@ public class CsBleReceiveNotificationCallable implements Callable<BluetoothGattC
         public void onNotificationReceive(BluetoothDevice device, BluetoothGattCharacteristic characteristic) {
 
             Log.d(TAG, "[CS] onNotificationReceive!!");
+            //
+            //byte[] value = characteristic.getValue();
+            //StringBuilder str = new StringBuilder();
+            //for (int i = 0; i < value.length; i++) {
+            //    str.append(String.format("%02xh ", value[i]));
+            //}
+            //Log.v(TAG,"[CS] characteristic.getValue() = "+str);
+            //
+
 
             if (device.equals(mBluetoothDevice) && characteristic.getValue()[0] == mCommandID.getID()) {
                 addCallback(new CallbackObject(device, characteristic, CsBleTransceiverErrorCode.ERROR_NONE));
@@ -125,6 +134,7 @@ public class CsBleReceiveNotificationCallable implements Callable<BluetoothGattC
                 if (m_isLongFormat) {
 
                     isComplete = mCollector.update(mBluetoothDevice, callbackObject.mCharacteristic);
+                    //Log.v(TAG,"[CS] isComplete = "+isComplete);
 
                 } else {
 

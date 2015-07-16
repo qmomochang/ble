@@ -41,13 +41,20 @@ public class LongCommandCollector {
 
         boolean ret = false;
         /** we assume that those packs will arrive in the order **/
-        if (device.equals(mBluetoothDevice) && characteristic.getValue()[0] == mCommandID.getID()) {
+        if (device.equals(mBluetoothDevice) && characteristic != null && characteristic.getValue()[0] == mCommandID.getID()) {
 
             /** we assume that properties and permissions are exactly the same for a single UUID */
             if (mResult == null)
                 mResult = new BluetoothGattCharacteristic(characteristic.getUuid(),
                     characteristic.getProperties(), characteristic.getPermissions());
             byte[] value = characteristic.getValue();
+            //
+            //StringBuilder str = new StringBuilder();
+            //for (int i = 0; i < value.length; i++) {
+            //    str.append(String.format("%02xh ", value[i]));
+            //}
+            //Log.v(TAG,"[CS] characteristic.getValue() = "+str);
+            //
 
             int pack_index = ((value[1] >> 1) & 0x1f);
             boolean isFirstPack = (pack_index == 0)? true : false;
@@ -95,6 +102,12 @@ public class LongCommandCollector {
 
                 for (int i = 0; i < fill_other_length; i ++)
                 {
+                    // RE always pass fixed 20byte commands, but CS did not.
+                    if (value.length < fill_other_length)
+                        if ( i+2 >= value.length)
+                            break;
+                    //int ccc = (Common.PAYLOAD_SIZE - 1) + (pack_index - 1) * Common.PAYLOAD_SIZE + i;
+                    //Log.v(TAG,"[CS] i = "+i+", filling results " + ccc + ", value.size " + value.length + ", fill_other_length = "+fill_other_length + ", mLast_pack_size = "+mLast_pack_size);
                     mResultArray[(Common.PAYLOAD_SIZE - 1) + (pack_index - 1) * Common.PAYLOAD_SIZE + i] = value[i + 2];
                 }
             }

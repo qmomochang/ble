@@ -74,6 +74,17 @@ public class CsBleSetNotificationCallable implements Callable<BluetoothGattChara
                 addCallback(new CallbackObject(device, null, errorCode));
             }
         }
+        @Override
+        public void onCharacteristicWrite(BluetoothDevice device, BluetoothGattCharacteristic characteristic) {
+
+            Log.d(TAG, "[CS] onCharacteristicWrite!!!");
+
+            //TODO: Confirm Error code type
+            if (device.equals(mBluetoothDevice) && characteristic.getUuid().toString().equals(CsBleGattAttributes.getUuid(mCommandID))) {
+
+                addCallback(new CallbackObject(device, characteristic, CsBleTransceiverErrorCode.ERROR_NONE));
+            }
+        }
     };
 
 
