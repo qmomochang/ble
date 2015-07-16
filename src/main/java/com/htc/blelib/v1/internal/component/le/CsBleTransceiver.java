@@ -338,9 +338,15 @@ public class CsBleTransceiver implements IGattRequest {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
+
             Log.d(TAG, "[CS] onCharacteristicChanged NOTIFICATION!!");
 
             if (characteristic != null) {
+
+                //BluetoothGattCharacteristic tmpChar = new BluetoothGattCharacteristic(characteristic.getUuid(), characteristic.getProperties(), characteristic.getPermissions());
+                //tmpChar.setValue(characteristic.getValue());
+                //tmpChar.setWriteType(characteristic.getWriteType());
+                //printCharacteristic("WRITE", tmpChar);
 
                 final LinkedList<CsBleTransceiverListener> listeners;
                 synchronized(mListeners){
@@ -1072,24 +1078,25 @@ public class CsBleTransceiver implements IGattRequest {
         Log.d(TAG, "[CS] UUID:" + commandID + " uuid(bytes):" + commandID.getID());
         UUID uuidService = UUID.fromString(CsBleGattAttributes.CS_SERVICE);
         UUID uuidChar = UUID.fromString(CsBleGattAttributes.getUuid(commandID));
-        UUID uuidDescriptor = UUID.fromString(CsBleGattAttributes.getUuid(CsBleGattAttributes.CsV1CommandEnum.CS_DESCRIPTOR));
+        UUID uuidDescriptor = UUID.fromString(CsBleGattAttributes.CS_DESCRIPTOR);
+
         byte[] writeData = (enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
 
         Log.d(TAG, "[CS] setCsNotification enable = " + enable + ", uuidService = " + uuidService + ", uuidChar = " + uuidChar + ", uuidDescriptor = " + uuidDescriptor);
 
         if (setNotification(device, uuidService, uuidChar, enable)) {
 
-               GattRequest request = mGattQueueManager.new GattRequest(device,
-                        uuidService,
-                        uuidChar,
-                        uuidDescriptor,
-                        writeData,
-                        GattQueueManager.REQUEST_WRITE_DESCRIP,
-                        delay,
-                        this);
+               //GattRequest request = mGattQueueManager.new GattRequest(device,
+               //         uuidService,
+               //         uuidChar,
+               //         uuidDescriptor,
+               //         writeData,
+               //         GattQueueManager.REQUEST_WRITE_DESCRIP,
+               //         delay,
+               //         this);
 
-               boolean ret = mGattQueueManager.addPendingRequest(request);
-               Log.d(TAG, "[CS] setCsNotification ret = " + ret);
+               //boolean ret = mGattQueueManager.addPendingRequest(request);
+               Log.d(TAG, "[CS] setCsNotification ret = true");
         }
 
         return 0;

@@ -70,12 +70,12 @@ public class CsGeneralRequestTask extends CsConnectivityTask {
         futureA0 = mExecutor.submit(new CsBleReceiveNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST));
         futureA1 = mExecutor.submit(new CsBleSetNotificationCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST, true));
 
-        if (futureA1.get() == null) {
-            Log.v(TAG,"[CS] futureA1.get == null, notification enable failed.");
-            sendMessage(false, null);
-            unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST);
-            return;
-        }
+        //if (futureA1.get() == null) {
+        //    Log.v(TAG,"[CS] futureA1.get == null, notification enable failed.");
+        //    sendMessage(false, null);
+        //    unregisterNotify(CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST);
+        //    return;
+        //}
 
         futureB  = mExecutor.submit(new CsBleWriteCallable(mCsBleTransceiver, mBluetoothDevice, CsBleGattAttributes.CsV1CommandEnum.CS_GENERAL_PURPOSE_REQUEST, dataArray));
         result = futureB.get();
